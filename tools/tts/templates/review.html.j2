@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="is">
+<head>
+  <meta charset="utf-8">
+  <title>Hugrún audio review</title>
+  <link rel="stylesheet" href="/static/review.css">
+</head>
+<body>
+  <header>
+    <h1>Hugrún audio review</h1>
+    <p>{{ reviewed_count }} / {{ total }} reviewed.
+       <button id="bulk-approve">Approve all unreviewed</button></p>
+  </header>
+  <main>
+  {%- for u in utterances %}
+    <article class="row state-{{ u.state }}" data-key="{{ u.key }}">
+      <header>
+        <span class="badge">{{ u.state_label }}</span>
+        <code class="key">{{ u.key }}</code>
+        <span class="text">"{{ u.used_text }}"</span>
+        <span class="voice">{{ u.used_voice }}</span>
+        {%- if u.kind == 'example_word' %}
+        <span class="hint">starts with: {{ u.starts_with }}</span>
+        {%- endif %}
+        {%- if u.notes_for_reviewer %}
+        <span class="notes-for-reviewer">{{ u.notes_for_reviewer }}</span>
+        {%- endif %}
+      </header>
+      {%- if u.audio_exists %}
+      <audio controls preload="none" src="/audio/{{ u.key }}"></audio>
+      {%- else %}
+      <p class="missing">audio not yet generated — run <code>python tools/tts/bake_audio.py</code></p>
+      {%- endif %}
+      <textarea placeholder="Reviewer notes (optional)">{{ u.notes }}</textarea>
+      <div class="actions">
+        <button class="approve" {% if not u.audio_exists %}disabled{% endif %}>Approve</button>
+        <button class="rerecord" {% if not u.audio_exists %}disabled{% endif %}>Re-record needed</button>
+      </div>
+    </article>
+  {%- endfor %}
+  </main>
+  <script src="/static/review.js"></script>
+</body>
+</html>
