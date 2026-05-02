@@ -84,8 +84,15 @@ class _LetterTileState extends State<LetterTile>
 
   void _handleTapDown(TapDownDetails _) {
     // STAFIR-06: callback first, animation second. The callback is
-    // fire-and-forget; LetterTile doesn't await it.
+    // fire-and-forget; LetterTile doesn't await it. The squeeze-then-
+    // bounce-back animation runs entirely in the AnimationController and
+    // is independent of the callback's completion (which may be running
+    // a slow audio dispatch on the AudioEngine).
     widget.onLetterTap(widget.letter);
+    // reverse() drives toward lowerBound (0.9 — the squeeze).
+    // The .then() chains forward() to drive back to upperBound (1.0).
+    // Plan 04-04 may extend this pattern; for now this is the entire
+    // tap interaction.
     _scaleCtl.reverse().then((_) {
       if (mounted) _scaleCtl.forward();
     });
