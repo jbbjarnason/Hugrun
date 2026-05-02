@@ -24,7 +24,9 @@ class ChildProfilesDao extends DatabaseAccessor<AppDatabase>
   /// Returns the latest profile (singleton), or null if empty.
   Future<ChildProfile?> readLatest() {
     return (select(childProfiles)
-          ..orderBy([(t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc)])
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc),
+          ])
           ..limit(1))
         .getSingleOrNull();
   }
@@ -32,7 +34,9 @@ class ChildProfilesDao extends DatabaseAccessor<AppDatabase>
   /// Reactive variant for Phase 4 / parent_settings UI.
   Stream<ChildProfile?> watchLatest() {
     return (select(childProfiles)
-          ..orderBy([(t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc)])
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc),
+          ])
           ..limit(1))
         .watchSingleOrNull();
   }

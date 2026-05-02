@@ -10,6 +10,10 @@ analyzer:
     - "**/*.freezed.dart"
     - "build/**"
     - ".dart_tool/**"
+    # drift_dev-generated migration helpers (test/core/db/generated/) — produced
+    # by `dart run drift_dev schema generate`; not hand-edited.
+    - "test/core/db/generated/**"
+    - "lib/core/db/database.steps.dart"
 
 linter:
   rules:

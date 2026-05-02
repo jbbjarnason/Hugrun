@@ -48,6 +48,9 @@ void main() {
     await db.childProfilesDao.upsertName(name: 'B');
     await Future<void>.delayed(const Duration(milliseconds: 50));
     await sub.cancel();
-    expect(emissions.where((n) => n == 'A' || n == 'B'), containsAll(['A', 'B']));
+    expect(
+      emissions.where((n) => n == 'A' || n == 'B'),
+      containsAll(['A', 'B']),
+    );
   });
 }

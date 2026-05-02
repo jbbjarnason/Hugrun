@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'dao/child_profiles_dao.dart';
+import 'database.steps.dart';
 import 'tables/child_profiles.dart';
 
 part 'database.g.dart';
@@ -21,14 +22,13 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) async {
-          await m.createAll();
-        },
-        // No-op upgrade at v1 — Plan 02 Task 3 will replace this with the
-        // generated `stepByStep` from drift_dev `schema steps`. Until then,
-        // there are no migrations to run because schemaVersion is 1 (D-04).
-        onUpgrade: (Migrator m, int from, int to) async {},
-      );
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    // Generated `stepByStep` from drift_dev `schema steps` — empty at v1
+    // but the framework is wired so Phase 10's v1→v2 step lands cleanly.
+    onUpgrade: stepByStep(),
+  );
 }
 
 /// Real-platform connection. Uses `drift_flutter` to set up `path_provider`

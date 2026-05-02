@@ -6,15 +6,17 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('AppDatabase opens on real platform and bootstrap inserts Hugrún',
-      (tester) async {
-    final db = AppDatabase();
-    addTearDown(db.close);
+  testWidgets(
+    'AppDatabase opens on real platform and bootstrap inserts Hugrún',
+    (tester) async {
+      final db = AppDatabase();
+      addTearDown(db.close);
 
-    await ensureDefaultChildProfile(db);
-    final row = await db.childProfilesDao.readLatest();
+      await ensureDefaultChildProfile(db);
+      final row = await db.childProfilesDao.readLatest();
 
-    expect(row, isNotNull);
-    expect(row!.name, 'Hugrún');
-  });
+      expect(row, isNotNull);
+      expect(row!.name, 'Hugrún');
+    },
+  );
 }

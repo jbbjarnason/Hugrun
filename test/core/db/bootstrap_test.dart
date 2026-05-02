@@ -15,17 +15,21 @@ void main() {
     expect(await db.childProfilesDao.count(), 1);
   });
 
-  test('ensureDefaultChildProfile is idempotent (re-run does not duplicate)',
-      () async {
-    await ensureDefaultChildProfile(db);
-    await ensureDefaultChildProfile(db);
-    expect(await db.childProfilesDao.count(), 1);
-  });
+  test(
+    'ensureDefaultChildProfile is idempotent (re-run does not duplicate)',
+    () async {
+      await ensureDefaultChildProfile(db);
+      await ensureDefaultChildProfile(db);
+      expect(await db.childProfilesDao.count(), 1);
+    },
+  );
 
-  test('ensureDefaultChildProfile does not overwrite existing custom name',
-      () async {
-    await db.childProfilesDao.upsertName(name: 'Other');
-    await ensureDefaultChildProfile(db);
-    expect((await db.childProfilesDao.readLatest())!.name, 'Other');
-  });
+  test(
+    'ensureDefaultChildProfile does not overwrite existing custom name',
+    () async {
+      await db.childProfilesDao.upsertName(name: 'Other');
+      await ensureDefaultChildProfile(db);
+      expect((await db.childProfilesDao.readLatest())!.name, 'Other');
+    },
+  );
 }
