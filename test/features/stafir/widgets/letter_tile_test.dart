@@ -21,7 +21,6 @@ Widget _hostTile({
   required IcelandicLetter letter,
   required int letterIndex,
   required ValueChanged<IcelandicLetter> onLetterTap,
-  Size size = const Size(800, 600),
 }) {
   return MaterialApp(
     home: Scaffold(
@@ -171,7 +170,7 @@ void main() {
           onLetterTap: (_) {},
         ),
       );
-      Container preTapContainer = tester
+      final preTapContainer = tester
           .widgetList<Container>(
             find.descendant(
               of: find.byType(LetterTile),
@@ -186,7 +185,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
 
-      Container postTapContainer = tester
+      final postTapContainer = tester
           .widgetList<Container>(
             find.descendant(
               of: find.byType(LetterTile),
@@ -204,7 +203,7 @@ void main() {
   });
 
   group('LetterTile scale animation (D-30)', () {
-    testWidgets('animates scale during tap (mid-animation 0.9-1.0)', (
+    testWidgets('animates scale during tap (mid-animation < 1.0)', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -218,24 +217,27 @@ void main() {
       final gesture = await tester.startGesture(
         tester.getCenter(find.byType(LetterTile)),
       );
-      // 50ms into the squeeze: scale should be < 1.0.
+      // 50ms into the squeeze: animation has progressed.
       await tester.pump(const Duration(milliseconds: 50));
-      // Find Transform widget in the LetterTile subtree.
-      final transforms = tester.widgetList<Transform>(
-        find.descendant(
-          of: find.byType(LetterTile),
-          matching: find.byType(Transform),
-        ),
-      );
-      // Transform.scale uses a Matrix4 — extract the scale factor from the
-      // X/Y diagonal entries. (0..0 for X, 1..1 for Y)
-      final activeTransforms = transforms.where(
-        (t) => t.transform.storage[0] < 1.0 || t.transform.storage[5] < 1.0,
+      // Find Transform widget(s) in the LetterTile subtree. The
+      // AnimatedBuilder rebuilds and replaces the inner widget on every
+      // animation tick, so we need to find Transform widgets directly.
+      final transforms = tester
+          .widgetList<Transform>(find.byType(Transform))
+          .toList();
+      expect(transforms, isNotEmpty);
+      // At least one Transform's scale should be < 1.0 mid-squeeze.
+      // Transform.scale wraps the matrix entries; storage[0] = X scale,
+      // storage[5] = Y scale.
+      final hasShrunk = transforms.any(
+        (t) => t.transform.storage[0] < 1.0 && t.transform.storage[5] < 1.0,
       );
       expect(
-        activeTransforms,
-        isNotEmpty,
-        reason: 'mid-animation scale should be < 1.0',
+        hasShrunk,
+        isTrue,
+        reason:
+            'mid-animation: at least one Transform should be scaled < 1.0 (got '
+            '${transforms.map((t) => "${t.transform.storage[0]},${t.transform.storage[5]}").toList()})',
       );
       await gesture.up();
       await tester.pumpAndSettle();
