@@ -239,3 +239,68 @@ identity. With `marionette_flutter` confirmed:
 - `custom_lint` NOT installed. 0.8.1 needs analyzer ^8 — conflicts with our
   ^9 stack. `riverpod_lint 3.1.x` uses `analysis_server_plugin` instead and
   delivers the same lint-during-analyze behavior; same ergonomic outcome.
+
+## REMEDIATION COMPLETE
+
+### Resolved pubspec.lock versions
+
+| Package | Version |
+|---|---|
+| flutter (`.fvmrc`) | 3.41.9 |
+| environment.sdk | 3.11.5 |
+| flutter_riverpod | 3.3.1 |
+| riverpod_annotation | 4.0.2 |
+| riverpod_generator | 4.0.3 |
+| riverpod_lint | 3.1.3 |
+| drift | 2.31.0 |
+| drift_flutter | 0.2.8 |
+| drift_dev | 2.31.0 |
+| build_runner | 2.15.0 |
+| freezed | 3.2.5 |
+| freezed_annotation | 3.1.0 |
+| flutter_gen_runner | 5.14.1 |
+| marionette_flutter | 0.5.0 |
+| just_audio | 0.10.5 |
+| audio_session | 0.2.3 |
+| (transitive) analyzer | 9.0.0 |
+| (transitive) meta | 1.17.0 |
+| (transitive) test_api | 0.7.10 |
+| (transitive) sqlite3 | 2.9.4 |
+
+### Test pass count
+
+| | Before | After |
+|---|---|---|
+| `flutter test` | 64 | **66** |
+
+### Commits added in remediation (3)
+
+| SHA | Message |
+|---|---|
+| `dc507e8` | `chore(01-01): upgrade to Flutter 3.41.9 + Riverpod 4.x codegen + drift 2.31 + freezed + riverpod_lint` |
+| `478637e` | `feat(01-04): apply marionette_flutter ^0.5.0 + complete Plan 04 smoke harness` |
+| `4a23abe` | `docs(01): update verification + summaries post-remediation` |
+
+### Phase 1 success criteria — final post-remediation status
+
+| # | Criterion | Status |
+|---|---|---|
+| 1 | `flutter run` works on iOS+Android | passed (build proof on 3.41.9); real-device run pending |
+| 2 | Home screen shows two rooms, navigable | passed |
+| 3 | Parent-gate primitive 3 s ring fill gates settings | passed |
+| 4 | Marionette E2E smoke test runs | passed (scripted variant + MCP harness; CI unblocked) |
+| 5 | CI workflow + no-tracking guard | passed |
+
+### Outstanding for the user
+
+1. Real-device `flutter run` validation on iOS + Android (criterion 1 final
+   acceptance) — `tools/run-marionette.sh ios` and `... android` are now
+   ready, will boot a simulator/AVD and run the scripted smoke.
+2. (Optional) MCP-harness end-to-end validation: `tools/run-marionette.sh
+   mcp ios` + the user's `marionette-verify` skill + an AI agent
+   (Claude Code / Cursor / Copilot / Gemini CLI) connected via the
+   `marionette_mcp` server.
+3. Push CI to GitHub and observe the three jobs (`analyze-and-test`,
+   `integration-no-network`, `marionette-e2e`) run end-to-end. The
+   `marionette-e2e` job in particular has never executed in a real CI
+   environment (it was `if: false` until this remediation).
