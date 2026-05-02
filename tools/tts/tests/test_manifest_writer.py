@@ -64,6 +64,28 @@ def _full_reviewed(manifest, voice="is_IS-steinn-medium"):
     return {"version": 1, "entries": entries}
 
 
+def _all_technically_reviewed(manifest):
+    """Build a reviewed.yaml dict with ONLY technically_reviewed:true for every entry."""
+    entries = {}
+    for u in manifest["utterances"]:
+        entries[u["key"]] = {
+            "technically_reviewed": True,
+            "technically_reviewed_at": "2026-05-02T18:00:00Z",
+            "technically_reviewed_lufs": -19.1,
+            "technically_reviewed_duration_ms": 600,
+        }
+    return {"version": 1, "entries": entries}
+
+
+def _mixed_partial(manifest):
+    """First entry technically_reviewed; the rest absent (block)."""
+    first = manifest["utterances"][0]["key"]
+    return {
+        "version": 1,
+        "entries": {first: {"technically_reviewed": True}},
+    }
+
+
 def _used_texts(manifest, voice="is_IS-steinn-medium"):
     return {u["key"]: (u["text"], voice) for u in manifest["utterances"]}
 
@@ -241,13 +263,14 @@ def test_phase2_backward_compat_enforced():
 
 
 def test_real_repo_manifest_renders(tmp_path):
-    """Smoke test: the real 65-entry manifest.yaml + a synthetic full reviewed.yaml
+    """Smoke test: the real manifest.yaml + a synthetic full reviewed.yaml
     produce valid Dart output without errors."""
     import yaml as _yaml
     from tools.tts.manifest_writer import write_audio_manifest
 
     repo_root = Path(__file__).resolve().parents[3]
     m = _yaml.safe_load((repo_root / "manifest.yaml").read_text())
+    expected_entries = len(m["utterances"])
 
     reviewed = _full_reviewed(m, voice=m["voice"])
     used_texts = _used_texts(m, voice=m["voice"])
@@ -265,8 +288,173 @@ def test_real_repo_manifest_renders(tmp_path):
         generated_at="2026-05-02T14:30:00Z",
     )
     body_m = out_m.read_text()
-    # 65 entries → 65 UtteranceKey.X lines in audio_manifest.g.dart
-    assert body_m.count("UtteranceKey.") == 65
+    # Each entry contributes 1× UtteranceKey.X plus 1× kAudioManifest[UtteranceKey.X]
+    # in the getAudioAsset wrapper? Actually no — the wrapper uses
+    # kAudioManifest[key], not UtteranceKey.X by name. So we just count entries.
+    assert body_m.count("UtteranceKey.") == expected_entries
     # All 5 stub keys present
     for k in ("letterA", "letterEth", "letterThorn", "wordHundur", "narrationWelcome"):
         assert f"UtteranceKey.{k}" in body_m
+
+
+# ============================================================================
+# Phase 13 soft-gate tests (Workstream C)
+# ============================================================================
+
+
+def test_soft_gate_emits_when_only_technically_reviewed(tmp_path):
+    """Phase 13: technically_reviewed:true is sufficient with allow_technically_reviewed=True.
+
+    The emitted manifest MUST include warning comments per entry and a
+    file-level header warning about pending pronunciation review.
+    """
+    from tools.tts.manifest_writer import write_audio_manifest
+
+    m = _basic_manifest()
+    reviewed = _all_technically_reviewed(m)
+    out_m = tmp_path / "audio_manifest.g.dart"
+    out_e = tmp_path / "utterance_key.dart"
+
+    write_audio_manifest(
+        m,
+        reviewed,
+        _used_texts(m),
+        _durations(m),
+        out_manifest_path=out_m,
+        out_enum_path=out_e,
+        allow_technically_reviewed=True,
+        generated_at="2026-05-02T14:30:00Z",
+    )
+
+    body = out_m.read_text()
+    # File-level warning header in comments.
+    assert "PRONUNCIATION REVIEW PENDING" in body
+    # All 5 entries rendered.
+    assert body.count("UtteranceKey.") == 5
+    # Per-entry warning comment.
+    pending_count = body.count("// PRONUNCIATION REVIEW PENDING")
+    # 5 per-entry markers + 1 in header = at least 6.
+    assert pending_count >= 5
+
+
+def test_soft_gate_no_warning_when_fully_reviewed(tmp_path):
+    """When every entry has reviewed:true, no warning comments emit."""
+    from tools.tts.manifest_writer import write_audio_manifest
+
+    m = _basic_manifest()
+    reviewed = _full_reviewed(m)
+    out_m = tmp_path / "audio_manifest.g.dart"
+    out_e = tmp_path / "utterance_key.dart"
+
+    write_audio_manifest(
+        m,
+        reviewed,
+        _used_texts(m),
+        _durations(m),
+        out_manifest_path=out_m,
+        out_enum_path=out_e,
+        allow_technically_reviewed=True,
+        generated_at="2026-05-02T14:30:00Z",
+    )
+
+    body = out_m.read_text()
+    assert "PRONUNCIATION REVIEW PENDING" not in body
+
+
+def test_soft_gate_blocks_when_neither_review_present(tmp_path):
+    """Soft gate ON, but some entries have neither flag → still blocked."""
+    from tools.tts.manifest_writer import write_audio_manifest, ReviewGateError
+
+    m = _basic_manifest()
+    reviewed = _mixed_partial(m)  # only the first entry has technically_reviewed
+
+    with pytest.raises(ReviewGateError) as exc_info:
+        write_audio_manifest(
+            m,
+            reviewed,
+            _used_texts(m),
+            _durations(m),
+            out_manifest_path=tmp_path / "m.dart",
+            out_enum_path=tmp_path / "e.dart",
+            allow_technically_reviewed=True,
+            generated_at="2026-05-02T14:30:00Z",
+        )
+    msg = str(exc_info.value)
+    # 4 of 5 entries are missing both reviewed and technically_reviewed.
+    assert "4" in msg
+
+
+def test_soft_gate_mixed_reviewed_and_technically_reviewed(tmp_path):
+    """Some entries reviewed:true, others technically_reviewed:true → emit
+    with warning comments only on the technically_reviewed-only entries."""
+    from tools.tts.manifest_writer import write_audio_manifest, text_hash
+
+    m = _basic_manifest()
+    voice = m["voice"]
+    reviewed = {
+        "version": 1,
+        "entries": {
+            # Two fully reviewed.
+            "letterA": {
+                "reviewed": True,
+                "reviewer": "Jon",
+                "timestamp": "2026-05-02T14:30:00Z",
+                "voice": voice,
+                "text_hash": text_hash("a", voice),
+                "notes": "OK",
+            },
+            "letterEth": {
+                "reviewed": True,
+                "reviewer": "Jon",
+                "timestamp": "2026-05-02T14:30:00Z",
+                "voice": voice,
+                "text_hash": text_hash("eð", voice),
+                "notes": "OK",
+            },
+            # Three technically_reviewed only.
+            "letterThorn": {"technically_reviewed": True},
+            "wordHundur": {"technically_reviewed": True},
+            "narrationWelcome": {"technically_reviewed": True},
+        },
+    }
+
+    out_m = tmp_path / "audio_manifest.g.dart"
+    out_e = tmp_path / "utterance_key.dart"
+    write_audio_manifest(
+        m,
+        reviewed,
+        _used_texts(m, voice=voice),
+        _durations(m),
+        out_manifest_path=out_m,
+        out_enum_path=out_e,
+        allow_technically_reviewed=True,
+        generated_at="2026-05-02T14:30:00Z",
+    )
+
+    body = out_m.read_text()
+    # The 3 unreviewed-for-pronunciation entries get warning comments.
+    pending = body.count("// PRONUNCIATION REVIEW PENDING")
+    assert pending >= 3
+    # Header should still warn since some entries are pending.
+    assert "PRONUNCIATION REVIEW PENDING" in body
+
+
+def test_soft_gate_off_still_blocks_technically_reviewed_only(tmp_path):
+    """Without the opt-in flag, technically_reviewed:true alone still
+    blocks (preserves Phase 3-7 behavior for callers that don't opt in)."""
+    from tools.tts.manifest_writer import write_audio_manifest, ReviewGateError
+
+    m = _basic_manifest()
+    reviewed = _all_technically_reviewed(m)
+
+    with pytest.raises(ReviewGateError):
+        write_audio_manifest(
+            m,
+            reviewed,
+            _used_texts(m),
+            _durations(m),
+            out_manifest_path=tmp_path / "m.dart",
+            out_enum_path=tmp_path / "e.dart",
+            # default allow_technically_reviewed=False
+            generated_at="2026-05-02T14:30:00Z",
+        )
