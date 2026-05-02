@@ -1,0 +1,7 @@
+version: 1
+overrides:
+  letterEth:
+    text: "eð"
+    length_scale: 1.05
+  wordHundur:
+    text: "hund-ur"

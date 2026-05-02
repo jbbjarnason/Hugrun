@@ -1,0 +1,8 @@
+version: 1
+voice: is_IS-steinn-medium
+language: is-IS
+utterances:
+  - key: letterA
+    text: "a"
+    asset: assets/audio/letters/names/a.aac
+    kind: not_a_real_kind

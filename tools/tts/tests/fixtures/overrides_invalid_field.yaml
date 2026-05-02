@@ -1,0 +1,5 @@
+# Has an unknown override field — schema rejects.
+version: 1
+overrides:
+  letterEth:
+    foobar: "not a recognized override field"

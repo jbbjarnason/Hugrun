@@ -1,0 +1,9 @@
+version: 1
+entries:
+  letterA:
+    reviewed: true
+    reviewer: "Jon"
+    timestamp: "yesterday at noon"   # not ISO-8601
+    voice: "is_IS-steinn-medium"
+    text_hash: "sha256:abcdef"
+    notes: ""

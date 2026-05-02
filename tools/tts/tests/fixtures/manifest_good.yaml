@@ -1,0 +1,27 @@
+# Phase 2 stub-shape fixture — 5 entries, schema-valid, used as the happy-path
+# baseline for tools/tts/schema.validate_manifest tests.
+version: 1
+voice: is_IS-steinn-medium
+language: is-IS
+utterances:
+  - key: letterA
+    text: "a"
+    asset: assets/audio/letters/names/a.aac
+    kind: letter_name
+  - key: letterEth
+    text: "eð"
+    asset: assets/audio/letters/names/eth.aac
+    kind: letter_name
+  - key: letterThorn
+    text: "þorn"
+    asset: assets/audio/letters/names/thorn.aac
+    kind: letter_name
+  - key: wordHundur
+    text: "hundur"
+    asset: assets/audio/letters/words/hundur.aac
+    kind: example_word
+    starts_with: h
+  - key: narrationWelcome
+    text: "Halló Hugrún. Veldu stafi eða tölur."
+    asset: assets/audio/narration/welcome_hugrun.aac
+    kind: narration

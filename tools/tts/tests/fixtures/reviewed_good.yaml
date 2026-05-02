@@ -1,0 +1,9 @@
+version: 1
+entries:
+  letterA:
+    reviewed: true
+    reviewer: "Jon"
+    timestamp: "2026-05-02T14:30:00Z"
+    voice: "is_IS-steinn-medium"
+    text_hash: "sha256:abcdef0123456789"
+    notes: "OK"

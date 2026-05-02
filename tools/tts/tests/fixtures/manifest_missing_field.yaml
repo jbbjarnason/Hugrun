@@ -1,0 +1,9 @@
+version: 1
+voice: is_IS-steinn-medium
+language: is-IS
+utterances:
+  - key: wordHundur
+    text: "hundur"
+    # missing `asset`
+    kind: example_word
+    starts_with: h

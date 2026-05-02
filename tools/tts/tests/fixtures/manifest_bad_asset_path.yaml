@@ -1,0 +1,9 @@
+version: 1
+voice: is_IS-steinn-medium
+language: is-IS
+utterances:
+  - key: letterA
+    text: "a"
+    # uppercase + space — violates D-06
+    asset: assets/audio/letters/Names/A.aac
+    kind: letter_name
