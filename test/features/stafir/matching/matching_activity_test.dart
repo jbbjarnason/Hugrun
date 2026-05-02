@@ -39,7 +39,7 @@ ProviderScope _wrap({
   Widget? child,
 }) {
   return ProviderScope(
-    overrides: <Override>[
+    overrides: [
       audioEngineProvider.overrideWith((ref) => engine),
       roundGeneratorProvider.overrideWith((ref) => generator),
       photoOverrideSourceProvider.overrideWith(
