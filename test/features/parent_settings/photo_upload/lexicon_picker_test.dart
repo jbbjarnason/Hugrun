@@ -110,12 +110,16 @@ void main() {
         ),
       );
 
-      final scrollable = find.byType(Scrollable).first;
+      // GridView.builder with cacheExtent can mount tiles into the
+      // widget tree before they are inside the visible viewport;
+      // scrollUntilVisible exits at the first non-empty .evaluate(),
+      // which is too early for hit-testing. Use ensureVisible to
+      // guarantee the tile center is on-screen before tapping.
       final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
-      if (hundurTile.evaluate().isEmpty) {
-        await tester.scrollUntilVisible(hundurTile, 300.0,
-            scrollable: scrollable);
-      }
+      await tester.scrollUntilVisible(hundurTile, 100.0,
+          scrollable: find.byType(Scrollable).first);
+      await tester.ensureVisible(hundurTile);
+      await tester.pumpAndSettle();
       await tester.tap(hundurTile);
       await tester.pumpAndSettle();
 
@@ -146,13 +150,13 @@ void main() {
         ),
       );
       // Pick a non-first word to ensure we're not just hitting the
-      // top-of-list tile.
-      final scrollable = find.byType(Scrollable).first;
+      // top-of-list tile. Use ensureVisible (see comment on tapping
+      // hundur, above) to guarantee the tile center is on-screen.
       final epliTile = find.byKey(const Key('lexicon-tile-epli'));
-      if (epliTile.evaluate().isEmpty) {
-        await tester.scrollUntilVisible(epliTile, 300.0,
-            scrollable: scrollable);
-      }
+      await tester.scrollUntilVisible(epliTile, 100.0,
+          scrollable: find.byType(Scrollable).first);
+      await tester.ensureVisible(epliTile);
+      await tester.pumpAndSettle();
       await tester.tap(epliTile);
       await tester.pumpAndSettle();
       expect(selected, isNotNull);

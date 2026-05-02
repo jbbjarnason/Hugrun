@@ -103,6 +103,15 @@ void main() {
     testWidgets(
       'tapping FAB → pick → select lexicon → addPhoto called',
       (tester) async {
+        // Phase 12 UI-04: LexiconPicker is now a 2-column GridView.
+        // Set surface size large enough to host the picker comfortably,
+        // and tap the keyed tile (lexicon-tile-hundur) rather than
+        // find.text('hundur') — the noun text in the picker tile is
+        // a small caption inside an InkWell, but the InkWell takes
+        // its key from the tile root (more robust to layout changes).
+        await tester.binding.setSurfaceSize(const Size(1280, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
         final picker = _FakePhotoPicker(File('/tmp/fake_source.jpg'));
         final repo = _CapturingPhotoRepository();
 
@@ -116,15 +125,19 @@ void main() {
         // LexiconPicker should now be visible.
         expect(find.text('Veldu orð'), findsOneWidget);
 
-        // Tap "hundur" — scroll the alphabetical list until it's in view
-        // (kStarterLexicon has ≥30 entries; "hundur" can be below the fold).
-        final hundurFinder = find.text('hundur');
+        // Tap "hundur" tile — kStarterLexicon has ≥30 entries; the tile
+        // can be below the fold in a 2-col grid. ensureVisible after
+        // scrollUntilVisible hits the corner case where the cacheExtent
+        // mounts the tile but it's not yet inside the viewport.
+        final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
         await tester.scrollUntilVisible(
-          hundurFinder,
-          200.0,
+          hundurTile,
+          100.0,
           scrollable: find.byType(Scrollable).first,
         );
-        await tester.tap(hundurFinder);
+        await tester.ensureVisible(hundurTile);
+        await tester.pumpAndSettle();
+        await tester.tap(hundurTile);
         await tester.pumpAndSettle();
 
         expect(repo.addCalls, hasLength(1));
