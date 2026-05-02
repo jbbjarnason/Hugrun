@@ -58,6 +58,11 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
+  # `path` is used by test/tools/check_no_tracking_test.dart to construct
+  # absolute fixture paths. Already pulled transitively, listing here removes
+  # depend_on_referenced_packages warning.
+  path: ^1.9.0
+
   flutter_lints: ^6.0.0
   # build_runner pinned to 2.4.x — newer (2.10+) generates build scripts using
   # Dart's "build hook" feature which `dart compile` does not support; the

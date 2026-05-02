@@ -21,12 +21,12 @@ const bannedPackages = <String>[
 Future<ProcessResult> runCheck(String fixturePubspecLock) async {
   final tmp = Directory.systemTemp.createTempSync('hugrun-check-no-tracking-');
   try {
-    await File(p.join(tmp.path, 'pubspec.lock')).writeAsString(fixturePubspecLock);
-    return await Process.run(
-      'bash',
-      [p.absolute('tools/check-no-tracking.sh')],
-      workingDirectory: tmp.path,
-    );
+    await File(
+      p.join(tmp.path, 'pubspec.lock'),
+    ).writeAsString(fixturePubspecLock);
+    return await Process.run('bash', [
+      p.absolute('tools/check-no-tracking.sh'),
+    ], workingDirectory: tmp.path);
   } finally {
     tmp.deleteSync(recursive: true);
   }
@@ -46,7 +46,8 @@ void main() {
 
   for (final pkg in bannedPackages) {
     test('exits non-zero when $pkg is present', () async {
-      final fixture = '''
+      final fixture =
+          '''
 packages:
   $pkg:
     dependency: "direct main"
@@ -57,10 +58,7 @@ packages:
 ''';
       final result = await runCheck(fixture);
       expect(result.exitCode, isNot(0));
-      expect(
-        '${result.stdout}${result.stderr}',
-        contains(pkg),
-      );
+      expect('${result.stdout}${result.stderr}', contains(pkg));
     });
   }
 }
