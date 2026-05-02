@@ -1,16 +1,40 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/parent_gate/parent_gate.dart';
 import '../parent_settings/parent_settings_screen.dart';
 import '../stafir/stafir_room.dart';
 import '../tolur/tolur_room.dart';
 import 'room_button.dart';
+import 'welcome_narration_controller.dart';
 
 /// Two-room home shell (FOUND-08) with a parent-gate-protected entry to
-/// settings (FOUND-09). Both rooms are Phase 1 placeholders; Phase 4
-/// (Stafir) and Phase 8 (Tölur) fill them. Navigator 1.0 (D-25).
-class HomePage extends StatelessWidget {
+/// settings (FOUND-09) and a once-per-session welcome narration (D-19,
+/// PERS-03). Phase 4 converts this from StatelessWidget to ConsumerStateful
+/// so initState can fire the welcome via the keepAlive controller.
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
+
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Schedule on next frame so build can render before audio fires.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Fire-and-forget; controller deduplicates across mounts.
+      unawaited(
+        ref
+            .read(welcomeNarrationControllerProvider.notifier)
+            .maybeFireOnce(),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-// Plan 04-06 RED tests for WelcomeNarrationController.
+// Plan 04-06 tests for WelcomeNarrationController.
 // ignore_for_file: scoped_providers_should_specify_dependencies
 
 import 'package:drift/native.dart';
@@ -11,6 +11,7 @@ import 'package:hugrun/core/db/database.dart';
 import 'package:hugrun/core/db/database_provider.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 import 'package:hugrun/features/home/welcome_narration_controller.dart';
+import 'package:hugrun/features/parent_settings/child_name_provider.dart';
 
 import '../../core/audio/_fakes/fake_audio_player.dart';
 
@@ -45,6 +46,27 @@ ProviderContainer _makeContainer({
   );
 }
 
+/// Eagerly subscribes to [childNameProvider] so its stream emits before
+/// the controller awaits `childNameProvider.future`. Without this, the
+/// stream provider gets disposed in loading state because the only
+/// listener (the controller's await) is sync-disposed when
+/// container.dispose runs.
+Future<void> _primeChildName(ProviderContainer container) async {
+  final emissions = <String?>[];
+  final sub = container.listen<AsyncValue<String?>>(
+    childNameProvider,
+    (prev, next) {
+      if (next is AsyncData<String?>) emissions.add(next.value);
+    },
+    fireImmediately: true,
+  );
+  // Wait for at least one emission.
+  for (var i = 0; i < 20 && emissions.isEmpty; i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 25));
+  }
+  sub.close();
+}
+
 void main() {
   test(
     'maybeFireOnce with name "Hugrún" calls audioEngine.play(narrationWelcome)',
@@ -57,9 +79,9 @@ void main() {
       final container = _makeContainer(db: db, engine: engine);
       addTearDown(container.dispose);
 
-      // Read controller; let stream provider settle.
+      await _primeChildName(container);
+
       final ctl = container.read(welcomeNarrationControllerProvider.notifier);
-      await Future<void>.delayed(const Duration(milliseconds: 50));
       await ctl.maybeFireOnce();
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -67,26 +89,24 @@ void main() {
     },
   );
 
-  test(
-    'maybeFireOnce called twice fires only once (D-19)',
-    () async {
-      final db = AppDatabase.forTesting(NativeDatabase.memory());
-      addTearDown(db.close);
-      await ensureDefaultChildProfile(db);
+  test('maybeFireOnce called twice fires only once (D-19)', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+    await ensureDefaultChildProfile(db);
 
-      final engine = _RecEngine();
-      final container = _makeContainer(db: db, engine: engine);
-      addTearDown(container.dispose);
+    final engine = _RecEngine();
+    final container = _makeContainer(db: db, engine: engine);
+    addTearDown(container.dispose);
 
-      final ctl = container.read(welcomeNarrationControllerProvider.notifier);
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-      await ctl.maybeFireOnce();
-      await ctl.maybeFireOnce();
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+    await _primeChildName(container);
 
-      expect(engine.playCalls.length, 1);
-    },
-  );
+    final ctl = container.read(welcomeNarrationControllerProvider.notifier);
+    await ctl.maybeFireOnce();
+    await ctl.maybeFireOnce();
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    expect(engine.playCalls.length, 1);
+  });
 
   test(
     'name change after first fire does NOT trigger second fire (D-21)',
@@ -99,11 +119,11 @@ void main() {
       final container = _makeContainer(db: db, engine: engine);
       addTearDown(container.dispose);
 
+      await _primeChildName(container);
+
       final ctl = container.read(welcomeNarrationControllerProvider.notifier);
-      await Future<void>.delayed(const Duration(milliseconds: 50));
       await ctl.maybeFireOnce();
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      // Now change the name.
       await db.childProfilesDao.upsertName(name: 'Anna');
       await Future<void>.delayed(const Duration(milliseconds: 100));
       await ctl.maybeFireOnce();
@@ -122,10 +142,11 @@ void main() {
     final container = _makeContainer(db: db, engine: engine);
     addTearDown(container.dispose);
 
+    await _primeChildName(container);
+
     final ctl = container.read(welcomeNarrationControllerProvider.notifier);
-    await Future<void>.delayed(const Duration(milliseconds: 50));
-    // Should NOT throw.
     await ctl.maybeFireOnce();
-    // No assertion needed — absence of exception IS the assertion.
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    // Absence of exception IS the assertion.
   });
 }
