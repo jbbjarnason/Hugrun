@@ -36,12 +36,16 @@ void main() {
         ),
       ),
     );
-    ctl.show('hundur');
+    // Phase 11 note: the lexicon images now ship in the asset bundle
+    // (assets/images/letters/words/hundur.webp etc.), so using a real
+    // lexicon slug here would render Image.asset instead of the
+    // placeholder. Use a deliberately-missing slug to keep this test
+    // exercising the no-asset → placeholder-text fallback path.
+    ctl.show('zz_no_asset');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    // Either the image asset loads or the placeholder text shows.
-    // In tests, asset bundle doesn't have the image, so placeholder fires.
-    expect(find.text('hundur'), findsOneWidget);
+    // Asset bundle does not have a 'zz_no_asset' image, so placeholder fires.
+    expect(find.text('zz_no_asset'), findsOneWidget);
     // Advance past the visible+fade so the pending timers fire before tear-
     // down (otherwise the no-pending-timers invariant trips).
     await tester.pump(const Duration(milliseconds: 500));
@@ -62,12 +66,15 @@ void main() {
         ),
       ),
     );
-    ctl.show('hundur');
+    // Phase 11 note: see comment in the previous test — use a slug with
+    // no shipped image so the placeholder text path is exercised
+    // independently of the (now real) lexicon asset bundle.
+    ctl.show('zz_no_asset');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    expect(find.text('hundur'), findsOneWidget);
+    expect(find.text('zz_no_asset'), findsOneWidget);
     // Past the visibleDuration + fadeDuration:
     await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('hundur'), findsNothing);
+    expect(find.text('zz_no_asset'), findsNothing);
   });
 }
