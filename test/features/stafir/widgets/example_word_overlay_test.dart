@@ -27,7 +27,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: ExampleWordOverlay(controller: ctl)),
+        home: Scaffold(
+          body: ExampleWordOverlay(
+            controller: ctl,
+            visibleDuration: const Duration(milliseconds: 100),
+            fadeDuration: const Duration(milliseconds: 50),
+          ),
+        ),
       ),
     );
     ctl.show('hundur');
@@ -36,6 +42,9 @@ void main() {
     // Either the image asset loads or the placeholder text shows.
     // In tests, asset bundle doesn't have the image, so placeholder fires.
     expect(find.text('hundur'), findsOneWidget);
+    // Advance past the visible+fade so the pending timers fire before tear-
+    // down (otherwise the no-pending-timers invariant trips).
+    await tester.pump(const Duration(milliseconds: 500));
   });
 
   testWidgets('hides after visibleDuration', (tester) async {

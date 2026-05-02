@@ -118,6 +118,9 @@ void main() {
   });
 
   testWidgets('StafirRoom can be popped without crashing', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     final navKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
       ProviderScope(
@@ -133,10 +136,10 @@ void main() {
     navKey.currentState!.push(
       MaterialPageRoute<void>(builder: (_) => const StafirRoom()),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.byType(StafirRoom), findsOneWidget);
     navKey.currentState!.pop();
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.byType(StafirRoom), findsNothing);
   });
 }
