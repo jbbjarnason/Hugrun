@@ -1,4 +1,6 @@
-import 'package:drift/drift.dart';
+// Alias drift imports — `drift/drift.dart` exports an `isNotNull` operator
+// (column predicate builder) that clashes with `matcher`'s `isNotNull` matcher.
+import 'package:drift/drift.dart' show InvalidDataException;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/db/database.dart';
