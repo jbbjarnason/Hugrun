@@ -30,6 +30,9 @@ import '../../../../integration_test/test_helpers/fake_audio_engine.dart';
 
 CvcWord _husWord() => kCvcWords.firstWhere((w) => w.word == 'hús');
 CvcWord _kyrWord() => kCvcWords.firstWhere((w) => w.word == 'kýr');
+// `hár` has no `har.webp` shipped in Phase 11's lexicon — used to verify
+// the errorBuilder fallback path renders the word string as text.
+CvcWord _harWord() => kCvcWords.firstWhere((w) => w.word == 'hár');
 
 ProviderScope _wrap({
   required FakeAudioEngine engine,
@@ -269,4 +272,33 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(engine.playCalls.last, UtteranceKey.wordK);
   });
+
+  testWidgets(
+    'C13 (Phase 11 fix): hús round renders Image.asset, no word-text fallback',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      // hús → assets/images/letters/words/hus.webp ships in Phase 11.
+      await tester.pumpWidget(_wrap(engine: engine, word: _husWord()));
+      await tester.pumpAndSettle();
+      // Image renders inside the round image container.
+      expect(find.byType(Image), findsOneWidget);
+      // The errorBuilder text 'hús' is NOT mounted while the asset succeeds.
+      expect(find.text('hús'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'C14 (Phase 11 fix): hár round (no shipped image) falls back to text',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      // hár has no `har.webp` in the Phase 11 lexicon — errorBuilder fires.
+      await tester.pumpWidget(_wrap(engine: engine, word: _harWord()));
+      await tester.pumpAndSettle();
+      expect(find.text('hár'), findsOneWidget);
+    },
+  );
 }

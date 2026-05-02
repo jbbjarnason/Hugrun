@@ -67,6 +67,22 @@ void main() {
     });
   });
 
+  /// A round whose slug intentionally has no shipped lexicon image, so the
+  /// errorBuilder fallback path renders the slug as text. Mirrors the
+  /// `zz_no_asset` pattern used in example_word_overlay_test.dart.
+  MatchingRound missingAssetRound() => MatchingRound(
+        targetWordKey: UtteranceKey.wordHundur,
+        targetWordSlug: 'zz_no_asset',
+        correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+        options: <dynamic>[
+          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
+          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
+          kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
+        ].cast(),
+        imageSource: const ImageSource.stockPlaceholder(wordSlug: 'zz_no_asset'),
+      );
+
   group('MatchingRoundImage', () {
     Widget wrap(MatchingRound round) => ProviderScope(
           child: MaterialApp(
@@ -80,13 +96,33 @@ void main() {
           ),
         );
 
-    testWidgets('I1: StockPlaceholder renders Container with slug Text',
+    testWidgets(
+        'I1: StockPlaceholder with shipped lexicon image renders Image.asset',
         (tester) async {
+      // Phase 11 baked `assets/images/letters/words/hundur.webp` so the
+      // matching round's StockPlaceholder now resolves to that asset
+      // instead of the text-on-color placeholder.
       await tester.pumpWidget(wrap(_stockRound()));
-      await tester.pump();
-      expect(find.text('hundur'), findsOneWidget);
+      await tester.pumpAndSettle();
       expect(
         find.byKey(const Key('matching-stock-placeholder-hundur')),
+        findsOneWidget,
+      );
+      // Image renders; no text fallback is mounted when the asset succeeds.
+      expect(find.byType(Image), findsOneWidget);
+      expect(find.text('hundur'), findsNothing);
+    });
+
+    testWidgets(
+        'I1b: StockPlaceholder with missing asset falls back to slug text',
+        (tester) async {
+      await tester.pumpWidget(wrap(missingAssetRound()));
+      // Pump multiple frames so Image.asset's errorBuilder fires for the
+      // missing asset path.
+      await tester.pumpAndSettle();
+      expect(find.text('zz_no_asset'), findsOneWidget);
+      expect(
+        find.byKey(const Key('matching-stock-placeholder-zz_no_asset')),
         findsOneWidget,
       );
     });
@@ -99,13 +135,15 @@ void main() {
         find.byKey(const Key('matching-photo-override-photo-uuid-7')),
         findsOneWidget,
       );
+      // PhotoOverride keeps the labeled-text placeholder until Phase 10
+      // ships real photo loading.
       expect(find.text('photo-uuid-7'), findsOneWidget);
     });
 
     testWidgets('I3: widget centers content and expands to parent width',
         (tester) async {
       await tester.pumpWidget(wrap(_stockRound()));
-      await tester.pump();
+      await tester.pumpAndSettle();
       // The placeholder Container should occupy 80% of parent width = 480.
       final containerFinder = find.byKey(
         const Key('matching-stock-placeholder-hundur'),
@@ -115,9 +153,13 @@ void main() {
     });
 
     testWidgets('I4: no instructional / score / timer text', (tester) async {
-      await tester.pumpWidget(wrap(_stockRound()));
-      await tester.pump();
-      // Exactly one Text widget (the placeholder/photoId label).
+      // With the shipped lexicon image, no Text widget is rendered at all
+      // (the errorBuilder doesn't fire). With the missing-asset round we
+      // see the slug label only. Either way: no digits, no instruction
+      // text — same invariant.
+      await tester.pumpWidget(wrap(missingAssetRound()));
+      await tester.pumpAndSettle();
+      // Exactly one Text — the slug label rendered by the errorBuilder.
       expect(find.byType(Text), findsOneWidget);
       // No digits anywhere — no scores or counters.
       expect(find.byWidgetPredicate(

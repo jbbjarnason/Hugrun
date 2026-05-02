@@ -33,6 +33,8 @@ import '../../../core/alphabet/icelandic_letter.dart';
 import '../../../core/audio/audio_engine_provider.dart';
 import '../../../core/cvc/cvc_word.dart';
 import '../../../core/cvc/phoneme_resolver.dart';
+import '../../../core/lexicon/icelandic_slug.dart';
+import '../example_word_resolver.dart';
 import '../widgets/letter_tile.dart';
 import 'cvc_providers.dart';
 
@@ -149,9 +151,11 @@ class _CvcActivityState extends ConsumerState<CvcActivity> {
 }
 
 /// Inline image area for the CVC round. Mirrors MatchingRoundImage's
-/// text-on-color placeholder pattern (D-12 of Phase 5) — Phase 6 ships
-/// the same posture; a polish pass or Phase 10 personalization will
-/// replace with real illustrations.
+/// pattern: try the Phase 11 lexicon image at
+/// `assets/images/letters/words/<slug>.webp`, fall back to a text-on-color
+/// tile when the asset is missing (e.g. `hár`/`gás` aren't in the starter
+/// lexicon yet). Slug is derived from `word.word` via the ASCII
+/// transliteration helper so `hús` → `hus.webp`, `kýr` → `kyr.webp`, etc.
 class _CvcRoundImage extends StatelessWidget {
   const _CvcRoundImage({required this.word});
 
@@ -159,6 +163,8 @@ class _CvcRoundImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final slug = icelandicWordToSlug(word.word);
+    final imagePath = exampleWordImagePath(slug);
     return LayoutBuilder(
       builder: (context, constraints) => Center(
         child: Container(
@@ -170,12 +176,19 @@ class _CvcRoundImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
           ),
           alignment: Alignment.center,
-          child: Text(
-            word.word,
-            style: const TextStyle(
-              fontSize: 56,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1A1A1A),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stack) => Text(
+                word.word,
+                style: const TextStyle(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
             ),
           ),
         ),
