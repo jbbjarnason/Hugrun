@@ -7,11 +7,14 @@ import '../../core/alphabet/icelandic_letter.dart';
 import '../../core/audio/audio_engine_provider.dart';
 import '../../core/audio/utterance_resolver.dart';
 import 'example_word_resolver.dart';
+import 'matching/matching_activity.dart';
+import 'stafir_mode.dart';
 import 'widgets/example_word_overlay.dart';
 import 'widgets/letter_grid.dart';
+import 'widgets/stafir_mode_toggle.dart';
 
-/// Phase 4 D-09 / D-10 / D-13 / STAFIR-01..10. Replaces the Phase 1
-/// placeholder.
+/// Phase 4 D-09 / D-10 / D-13 / STAFIR-01..10. Plan 05-03 adds the
+/// Letters / Match mode toggle (D-01).
 ///
 /// MANIFEST SWAP-IN NOTE (D-22, D-23):
 ///   Phase 4 ships against the Phase 2 stub manifest (5 clips).
@@ -29,12 +32,22 @@ class StafirRoom extends ConsumerStatefulWidget {
   const StafirRoom({super.key});
 
   @override
-  ConsumerState<StafirRoom> createState() => _StafirRoomState();
+  ConsumerState<StafirRoom> createState() => StafirRoomState();
 }
 
-class _StafirRoomState extends ConsumerState<StafirRoom> {
+/// Public so widget tests can access via `tester.state<StafirRoomState>(...)`
+/// to drive [debugSetMode] (Plan 05-03 Task 2).
+class StafirRoomState extends ConsumerState<StafirRoom> {
   final ExampleWordOverlayController _overlayCtl =
       ExampleWordOverlayController();
+
+  StafirMode _mode = StafirMode.letters;
+
+  /// Test-only escape hatch to drive the mode without simulating a 3-second
+  /// hold gesture. The toggle widget itself is exercised by its own widget
+  /// tests; this lets the StafirRoom tests stay focused on body composition.
+  @visibleForTesting
+  void debugSetMode(StafirMode m) => setState(() => _mode = m);
 
   @override
   void dispose() {
@@ -47,13 +60,9 @@ class _StafirRoomState extends ConsumerState<StafirRoom> {
     if (key == null) {
       // Phase 2 stub: enum entry doesn't exist for this letter. Visual
       // feedback already happened via LetterTile onTapDown. No audio.
-      // Phase 3 fixes by extending letterToUtteranceKey + the manifest.
       return;
     }
-    // Fire-and-forget. AudioEngine.play handles cancel-on-retap.
     unawaited(ref.read(audioEngineProvider).play(key));
-    // Show example-word overlay only if a paired word exists in the
-    // active manifest.
     final resolved = resolveLetterToClips(key);
     final wordKey = resolved.wordKey;
     if (wordKey != null) {
@@ -64,16 +73,30 @@ class _StafirRoomState extends ConsumerState<StafirRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar kept for nav parity with Phase 1 (back button); behind
-      // immersive system UI mode (Plan 01) so chrome is minimal in
-      // practice on hardware.
       appBar: AppBar(title: const Text('Stafir')),
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            LetterGrid(onLetterTap: _onLetterTap),
-            IgnorePointer(
-              child: ExampleWordOverlay(controller: _overlayCtl),
+            // Mode-conditional primary surface.
+            switch (_mode) {
+              StafirMode.letters => LetterGrid(onLetterTap: _onLetterTap),
+              StafirMode.match => const MatchingActivity(),
+            },
+            // Letters-mode-only example word overlay.
+            if (_mode == StafirMode.letters)
+              IgnorePointer(
+                child: ExampleWordOverlay(controller: _overlayCtl),
+              ),
+            // Mode toggle, top-right corner. 3-second hold is required
+            // to swap modes (D-01 — kid-safe, accident-resistant).
+            Positioned(
+              top: 8,
+              right: 8,
+              child: StafirModeToggle(
+                currentMode: _mode,
+                onToggle: () =>
+                    setState(() => _mode = _mode.next),
+              ),
             ),
           ],
         ),
