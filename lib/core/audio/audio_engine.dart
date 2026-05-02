@@ -100,12 +100,23 @@ class AudioEngine {
   }
 
   /// Acquires the next player from the pool in round-robin order.
-  /// Plan 04-02 uses this internally; exposed via `@visibleForTesting`
-  /// so tests in Plan 04-02 can inspect rotation behavior.
+  ///
+  /// Plan 04-02 uses this internally to dispatch playback while preserving
+  /// the cancel-on-retap contract (D-04, D-05): the previous player is
+  /// stopped first, then the next pool slot picks up the new audio source.
+  /// Exposed via `@visibleForTesting` so Plan 04-02 tests can inspect
+  /// rotation behavior without making the whole pool public.
   @visibleForTesting
   AudioPlayerLike acquirePlayerForTesting() => _acquirePlayer();
 
+  /// Round-robin index. The pool size is fixed at [poolSize]; we wrap modulo
+  /// [poolSize]. Initial value `0` so the first acquire returns player 0.
+  /// Plan 04-01 only uses player 0 (for AVAudioSession priming); Plan 04-02
+  /// will rotate as letters are tapped.
   int _nextPoolIndex = 0;
+
+  /// Internal pool acquire — guarded by an assertion that the pool hasn't
+  /// drifted from [poolSize] (catches a future bug that mutates [_pool]).
   AudioPlayerLike _acquirePlayer() {
     assert(
       _pool.length == poolSize,
@@ -115,6 +126,12 @@ class AudioEngine {
     _nextPoolIndex = (_nextPoolIndex + 1) % poolSize;
     return p;
   }
+
+  /// Debug-only: dump pool occupancy. Plan 04-02 may extend this to track
+  /// which slot is currently active.
+  @visibleForTesting
+  String debugPoolSummary() =>
+      'AudioEngine pool=${_pool.length}/$poolSize next=$_nextPoolIndex warmedUp=$_warmedUp';
 
   /// Releases all players. Called from the Riverpod provider's `onDispose`.
   Future<void> dispose() async {
