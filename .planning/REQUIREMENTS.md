@@ -146,13 +146,86 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated by gsd-roadmapper) | — | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 2 | Pending |
+| FOUND-05 | Phase 2 | Pending |
+| FOUND-06 | Phase 1 | Pending |
+| FOUND-07 | Phase 1 | Pending |
+| FOUND-08 | Phase 1 | Pending |
+| FOUND-09 | Phase 1 | Pending |
+| FOUND-10 | Phase 1 | Pending |
+| FOUND-11 | Phase 1 | Pending |
+| AUDIO-01 | Phase 3 | Pending |
+| AUDIO-02 | Phase 3 | Pending |
+| AUDIO-03 | Phase 3 | Pending |
+| AUDIO-04 | Phase 3 | Pending |
+| AUDIO-05 | Phase 3 | Pending |
+| AUDIO-06 | Phase 3 | Pending |
+| AUDIO-07 | Phase 3 | Pending |
+| AUDIO-08 | Phase 3 | Pending |
+| AUDIO-09 | Phase 3 | Pending |
+| AUDIO-10 | Phase 3 | Pending |
+| STAFIR-01 | Phase 4 | Pending |
+| STAFIR-02 | Phase 4 | Pending |
+| STAFIR-03 | Phase 4 | Pending |
+| STAFIR-04 | Phase 4 | Pending |
+| STAFIR-05 | Phase 4 | Pending |
+| STAFIR-06 | Phase 4 | Pending |
+| STAFIR-07 | Phase 4 | Pending |
+| STAFIR-08 | Phase 4 | Pending |
+| STAFIR-09 | Phase 4 | Pending |
+| STAFIR-10 | Phase 4 | Pending |
+| PERS-01 | Phase 4 | Pending |
+| PERS-02 | Phase 4 | Pending |
+| PERS-03 | Phase 4 | Pending |
+| MATCH-01 | Phase 5 | Pending |
+| MATCH-02 | Phase 5 | Pending |
+| MATCH-03 | Phase 5 | Pending |
+| MATCH-04 | Phase 5 | Pending |
+| CVC-01 | Phase 6 | Pending |
+| CVC-02 | Phase 6 | Pending |
+| CVC-03 | Phase 6 | Pending |
+| TRACE-01 | Phase 7 | Pending |
+| TRACE-02 | Phase 7 | Pending |
+| TRACE-03 | Phase 7 | Pending |
+| TRACE-04 | Phase 7 | Pending |
+| TRACE-05 | Phase 7 | Pending |
+| NUM-01 | Phase 8 | Pending |
+| NUM-02 | Phase 8 | Pending |
+| NUM-03 | Phase 8 | Pending |
+| NUM-06 | Phase 8 | Pending |
+| NUM-08 | Phase 8 | Pending |
+| NUM-04 | Phase 9 | Pending |
+| NUM-05 | Phase 9 | Pending |
+| NUM-07 | Phase 9 | Pending |
+| PHOTO-01 | Phase 10 | Pending |
+| PHOTO-02 | Phase 10 | Pending |
+| PHOTO-03 | Phase 10 | Pending |
+| PHOTO-04 | Phase 10 | Pending |
+| PHOTO-05 | Phase 10 | Pending |
+| PHOTO-06 | Phase 10 | Pending |
+| PHOTO-07 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 56 total (counts: FOUND 11, AUDIO 10, STAFIR 10, PERS 3, MATCH 4, TRACE 5, CVC 3, NUM 8, PHOTO 7 — recheck after roadmap)
-- Mapped to phases: TBD
-- Unmapped: TBD
+- v1 requirements: 61 total (counts: FOUND 11, AUDIO 10, STAFIR 10, PERS 3, MATCH 4, TRACE 5, CVC 3, NUM 8, PHOTO 7)
+- Mapped to phases: 61
+- Unmapped: 0
+- Status: 100% coverage ✓
+
+**Phase distribution:**
+- Phase 1 (Skeleton & Drift Schema): 9 requirements (FOUND-01, 02, 03, 06, 07, 08, 09, 10, 11)
+- Phase 2 (Alphabet & Asset Conventions): 2 requirements (FOUND-04, 05)
+- Phase 3 (TTS Pipeline): 10 requirements (AUDIO-01..10)
+- Phase 4 (Stafir Tap-to-Hear MVP): 13 requirements (STAFIR-01..10, PERS-01..03)
+- Phase 5 (Letter-to-Word Matching): 4 requirements (MATCH-01..04)
+- Phase 6 (CVC Blending): 3 requirements (CVC-01..03)
+- Phase 7 (Letter Tracing): 5 requirements (TRACE-01..05)
+- Phase 8 (Tölur Tap-to-Hear & Sequencing): 5 requirements (NUM-01, 02, 03, 06, 08)
+- Phase 9 (Numeracy Activities): 3 requirements (NUM-04, 05, 07)
+- Phase 10 (Personalization Photos): 7 requirements (PHOTO-01..07)
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after initial definition*
+*Last updated: 2026-05-02 after roadmap creation (10 phases, 61/61 v1 requirements mapped)*
