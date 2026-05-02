@@ -10,6 +10,7 @@ DOMAIN_PATHS=(
                             # parent_gate.dart is a widget — see EXCEPTIONS below
   "lib/core/alphabet"       # Phase 2 Plan 01: IcelandicLetter + kIcelandicAlphabet
   "lib/core/manifest"       # Phase 2 Plan 02: UtteranceKey + AudioAsset (audio manifest contract types)
+  "lib/core/matching"       # Phase 5 Plan 01: MatchingRound + RoundGenerator (pure-Dart round logic, D-05)
   # When Phase 4 adds lib/domain/, append it here.
 )
 
