@@ -1,0 +1,16 @@
+# Codegen orchestration. Per PITFALLS Pitfall 21 — drift_dev should run before
+# any other annotation builder so that drift's generated `.g.dart` files exist
+# when downstream builders (riverpod_generator, freezed) run.
+# Phase 1 has only drift_dev wired; Phase 4 adds the rest.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        enabled: true
+        options:
+          # Use INTEGER unix-epoch storage for DateTime per D-03 (created_at INTEGER)
+          store_date_time_values_as_text: false
+          # Generated companions/result classes use named parameters
+          named_parameters: true
+          # No mutable_classes — drift companions are immutable by default
+          mutable_classes: false
