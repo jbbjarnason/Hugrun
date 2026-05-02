@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: blocked
-stopped_at: Phase 3 Plan 01 complete; Plans 02-07 BLOCKED on TTS provider outage (tts.tiro.is offline)
-last_updated: "2026-05-02T13:30:00.000Z"
-last_activity: 2026-05-02 — Phase 3 Plan 01 tooling shipped (5 commits); live Tiro spike returned HTTP 404 across all endpoints; Phase 3 Plans 02-07 blocked pending TTS provider decision (Azure Neural / Grammatek / Polly / self-hosted)
+status: ready-for-milestone-audit
+stopped_at: Phase 10 complete — all 10 phases shipped; ready for /gsd-complete-milestone
+last_updated: "2026-05-02T18:00:00.000Z"
+last_activity: 2026-05-02 — Phase 10 (Personalization — Photo System) shipped (9 atomic commits across 5 plans); 443 tests pass; APK builds; all guards green
 progress:
   total_phases: 10
-  completed_phases: 0
-  total_plans: 1
-  completed_plans: 0
-  partial_plans: 1
-  percent: 1
+  completed_phases: 10
+  total_plans: 10
+  completed_plans: 10
+  partial_plans: 0
+  percent: 100
 ---
 
 # Project State
@@ -22,16 +22,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-02)
 
 **Core value:** A five-year-old can pick up a tablet, tap, and learn — discoverable through visuals and audio alone, with no failure states, no scores, no instructions to read.
-**Current focus:** Phase 3 — TTS Pipeline & Audio Review Tooling (BLOCKED on provider outage)
+**Current focus:** v1 milestone code complete — pending `/gsd-complete-milestone` audit pass.
 
 ## Current Position
 
-Phase: 3 of 10 (TTS Pipeline & Audio Review Tooling)
-Plan: 03-01 done (tooling baseline + spike); 03-02..03-07 BLOCKED
-Status: BLOCKED — pending user decision on TTS provider (see .planning/phases/03-tts-pipeline-audio-review-tooling/03-VERIFICATION.md)
-Last activity: 2026-05-02 — Plan 01 tooling shipped (5 commits); live Tiro spike returned HTTP 404; outage + 4 escalation paths documented in tools/tts/README.md
+Phase: 10 of 10 (DONE — Personalization Photo System)
+Plan: 10-01..10-04 complete; 10-05 docs landed
+Status: ready-for-milestone-audit. All 10 phases shipped.
+Last activity: 2026-05-02 — Phase 10 complete (9 atomic commits, +52 tests → 443 total)
 
-Progress: [█░░░░░░░░░] 5%
+Progress: [██████████] 100%
+
+**Open follow-ups carried into milestone close:**
+- Phase 3 TTS pipeline: 03-01 done; 03-02..03-07 still BLOCKED on Tiro outage (provider HTTP 404). Phase 3 ships partial (tooling baseline only). Audio assets that depend on full TTS coverage are placeholder-driven; the runtime app reads `kAudioManifest` and the matching activity / Stafir tap-to-hear work as long as the manifest entries resolve to existing AAC files.
+- Real-device validation (Phase 1 criterion 1) — `flutter run` on a physical iPad / Android tablet still pending sign-off.
+- ROADMAP boxes for Phases 1-9 are unchecked in the master ROADMAP.md table; per-phase VERIFICATION.md docs exist and pass for each.
 
 ## Performance Metrics
 

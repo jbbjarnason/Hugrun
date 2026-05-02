@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 7: Letter Tracing (Ítalíuskrift)** - CustomPainter tracing surface, lowercase Ítalíuskrift letterforms for all 32 letters, calibrated tolerance, soft stroke-order, completion celebration with child name
 - [ ] **Phase 8: Tölur Tap-to-Hear & Sequencing** - Numbers room with digits 1–10, gendered audio for 1–4, sequencing activity, school-convention masculine for abstract counting
 - [ ] **Phase 9: Numeracy Activities (One-to-One, Subitizing, Addition)** - One-to-one correspondence, subitizing 1–5, addition with objects (no `+` symbol), all under no-fail rules
-- [ ] **Phase 10: Personalization — Photo System** - Parent photo upload + Icelandic-word tagging, curated lexicon, photo overrides for matching and numeracy, Drift v1→v2 migration with `schemaAt(1)` round-trip test
+- [x] **Phase 10: Personalization — Photo System** - Parent photo upload + Icelandic-word tagging, curated lexicon, photo overrides for matching and numeracy, Drift v1→v2 migration with `schemaAt(1)` round-trip test (2026-05-02)
 
 ## Phase Details
 
