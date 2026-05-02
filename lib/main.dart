@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'app/app.dart';
+import 'core/db/database_provider.dart';
+import 'features/parent_settings/photo_upload/drift_photo_override_source.dart';
+import 'features/stafir/matching/matching_providers.dart';
 
 /// Locks the app to landscape orientation and hides system chrome (D-15, D-16).
 ///
@@ -50,5 +53,24 @@ Future<void> main() async {
   // already respects the orientation. SystemChrome requires a binding, which
   // we ensure above.
   await configureSystemChrome();
-  runApp(const ProviderScope(child: HugrunApp()));
+  runApp(
+    ProviderScope(
+      // Phase 10 D-13: override the photo source binding from Phase 5's empty
+      // stub to the Drift-backed implementation. The matching round generator
+      // sees the new source via `ref.watch` — no code change in the activity.
+      overrides: [
+        photoOverrideSourceProvider.overrideWith(
+          (ref) {
+            final source = DriftPhotoOverrideSource(
+              ref.watch(appDatabaseProvider),
+            );
+            ref.onDispose(source.dispose);
+            return source;
+          },
+        ),
+      ],
+      child: const HugrunApp(),
+    ),
+  );
 }
+

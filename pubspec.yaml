@@ -86,6 +86,10 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.8.0
   uuid: ^4.5.3
+  # `path` joins app-documents-directory with the hugrun_photos/<uuid>.jpg
+  # filename in PhotoRepository (Phase 10 D-11). Promoted from dev_dependencies
+  # since lib/ now references it directly.
+  path: ^1.9.0
 
   # Marionette MCP runtime (D-09 / FOUND-07). marionette_flutter is the
   # leancodepl AI-agent-driven E2E harness — NOT a scripted test framework.
@@ -103,8 +107,8 @@ dev_dependencies:
     sdk: flutter
 
   # `path` is used by test/tools/check_no_tracking_test.dart to construct
-  # absolute fixture paths.
-  path: ^1.9.0
+  # absolute fixture paths. (Also a direct main dep — see above.)
+
 
   flutter_lints: ^6.0.0
 
