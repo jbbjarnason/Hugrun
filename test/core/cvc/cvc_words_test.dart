@@ -8,7 +8,6 @@
 // Pure-Dart per Phase 6 D-06.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugrun/core/cvc/cvc_word.dart';
 import 'package:hugrun/core/cvc/cvc_words.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 
