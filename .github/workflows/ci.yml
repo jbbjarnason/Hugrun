@@ -34,11 +34,11 @@ jobs:
       - name: dart format --set-exit-if-changed
         run: dart format --set-exit-if-changed .
 
+      - name: build_runner build
+        run: dart run build_runner build
+
       - name: flutter analyze
         run: flutter analyze
-
-      - name: build_runner build
-        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: flutter test
         run: flutter test
@@ -83,7 +83,7 @@ jobs:
         run: flutter pub get
 
       - name: build_runner
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: integration_test under NoNetworkHttpOverrides
         run: |
@@ -92,18 +92,14 @@ jobs:
             --reporter=expanded
 
   # ============================================================================
-  # marionette-e2e job is intentionally GUARDED behind the existence of the
-  # Marionette package. As of 2026-05-02, the Marionette package referenced by
-  # CONTEXT D-09 does not exist on pub.dev under the name `marionette`; the
-  # closest match (`marionette_flutter`) is an MCP-based AI agent tool, not an
-  # E2E test framework. The user-mandated framework choice is being escalated.
-  # When Marionette is installed by Plan 04 (or substituted with the user's
-  # explicit approval), uncomment this job AND remove the conditional skip.
+  # marionette-e2e runs the SCRIPTED Marionette/integration-test smoke against
+  # iPad Air simulator + Pixel Tablet AVD. The MCP variant (AI-agent-driven
+  # via marionette_flutter + marionette_mcp) is NOT wired into CI — that one
+  # is a pre-merge interactive check. See marionette/README.md.
   # ============================================================================
   marionette-e2e:
     name: marionette-e2e (macOS)
     runs-on: macos-latest
-    if: false  # Disabled until Marionette package is resolved (Plan 04 checkpoint)
     steps:
       - uses: actions/checkout@v4
 
@@ -123,7 +119,7 @@ jobs:
         run: flutter pub get
 
       - name: build_runner
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Boot iPad Air simulator
         run: |

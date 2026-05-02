@@ -61,6 +61,15 @@ dependencies:
   # package added so Phase 4's first @freezed type can land without churn)
   freezed_annotation: ^3.1.0
 
+  # Marionette MCP runtime (D-09 / FOUND-07). marionette_flutter is the
+  # leancodepl AI-agent-driven E2E harness — NOT a scripted test framework.
+  # We initialize MarionetteBinding only in debug mode (lib/main.dart) so an
+  # external `marionette_mcp` server can attach to the Flutter VM and let an
+  # AI agent (Claude Code / Cursor / Copilot via the user's `marionette-verify`
+  # skill) drive the app for smoke verification. Production builds embed no
+  # MCP surface. See marionette/README.md for the verification model.
+  marionette_flutter: ^0.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
