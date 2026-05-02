@@ -1,0 +1,16 @@
+# Python dependencies for the Hugrún TTS pipeline (Phase 3).
+# Pinned for reproducibility. Install via:
+#   python3 -m venv tools/tts/.venv && source tools/tts/.venv/bin/activate
+#   pip install -r tools/tts/requirements.txt
+#
+# Or globally with --user:
+#   pip install --user -r tools/tts/requirements.txt
+#
+# requests + pyyaml + jinja2 — pipeline runtime deps
+# pytest + requests-mock — test deps (lightweight; included alongside runtime so the
+# pipeline's own self-tests stay self-contained without a separate dev-requirements file)
+requests==2.32.4
+pyyaml==6.0.2
+jinja2==3.1.4
+pytest==8.3.3
+requests-mock==1.12.1

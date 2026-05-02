@@ -1,0 +1,18 @@
+# Local cache for raw Tiro outputs — pre-review audio that must not enter git.
+# (D-08 / Plan 01 threat model T-03-01-01.)
+# The directory itself is committed via _raw/.gitkeep so the path always exists;
+# everything else under _raw/ is ignored.
+_raw/*
+!_raw/.gitkeep
+
+# Python tooling artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# venv
+.venv/
+
+# Bake pipeline run reports — D-03 (per-run summary, gitignored)
+last-run.json
