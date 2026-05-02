@@ -1,9 +1,30 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'app/app.dart';
+
+/// Locks the app to landscape orientation and hides system chrome (D-15, D-16).
+///
+/// Extracted as a top-level function so unit tests can verify the
+/// SystemChannels.platform calls without launching `runApp`. See
+/// `test/skeleton/main_orientation_test.dart`.
+///
+/// Decisions:
+///   D-15  Tablets in landscape give better grid layout for 32 letters and
+///         more comfortable tap zones.
+///   D-16  Status bar + navigation bar hidden so the child can't
+///         accidentally dismiss the app — parent gate (3 s hold) is the
+///         only documented exit affordance.
+Future<void> configureSystemChrome() async {
+  await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+}
 
 /// App entry point.
 ///
@@ -19,11 +40,15 @@ import 'app/app.dart';
 /// `AutomatedTestWidgetsFlutterBinding`) or `integration_test` (which uses
 /// `IntegrationTestWidgetsFlutterBinding`); both of those still work because
 /// they construct their own bindings before `main()` runs.
-void main() {
+Future<void> main() async {
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized();
   } else {
     WidgetsFlutterBinding.ensureInitialized();
   }
+  // D-15 / D-16: lock landscape + immersive before runApp so the first frame
+  // already respects the orientation. SystemChrome requires a binding, which
+  // we ensure above.
+  await configureSystemChrome();
   runApp(const ProviderScope(child: HugrunApp()));
 }
