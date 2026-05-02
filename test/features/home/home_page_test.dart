@@ -108,6 +108,36 @@ void main() {
     );
   });
 
+  testWidgets('Phase 12 UI-03: Stafir room button shows alphabet glyph '
+      '"Aa á" so a pre-reader can recognize the room', (tester) async {
+    await _runHomeWithDb(
+      tester,
+      body: (engine, db) async {
+        expect(
+          find.byKey(const Key('home-room-glyph-stafir')),
+          findsOneWidget,
+          reason: 'Stafir room button must render a styled alphabet '
+              'glyph keyed home-room-glyph-stafir',
+        );
+      },
+    );
+  });
+
+  testWidgets('Phase 12 UI-03: Tölur room button shows numeral glyph '
+      '"1 2 3" so a pre-reader can recognize the room', (tester) async {
+    await _runHomeWithDb(
+      tester,
+      body: (engine, db) async {
+        expect(
+          find.byKey(const Key('home-room-glyph-tolur')),
+          findsOneWidget,
+          reason: 'Tölur room button must render a styled numeral '
+              'glyph keyed home-room-glyph-tolur',
+        );
+      },
+    );
+  });
+
   testWidgets('Tapping Stafir navigates to StafirRoom', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));

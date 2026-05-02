@@ -45,4 +45,44 @@ void main() {
     expect(size.width, greaterThanOrEqualTo(88));
     expect(size.height, greaterThanOrEqualTo(88));
   });
+
+  // ---------------- Phase 12 UI-03 -----------------------------------
+
+  testWidgets('Phase 12 UI-03: RoomButton renders an optional glyph '
+      'widget when provided', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: RoomButton(
+              label: 'Stafir',
+              glyph: const Text(
+                'Aa á',
+                key: Key('roombutton-glyph'),
+                style: TextStyle(fontSize: 96),
+              ),
+              onTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(const Key('roombutton-glyph')), findsOneWidget);
+    expect(find.text('Stafir'), findsOneWidget);
+  });
+
+  testWidgets('Phase 12 UI-03: when glyph absent, button still works '
+      '(backward compatible)', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: RoomButton(label: 'Test', onTap: () {}),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.byType(RoomButton), findsOneWidget);
+  });
 }
