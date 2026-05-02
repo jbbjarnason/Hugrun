@@ -57,7 +57,11 @@ def test_phase2_stub_keys_preserved():
 
 
 def test_count_breakdown():
-    """Test 12: 32 letter_name + 32 example_word + 1 narration = 65 total."""
+    """Test 12: 32 letter_name + 35 example_word (32 + 3 CVC extras) +
+    32 phoneme + 18 numerals (4+4+4+6) + 1 narration = 118 total.
+
+    Counts grew through Phase 6 (32 phonemes + 3 CVC extras) and
+    Phase 8 (18 numerals); Phase 13 keeps them as-is."""
     data = _load_manifest()
     utterances = data["utterances"]
 
@@ -65,9 +69,14 @@ def test_count_breakdown():
     for u in utterances:
         by_kind[u["kind"]] = by_kind.get(u["kind"], 0) + 1
 
-    assert len(utterances) == 65, f"Expected 65 utterances, got {len(utterances)}"
+    assert len(utterances) == 118, f"Expected 118 utterances, got {len(utterances)}"
     assert by_kind.get("letter_name") == 32, f"Expected 32 letter_name, got {by_kind.get('letter_name')}"
-    assert by_kind.get("example_word") == 32, f"Expected 32 example_word, got {by_kind.get('example_word')}"
+    assert by_kind.get("example_word") == 35, f"Expected 35 example_word (32 + 3 CVC), got {by_kind.get('example_word')}"
+    assert by_kind.get("phoneme") == 32, f"Expected 32 phoneme, got {by_kind.get('phoneme')}"
+    assert by_kind.get("numeral_masculine") == 4, f"Expected 4 numeral_masculine, got {by_kind.get('numeral_masculine')}"
+    assert by_kind.get("numeral_feminine") == 4, f"Expected 4 numeral_feminine, got {by_kind.get('numeral_feminine')}"
+    assert by_kind.get("numeral_neuter") == 4, f"Expected 4 numeral_neuter, got {by_kind.get('numeral_neuter')}"
+    assert by_kind.get("numeral_invariant") == 6, f"Expected 6 numeral_invariant, got {by_kind.get('numeral_invariant')}"
     assert by_kind.get("narration") == 1, f"Expected 1 narration, got {by_kind.get('narration')}"
 
 

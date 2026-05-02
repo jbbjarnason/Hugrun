@@ -32,8 +32,8 @@ def test_dry_run_returns_plan(tmp_path):
         dry_run=True,
         last_run_path=last_run,
     )
-    assert plan.total_utterances == 65
-    assert len(plan.per_utterance) == 65
+    assert plan.total_utterances == 118
+    assert len(plan.per_utterance) == 118
     assert last_run.is_file()
     written = json.loads(last_run.read_text())
     assert "started_at" in written
@@ -141,10 +141,12 @@ def test_pipeline_with_mocked_client(tmp_path, monkeypatch):
         out_enum_path=out_e,
     )
 
-    # All 65 should normalize successfully (mocked).
+    # All 118 should normalize successfully (mocked).
     normalized = [s for s in plan.per_utterance.values() if s.get("stage") == "normalized"]
-    assert len(normalized) == 65
-    # Review gate should BLOCK because reviewed.yaml is empty.
+    assert len(normalized) == 118
+    # Review gate should BLOCK because reviewed.yaml has only Phase 13's
+    # technically_reviewed entries (no native-speaker reviewed:true). The
+    # default pipeline does NOT use the soft gate — that's an opt-in.
     assert plan.manifest_written is False
     assert "REVIEW GATE" in plan.next_action or "blocked" in plan.next_action.lower()
 

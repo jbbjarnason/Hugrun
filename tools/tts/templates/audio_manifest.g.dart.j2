@@ -9,7 +9,25 @@
 // The pipeline aborts before this file is rewritten if any utterance is
 // unreviewed (D-18 — review gate). Edit manifest.yaml + reviewed.yaml
 // and re-run; do NOT hand-edit this file.
-
+{% if any_pending %}//
+// =====================================================================
+// PRONUNCIATION REVIEW PENDING — Phase 13 soft gate
+// =====================================================================
+// {{ pending_pronunciation_count }} of {{ entries|length }} entries below have ONLY passed the
+// technical review (format / loudness / non-empty). Native-speaker
+// pronunciation correctness has NOT been verified for those entries
+// — they are marked inline with `// PRONUNCIATION REVIEW PENDING`.
+//
+// To complete pronunciation review:
+//   1. python3 tools/tts/review_server.py
+//   2. Listen to each clip; click Approve or Re-record
+//   3. Re-run python tools/tts/bake_audio.py
+//
+// Until that pass completes, the app DOES play these clips at runtime
+// (so the audio path is exercised end-to-end), but a native Icelandic
+// speaker should sign off before shipping to children.
+// =====================================================================
+{% endif %}
 import 'package:hugrun/core/manifest/audio_asset.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 
@@ -18,6 +36,9 @@ import 'package:hugrun/core/manifest/utterance_key.dart';
 /// - / only). Durations are real measurements from ffprobe (D-12).
 const Map<UtteranceKey, AudioAsset> kAudioManifest = <UtteranceKey, AudioAsset>{
 {%- for entry in entries %}
+{%- if entry.pending_pronunciation %}
+  // PRONUNCIATION REVIEW PENDING — technically reviewed only.
+{%- endif %}
   UtteranceKey.{{ entry.key }}: AudioAsset(
     path: '{{ entry.asset }}',
     approximateDuration: Duration(milliseconds: {{ entry.duration_ms }}),
