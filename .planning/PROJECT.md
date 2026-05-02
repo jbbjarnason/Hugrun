@@ -85,6 +85,7 @@ A five-year-old can pick up a tablet, tap, and learn — discoverable through vi
 - **Persistence — Drift (SQLite)**: User-specified. Replaces the Hive/Isar mention from the original plan.
 - **Audio runtime — `just_audio` + `Ticker`**: For sync between audio and animation. Pre-loaded into memory, no disk read latency mid-tap, no network calls during play. Ever.
 - **Animation — Rive (deferred), CustomPainter for tracing (deferred to post-MVP)**: Tracing requires full control; Rive for character animation when activities expand.
+- **Testing — TDD with Marionette for E2E**: Test-driven development is the default workflow. Write unit/widget tests before implementation (red → green → refactor). Use Marionette as the end-to-end test framework for Flutter UI verification. Every phase plan should sequence test tasks before implementation tasks.
 - **Privacy / safety**: No ads, no IAP, no analytics SDKs, no network calls during play, no accounts, no cloud, no sync.
 - **Timeline**: ASAP playable for Hugrún. MVP cut is steps 1–2 of the build order (tap-to-hear prototype + full alphabet coverage). Other activities follow only after the loop is dialed in.
 - **Audio quality**: Every clip loudness-normalized so no clip is louder than another. Manual pronunciation review pass required for every utterance. Mispronunciations get an entry in `pronunciation_overrides.yaml`.
@@ -106,6 +107,8 @@ A five-year-old can pick up a tablet, tap, and learn — discoverable through vi
 | Both iOS + Android from day one | Future-proof; child's tablet may change; testing on both validates platform abstractions early | — Pending |
 | Personalization as the differentiating moat | Generic content = "fine"; child's dog, toys, name = "sticky" | — Pending |
 | Skip Rive in MVP | Tap-to-hear MVP doesn't need character animation; defer until activities expand | — Pending |
+| TDD as default workflow | User-specified; tests precede implementation in every phase plan | — Pending |
+| Marionette for E2E tests | User-specified; Flutter-native E2E framework, parallelizable via marionette-verify skill | — Pending |
 
 ## Evolution
 
