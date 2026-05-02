@@ -14,6 +14,7 @@ DOMAIN_PATHS=(
   "lib/core/cvc"            # Phase 6 Plan 02: CvcWord + kCvcWords + phoneme_resolver (pure-Dart CVC domain, D-06)
   "lib/core/numbers"        # Phase 8 Plan 01: IcelandicNumber + kIcelandicNumbers + number_audio_resolver (pure-Dart number domain, D-04)
   "lib/core/tracing"        # Phase 7 Plan 02: TraceGlyph + glyph_loader (pure-Dart MMAH parsing, D-08)
+  "lib/core/lexicon"        # Phase 10 Plan 02: LexiconEntry + kStarterLexicon (pure-Dart curated noun lexicon, D-05/D-06)
   # When Phase 4 adds lib/domain/, append it here.
 )
 
