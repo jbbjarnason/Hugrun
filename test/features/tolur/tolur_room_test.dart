@@ -17,8 +17,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/audio/audio_engine_provider.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
+import 'package:hugrun/features/tolur/sequencing/sequencing_activity.dart';
+import 'package:hugrun/features/tolur/tolur_mode.dart';
 import 'package:hugrun/features/tolur/tolur_room.dart';
+import 'package:hugrun/features/tolur/widgets/number_grid.dart';
 import 'package:hugrun/features/tolur/widgets/number_tile.dart';
+import 'package:hugrun/features/tolur/widgets/tolur_mode_toggle.dart';
 
 import '../../../integration_test/test_helpers/fake_audio_engine.dart';
 
@@ -156,6 +160,42 @@ void main() {
       UtteranceKey.numberNine,
       UtteranceKey.numberTen,
     ]);
+  });
+
+  testWidgets('TR1: TolurRoom hosts a TolurModeToggle widget', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final engine = FakeAudioEngine();
+    await tester.pumpWidget(_wrap(engine: engine));
+    await tester.pumpAndSettle();
+    expect(find.byType(TolurModeToggle), findsOneWidget);
+  });
+
+  testWidgets('TR2: TolurRoom defaults to TapToHear mode (NumberGrid visible)',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final engine = FakeAudioEngine();
+    await tester.pumpWidget(_wrap(engine: engine));
+    await tester.pumpAndSettle();
+    expect(find.byType(NumberGrid), findsOneWidget);
+    expect(find.byType(SequencingActivity), findsNothing);
+  });
+
+  testWidgets('TR3: setting mode=sequence swaps body to SequencingActivity',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final engine = FakeAudioEngine();
+    await tester.pumpWidget(_wrap(engine: engine));
+    await tester.pumpAndSettle();
+
+    final state = tester.state<TolurRoomState>(find.byType(TolurRoom));
+    state.debugSetMode(TolurMode.sequence);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(NumberGrid), findsNothing);
+    expect(find.byType(SequencingActivity), findsOneWidget);
   });
 
   testWidgets('T7: NUM-08 — no fail UI / no score / no extra digit text',
