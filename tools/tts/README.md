@@ -5,7 +5,11 @@ loudness-normalized AAC clips and regenerates `lib/gen/audio_manifest.g.dart`.
 
 ## Status
 
-Phase 3 plan 01 — tooling baseline complete; Tiro spike pending Task 2.
+Phase 3 — Piper migration in progress (2026-05-02). Build-time on-device neural
+TTS via the open-source `piper-tts` CLI, Icelandic voice "Steinn" from
+Grammatek Símarómur. Replaces the v1 plan that targeted Tiro after the Tiro
+service was found offline (see "Tiro service outage" section below — historical
+record).
 
 ## Setup
 
@@ -18,13 +22,25 @@ brew install pipx && pipx ensurepath
 pipx install ffmpeg-normalize
 # After ensurepath, restart your shell or `export PATH="$HOME/.local/bin:$PATH"`
 
-# 3. Create venv + install Python deps
+# 3. Install Piper (local on-device neural TTS)
+pipx install piper-tts
+# (brew install piper-tts is NOT available on Homebrew as of 2026-05-02 —
+# pipx is the preferred install method on macOS.)
+
+# 4. Download the Steinn voice model (~76 MB ONNX + 4 KB JSON config; gitignored)
+bash tools/tts/setup_voice.sh
+
+# 5. Create venv + install Python deps
 python3 -m venv tools/tts/.venv
 source tools/tts/.venv/bin/activate
 pip install -r tools/tts/requirements.txt
 
-# 4. Verify everything
-python tools/tts/check_deps.py    # all green
+# 6. Verify everything
+python tools/tts/check_deps.py    # all green (ffmpeg, piper, voice files, modules)
+
+# 7. Verify Piper synthesis with a one-shot spike
+python tools/tts/piper_spike.py --text "halló Hugrún"
+# → writes a WAV under tools/tts/_raw/; play it back to confirm Steinn quality.
 ```
 
 ## Verified versions (2026-05-02)
@@ -32,18 +48,92 @@ python tools/tts/check_deps.py    # all green
 - ffmpeg: 8.1 (Homebrew, arm64 sequoia bottle)
 - ffmpeg-normalize: 1.37.6 (pipx-managed)
 - python3: 3.14.3 (Homebrew)
+- piper-tts: 1.4.2 (pipx-managed; binary at `~/.local/bin/piper`)
+- voice: `is_IS-steinn-medium.onnx` (76,495,465 bytes; SHA from Hugging Face
+  CAS-bridge; commit `7a6c333ec560f0e688371adc2fbb7bbe105028c6` of
+  rhasspy/piper-voices)
+
+## Piper migration (2026-05-02)
+
+After the Tiro spike returned HTTP 404 for every documented endpoint (see
+historical record below), Phase 3 pivots to **Piper** — Apache 2.0 on-device
+neural TTS that runs entirely offline and generates audio at build time.
+
+### Why Piper
+
+- **Apache 2.0** — same license slot Tiro held; no new licensing risk for a
+  kids' app (research Finding 1).
+- **Offline** — no API keys, no rate limits, no service-availability concerns.
+  The pipeline runs from `make` / a local script and produces deterministic
+  output given the same `(text, voice, length-scale)` triple.
+- **Same architectural slot** — build-time generator → AAC clips ship as
+  static assets. ffmpeg-normalize, manifest_writer, review UI, reviewed.yaml
+  gate are all reused unchanged.
+- **Parallelizable** — the pipeline can synthesize multiple clips concurrently
+  (no rate limit, just CPU cores).
+
+### Voice: Steinn (male, Icelandic)
+
+`is_IS-steinn-medium` from `huggingface.co/rhasspy/piper-voices` —
+upstream-trained on Grammatek Símarómur data. PROJECT.md's v1 narrator was
+"Diljá v2" (female); the Piper voices repo currently ships only the male
+Steinn voice for `is_IS`. Final voice quality is Jon's call during the Plan 07
+review pass; if Steinn is unsatisfactory the fallback is Microsoft Azure
+Neural TTS (`is-IS-GudrunNeural` female / `is-IS-GunnarNeural` male) per the
+PROJECT.md fallback chain.
+
+### Piper invocation
+
+```bash
+echo "halló Hugrún" | piper \
+  --model tools/tts/voices/is_IS-steinn-medium.onnx \
+  --output_file out.wav
+```
+
+Output: 16-bit signed PCM WAV, mono, 22,050 Hz. The pipeline downstream
+re-samples to 48 kHz and re-encodes as AAC-LC mono 96 kbps M4A via
+`ffmpeg-normalize` + a final `ffmpeg` pass for the silence pad (D-09 / D-10 /
+D-12).
+
+### Prosody control (D-13, D-15)
+
+Piper supports `--length-scale` (1.0 = normal; >1 slower; <1 faster) and
+`--noise-scale` (generator noise; default tuned per voice). Phoneme-level
+overrides are NOT directly supported by the Piper CLI; for fine pronunciation
+fixes we use **text substitution** (e.g. write `"hund-ur"` instead of
+`"hundur"`) or **eSpeak-style phoneme spelling** in the input text. The
+review UI's "Re-record needed" button is the trigger; Jon hand-edits
+`pronunciation_overrides.yaml` between bake runs.
+
+### Voice file location and gitignore
+
+`tools/tts/voices/is_IS-steinn-medium.onnx` (~76 MB) and
+`tools/tts/voices/is_IS-steinn-medium.onnx.json` (~4 KB) are downloaded by
+`bash tools/tts/setup_voice.sh` on first run. Both files are listed in
+`tools/tts/.gitignore` and never committed (don't bloat the repo).
+`setup_voice.sh` is idempotent — re-running it skips the download if both
+files are already present with non-zero size.
+
+### Removing the Tiro plumbing
+
+`tools/tts/tiro_spike.py` is preserved as a historical record of the
+verification spike that uncovered the outage. It is not invoked by any
+later phase; new pipeline work targets `piper_spike.py` and (in Plan 03)
+`piper_client.py` instead.
+
+
 
 ## HTTP client choice
 
 `requests` (not `httpx`) — synchronous-only is fine for the pipeline (rate-limit at
 1 req/sec dominates anyway). `requests-mock` is the test-time mock library.
 
-## Tiro TTS facts (verified 2026-05-02)
+## Tiro TTS facts (verified 2026-05-02 — HISTORICAL RECORD)
 
-> **STATUS: BLOCKED.** The public Tiro TTS service at `tts.tiro.is` is no longer
-> reachable. All documented endpoints return HTTP 404. The successor TTS API
-> hosted by Grammatek requires paid client credentials. See "Tiro service
-> outage" below for the full investigation and escalation options.
+> **STATUS: SUPERSEDED by the Piper migration above.** The public Tiro TTS
+> service at `tts.tiro.is` is offline; the section below documents the
+> verification spike that uncovered the outage. Kept for historical record /
+> future reference if Tiro ever returns.
 
 - **Base URL**: `https://tts.tiro.is` (DNS still resolves; CNAME → talgreinir.is → 35.190.211.139; HTTP server reachable but returns 404 for every documented path)
 - **Synthesize endpoint** (per upstream `icelandic-lt/tiro-tts` source `src/app.py`): `/v0/speech` (POST). **Returns 404.**
@@ -133,18 +223,21 @@ once a path forward is chosen.
 
 - "ffmpeg: command not found" → `brew install ffmpeg`
 - "ffmpeg-normalize: command not found" → `pipx install ffmpeg-normalize` and ensure `~/.local/bin` is on PATH
+- "piper: command not found" → `pipx install piper-tts` and ensure `~/.local/bin` is on PATH
+- "Piper voice model missing" → `bash tools/tts/setup_voice.sh` (downloads ~76 MB ONNX from Hugging Face)
 - "ModuleNotFoundError: No module named 'requests'" → `pip install -r tools/tts/requirements.txt`
-- "TIRO_API_KEY not set" → optional unless the spike (Plan 01 Task 2) proves Tiro requires auth (research suggests it does NOT, MEDIUM confidence)
 
-## Layout (D-01)
+## Layout (D-01, post-Piper-migration)
 
 ```
 tools/tts/
   README.md                # this file
   requirements.txt         # pinned Python deps
   check_deps.py            # --check-deps entrypoint (D-29)
-  tiro_spike.py            # one-shot Tiro verification (D-06; Plan 01 Task 2)
-  tiro_client.py           # HTTP wrapper (Plan 03)
+  setup_voice.sh           # idempotent Steinn voice downloader (D-05)
+  piper_spike.py           # one-shot Piper verification (D-06)
+  piper_client.py          # subprocess wrapper (Plan 03)
+  tiro_spike.py            # HISTORICAL: original Tiro verification (kept for record)
   normalize.py             # ffmpeg-normalize wrapper (Plan 03)
   bake_audio.py            # main pipeline orchestrator (Plan 04)
   manifest_writer.py       # Dart codegen (Plan 04)
@@ -154,5 +247,6 @@ tools/tts/
   templates/               # Jinja2 templates for codegen + review HTML
   static/                  # CSS + JS for review UI
   tests/                   # pytest test suite
-  _raw/                    # local cache of raw Tiro output (gitignored)
+  voices/                  # Steinn ONNX + JSON config (gitignored, downloaded by setup_voice.sh)
+  _raw/                    # local cache of raw Piper output (gitignored)
 ```
