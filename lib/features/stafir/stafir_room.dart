@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/alphabet/icelandic_letter.dart';
 import '../../core/audio/audio_engine_provider.dart';
 import '../../core/audio/utterance_resolver.dart';
+import 'cvc/cvc_activity.dart';
 import 'example_word_resolver.dart';
 import 'matching/matching_activity.dart';
 import 'stafir_mode.dart';
@@ -81,6 +82,7 @@ class StafirRoomState extends ConsumerState<StafirRoom> {
             switch (_mode) {
               StafirMode.letters => LetterGrid(onLetterTap: _onLetterTap),
               StafirMode.match => const MatchingActivity(),
+              StafirMode.cvc => const CvcActivity(),
             },
             // Letters-mode-only example word overlay.
             if (_mode == StafirMode.letters)

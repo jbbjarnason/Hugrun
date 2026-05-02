@@ -91,9 +91,19 @@ class _StafirModeToggleState extends State<StafirModeToggle>
 
   @override
   Widget build(BuildContext context) {
-    final iconData = widget.currentMode == StafirMode.letters
-        ? Icons.image_outlined
-        : Icons.grid_view_outlined;
+    // Phase 6 D-15: 3 distinct icons, one per mode.
+    //  letters → image_outlined  (the alphabet grid)
+    //  match   → grid_view_outlined  (the matching round options)
+    //  cvc     → spellcheck         (blending letters into a word)
+    final IconData iconData;
+    switch (widget.currentMode) {
+      case StafirMode.letters:
+        iconData = Icons.image_outlined;
+      case StafirMode.match:
+        iconData = Icons.grid_view_outlined;
+      case StafirMode.cvc:
+        iconData = Icons.spellcheck;
+    }
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (_) => _start(),
