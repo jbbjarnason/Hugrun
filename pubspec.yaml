@@ -103,5 +103,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Phase 2 D-05 / D-10: 10 explicit asset folders (7 audio + 3 images).
+  # Trailing slash matters — flutter_gen_runner emits folder-grouped typed
+  # paths from this list. tools/check-asset-paths.sh enforces D-06 path
+  # conventions on every file under these roots.
   assets:
-    - assets/
+    - assets/audio/letters/names/
+    - assets/audio/letters/words/
+    - assets/audio/letters/phonemes/
+    - assets/audio/numbers/masculine/
+    - assets/audio/numbers/feminine/
+    - assets/audio/numbers/neuter/
+    - assets/audio/narration/
+    - assets/images/letters/words/
+    - assets/images/numbers/
+    - assets/images/ui/
