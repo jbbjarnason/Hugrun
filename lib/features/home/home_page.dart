@@ -7,6 +7,7 @@ import '../../core/parent_gate/parent_gate.dart';
 import '../parent_settings/parent_settings_screen.dart';
 import '../stafir/stafir_room.dart';
 import '../tolur/tolur_room.dart';
+import 'home_room_glyphs.dart';
 import 'room_button.dart';
 import 'welcome_narration_controller.dart';
 
@@ -71,10 +72,14 @@ class _RoomGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 600;
+        // Phase 12 UI-03 — each room button now leads with a styled
+        // glyph (alphabet motif "A a á" / numeral motif "1 2 3"). The
+        // text label persists as a small caption below the glyph.
         final children = <Widget>[
           RoomButton(
             key: const Key('home-room-stafir'),
             label: 'Stafir',
+            glyph: const StafirRoomGlyph(),
             onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute<void>(builder: (_) => const StafirRoom())),
@@ -82,6 +87,7 @@ class _RoomGrid extends StatelessWidget {
           RoomButton(
             key: const Key('home-room-tolur'),
             label: 'Tölur',
+            glyph: const TolurRoomGlyph(),
             onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute<void>(builder: (_) => const TolurRoom())),
