@@ -24,9 +24,17 @@ from dataclasses import dataclass, asdict
 from typing import Iterable
 
 
-REQUIRED_BINARIES = ("ffmpeg", "ffmpeg-normalize", "python3")
+REQUIRED_BINARIES = ("ffmpeg", "ffmpeg-normalize", "python3", "piper")
 REQUIRED_MODULES = ("yaml", "jinja2", "requests", "pytest")
-OPTIONAL_ENV_VARS = ("TIRO_API_KEY",)  # required only if Plan 01 spike proved it
+# 2026-05-02 Piper migration: TIRO_API_KEY no longer required (Piper is local CLI,
+# no auth, no API keys). Kept in OPTIONAL_ENV_VARS only as a soft historical hint;
+# the audit-quiet behavior is unchanged.
+OPTIONAL_ENV_VARS: tuple[str, ...] = ()
+
+# Default voice directory (D-05). Override by passing a path explicitly.
+DEFAULT_VOICE_DIR = "tools/tts/voices"
+PIPER_VOICE_ONNX = "is_IS-steinn-medium.onnx"
+PIPER_VOICE_JSON = "is_IS-steinn-medium.onnx.json"
 
 
 @dataclass
@@ -160,6 +168,46 @@ def check_env_vars(vars_: Iterable[str], *, required: bool = False) -> list[Chec
     return results
 
 
+def check_piper_voice(voice_dir) -> list[CheckResult]:
+    """Verify the Steinn voice ONNX + JSON config files are present (D-05).
+
+    Voice files are gitignored (~76 MB ONNX); they are downloaded by
+    `bash tools/tts/setup_voice.sh` on first run. This check surfaces an
+    actionable error if the user skipped setup.
+    """
+    from pathlib import Path
+    voice_dir = Path(voice_dir)
+    onnx = voice_dir / PIPER_VOICE_ONNX
+    cfg = voice_dir / PIPER_VOICE_JSON
+    results: list[CheckResult] = []
+
+    for label, path in (("piper-voice-onnx", onnx), ("piper-voice-config", cfg)):
+        if path.is_file() and path.stat().st_size > 0:
+            results.append(
+                CheckResult(
+                    name=label,
+                    ok=True,
+                    found_path=str(path),
+                    version=f"{path.stat().st_size} bytes",
+                    message=f"{label}: {path} ({path.stat().st_size} bytes)",
+                )
+            )
+        else:
+            results.append(
+                CheckResult(
+                    name=label,
+                    ok=False,
+                    found_path=None,
+                    message=(
+                        f"{label}: missing at {path}. "
+                        f"Run `bash tools/tts/setup_voice.sh` to download "
+                        f"{PIPER_VOICE_ONNX} from huggingface.co/rhasspy/piper-voices."
+                    ),
+                )
+            )
+    return results
+
+
 def _all_ok(results: list[CheckResult]) -> bool:
     return all(r.ok for r in results)
 
@@ -175,11 +223,13 @@ def main(argv: list[str] | None = None) -> int:
     binaries = check_binaries(REQUIRED_BINARIES)
     modules = check_python_modules(REQUIRED_MODULES)
     env_vars = check_env_vars(OPTIONAL_ENV_VARS, required=False)
+    voice = check_piper_voice(DEFAULT_VOICE_DIR)
 
     payload = {
         "binaries": [r.to_dict() for r in binaries],
         "python_modules": [r.to_dict() for r in modules],
         "env_vars": [r.to_dict() for r in env_vars],
+        "piper_voice": [r.to_dict() for r in voice],
     }
 
     if args.json:
@@ -203,12 +253,17 @@ def main(argv: list[str] | None = None) -> int:
             mark = "ok" if r.ok else "FAIL"
             print(f"  [{mark}] {r.message}")
         print()
-        if _all_ok(binaries) and _all_ok(modules) and _all_ok(env_vars):
+        print("Piper voice files:")
+        for r in voice:
+            mark = "ok" if r.ok else "FAIL"
+            print(f"  [{mark}] {r.message}")
+        print()
+        if _all_ok(binaries) and _all_ok(modules) and _all_ok(env_vars) and _all_ok(voice):
             print("All checks passed.")
         else:
             print("One or more checks failed; see messages above.", file=sys.stderr)
 
-    if _all_ok(binaries) and _all_ok(modules) and _all_ok(env_vars):
+    if _all_ok(binaries) and _all_ok(modules) and _all_ok(env_vars) and _all_ok(voice):
         return 0
     return 1
 
