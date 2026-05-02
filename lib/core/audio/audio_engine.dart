@@ -167,10 +167,16 @@ class AudioEngine {
     _warmedUp = false;
   }
 
-  /// The currently-active player + the key it's dispatching, or null if
-  /// nothing is in flight. The cancel-on-retap path stops [_activePlayer]
-  /// before acquiring a fresh slot for the new key (D-04, D-05, STAFIR-04,
-  /// STAFIR-05).
+  /// Active playback slot. Conceptually a `(player, key)` pair: when a
+  /// new tap arrives we stop [_activePlayer] then acquire a fresh slot.
+  /// Both fields are nulled-out together; tests assert via
+  /// [debugActiveKey].
+  ///
+  /// Invariant: `_activePlayer == null  IFF  _activeKey == null`.
+  /// Invariant: `_activePlayer != null` only between dispatch and the
+  /// next stop()/play() call. The previous tap's player may still be
+  /// playing audio briefly after we stop() it because just_audio drains
+  /// asynchronously — that's fine, the system mixer handles the overlap.
   AudioPlayerLike? _activePlayer;
   UtteranceKey? _activeKey;
 

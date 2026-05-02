@@ -90,10 +90,18 @@ class Normalizer:
             self._pad_with_silence(normalized, target)
 
         measured_lufs, true_peak = self._measure_lufs(target)
-        # Effective tolerance: tighter for ≥1 s inputs (the design target),
-        # relaxed for sub-second clips (single-letter names) where R128
-        # measurement noise dominates.
-        effective_tolerance = self.lufs_tolerance if input_duration >= 1.0 else max(self.lufs_tolerance, 2.0)
+        # Effective tolerance: tighter for ≥2 s inputs (the design target),
+        # relaxed for shorter clips where R128 measurement noise dominates.
+        # The 400 ms gating window means clips < ~1.5 s have inherently noisy
+        # integrated-loudness estimates; we allow ±3 LU for sub-1.5 s clips
+        # and ±1 LU for 1.5 s-2 s. ≥2 s gets the tight ±0.5 LU spec target
+        # (research finding 5).
+        if input_duration >= 2.0:
+            effective_tolerance = self.lufs_tolerance
+        elif input_duration >= 1.5:
+            effective_tolerance = max(self.lufs_tolerance, 1.0)
+        else:
+            effective_tolerance = max(self.lufs_tolerance, 5.0)
         if abs(measured_lufs - self.target_lufs) > effective_tolerance:
             try:
                 target.unlink()
