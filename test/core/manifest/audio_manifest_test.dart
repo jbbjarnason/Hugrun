@@ -88,12 +88,15 @@ void main() {
     );
 
     test(
-      'Phase 6 phoneme + new word keys are NOT in the Phase 2 stub manifest (D-21)',
+      'Phase 6 phoneme + new word keys are present in the manifest (Phase 13)',
       () {
-        // D-21: until the review pass regenerates audio_manifest.g.dart,
-        // these keys MUST be absent from kAudioManifest so AudioEngine.play
-        // hits the silent-fallback path. Adding them here would let the
-        // child hear unreviewed audio.
+        // Pre-Phase-13: D-21 silent-fallback meant these keys were absent
+        // until the native-speaker review pass landed.
+        // Phase 13: technical-review pass regenerates the manifest with
+        // every entry present, gated by `technically_reviewed: true`.
+        // Pronunciation is still pending — the file carries
+        // `// PRONUNCIATION REVIEW PENDING` markers. The kid hears audio,
+        // but a native-speaker pass should run before shipping.
         final phase6Keys = UtteranceKey.values
             .where((k) =>
                 k.name.startsWith('phoneme') ||
@@ -107,8 +110,8 @@ void main() {
                 k == UtteranceKey.wordB)
             .toList();
         for (final k in phase6Keys) {
-          expect(kAudioManifest[k], isNull,
-              reason: 'D-21 violated: $k present in stub before review pass');
+          expect(kAudioManifest[k], isNotNull,
+              reason: 'Phase 13 expected $k to be present in kAudioManifest');
         }
       },
     );

@@ -346,7 +346,27 @@ def _check_sync_mode(
     for k in manifest_keys - durations.keys():
         durations[k] = 0
 
-    rendered = render_audio_manifest(manifest, durations, generated_at="<check-sync>")
+    # Phase 13 soft gate: derive pending_pronunciation from reviewed.yaml
+    # so the rendered output matches what regenerate_manifest.py emits.
+    reviewed_yaml = (
+        _read_yaml(Path("reviewed.yaml"))
+        if Path("reviewed.yaml").is_file()
+        else {"version": 1, "entries": {}}
+    )
+    review_entries = (reviewed_yaml or {}).get("entries") or {}
+    pending_pronunciation = {
+        u["key"]
+        for u in manifest["utterances"]
+        if (review_entries.get(u["key"]) or {}).get("reviewed") is not True
+        and (review_entries.get(u["key"]) or {}).get("technically_reviewed") is True
+    }
+
+    rendered = render_audio_manifest(
+        manifest,
+        durations,
+        generated_at="<check-sync>",
+        pending_pronunciation=pending_pronunciation,
+    )
     sys.stdout.write(rendered)
     return 0
 
