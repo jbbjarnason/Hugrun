@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  analyze-and-test:
+    name: analyze-and-test (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .fvmrc
+        id: fvmrc
+        run: |
+          FLUTTER_VERSION="$(grep -oE '"flutter":\s*"[^"]+"' .fvmrc | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvmrc.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: flutter --version
+        run: flutter --version
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: dart format --set-exit-if-changed
+        run: dart format --set-exit-if-changed .
+
+      - name: flutter analyze
+        run: flutter analyze
+
+      - name: build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: flutter test
+        run: flutter test
+
+      - name: tools/check-no-tracking.sh
+        run: bash tools/check-no-tracking.sh
+
+      - name: tools/check-no-tracking_test.sh (self-test)
+        run: bash tools/check-no-tracking_test.sh
+
+      - name: tools/check-domain-purity.sh
+        run: bash tools/check-domain-purity.sh
+
+      - name: tools/check-flutter-version.sh (soft)
+        run: bash tools/check-flutter-version.sh
+
+  integration-no-network:
+    name: integration-no-network (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .fvmrc
+        id: fvmrc
+        run: |
+          FLUTTER_VERSION="$(grep -oE '"flutter":\s*"[^"]+"' .fvmrc | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvmrc.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: Install Linux desktop deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev clang
+          flutter config --enable-linux-desktop
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: integration_test under NoNetworkHttpOverrides
+        run: |
+          flutter test integration_test/no_network_test.dart \
+            -d linux \
+            --reporter=expanded
+
+  # ============================================================================
+  # marionette-e2e job is intentionally GUARDED behind the existence of the
+  # Marionette package. As of 2026-05-02, the Marionette package referenced by
+  # CONTEXT D-09 does not exist on pub.dev under the name `marionette`; the
+  # closest match (`marionette_flutter`) is an MCP-based AI agent tool, not an
+  # E2E test framework. The user-mandated framework choice is being escalated.
+  # When Marionette is installed by Plan 04 (or substituted with the user's
+  # explicit approval), uncomment this job AND remove the conditional skip.
+  # ============================================================================
+  marionette-e2e:
+    name: marionette-e2e (macOS)
+    runs-on: macos-latest
+    if: false  # Disabled until Marionette package is resolved (Plan 04 checkpoint)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .fvmrc
+        id: fvmrc
+        run: |
+          FLUTTER_VERSION="$(grep -oE '"flutter":\s*"[^"]+"' .fvmrc | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvmrc.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Boot iPad Air simulator
+        run: |
+          xcrun simctl list devices available
+          IPAD_ID="$(xcrun simctl list devices available | grep -E 'iPad Air' | head -n1 | grep -oE '\([0-9A-F-]+\)' | tr -d '()')"
+          echo "IPAD_ID=$IPAD_ID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$IPAD_ID"
+
+      - name: Run Marionette on iOS Simulator
+        run: tools/run-marionette.sh ios
+
+      - name: Set up Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_tablet
+          script: tools/run-marionette.sh android
