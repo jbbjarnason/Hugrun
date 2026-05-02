@@ -39,15 +39,15 @@ ProviderScope _wrap({required FakeAudioEngine engine, Widget? child}) {
 void main() {
   // -- Phase 1 baseline (still required) ------------------------------------
 
-  testWidgets('TolurRoom Scaffold has AppBar with title "Tölur"',
-      (tester) async {
+  testWidgets('TolurRoom shows NO AppBar (Phase 12 UI-01: kid-mode '
+      'must have zero text titles visible to child)', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
     await tester.pumpWidget(_wrap(engine: engine));
-    final appBar = tester.widget<AppBar>(find.byType(AppBar));
-    expect(appBar.title, isA<Text>());
-    expect((appBar.title as Text).data, 'Tölur');
+    await tester.pumpAndSettle();
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.text('Tölur'), findsNothing);
   });
 
   testWidgets('TolurRoom can be popped without crashing', (tester) async {

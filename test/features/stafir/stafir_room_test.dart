@@ -65,15 +65,17 @@ void main() {
     expect(find.byType(LetterTile), findsNWidgets(32));
   });
 
-  testWidgets('StafirRoom AppBar still shows "Stafir"', (tester) async {
+  testWidgets('StafirRoom shows NO AppBar (Phase 12 UI-01: kid-mode '
+      'must have zero text titles visible to child)', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_wrap());
     await tester.pump();
-    final appBar = tester.widget<AppBar>(find.byType(AppBar));
-    expect(appBar.title, isA<Text>());
-    expect((appBar.title! as Text).data, 'Stafir');
+    expect(find.byType(AppBar), findsNothing);
+    // Defense-in-depth: the literal text "Stafir" must not appear
+    // anywhere in the kid-facing surface.
+    expect(find.text('Stafir'), findsNothing);
   });
 
   testWidgets('Tapping the "a" tile invokes audioEngine.play(letterA)', (
@@ -278,20 +280,21 @@ void main() {
     },
   );
 
-  testWidgets('S6: AppBar still shows "Stafir" — no per-mode title drift',
-      (tester) async {
+  testWidgets('S6 (Phase 12): NO AppBar present in any mode — '
+      'AppBar removed for kid-mode polish (UI-01)', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_wrap());
     await tester.pump();
-    var appBar = tester.widget<AppBar>(find.byType(AppBar));
-    expect((appBar.title! as Text).data, 'Stafir');
+    expect(find.byType(AppBar), findsNothing);
     final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
     state.debugSetMode(StafirMode.match);
     await tester.pump();
-    appBar = tester.widget<AppBar>(find.byType(AppBar));
-    expect((appBar.title! as Text).data, 'Stafir');
+    expect(find.byType(AppBar), findsNothing);
+    state.debugSetMode(StafirMode.cvc);
+    await tester.pump();
+    expect(find.byType(AppBar), findsNothing);
   });
 
   testWidgets('S7: toggle does not capture letter taps in same coordinate',
