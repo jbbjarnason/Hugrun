@@ -1,6 +1,10 @@
 // Plan 04-01 RED tests for the audioEngineProvider.
 // Validates D-01 (top-level non-autoDispose Riverpod provider with
 // keepAlive: true) and the dispose-on-container-dispose contract.
+//
+// We override the default provider with a fake-player-backed engine because
+// the default factory constructs `package:just_audio`'s AudioPlayer, which
+// requires platform channels not available under the unit-test binding.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,15 +13,28 @@ import 'package:hugrun/core/audio/audio_engine_provider.dart';
 
 import '_fakes/fake_audio_player.dart';
 
+AudioEngine _makeFakeBackedEngine() =>
+    AudioEngine(playerFactory: FakeAudioPlayer.new);
+
 void main() {
   test(
     'audioEngineProvider returns the same AudioEngine across reads (keepAlive)',
     () {
-      final container = ProviderContainer();
+      final engine = _makeFakeBackedEngine();
+      final container = ProviderContainer(
+        overrides: [
+          audioEngineProvider.overrideWith((ref) {
+            ref.onDispose(() async => engine.dispose());
+            return engine;
+          }),
+        ],
+      );
       addTearDown(container.dispose);
+
       final a = container.read(audioEngineProvider);
       final b = container.read(audioEngineProvider);
       expect(identical(a, b), isTrue);
+      expect(a, same(engine));
     },
   );
 
@@ -25,15 +42,7 @@ void main() {
     'audioEngineProvider with overridden engine disposes engine on container dispose',
     () async {
       var disposed = false;
-      final fakes = <FakeAudioPlayer>[];
-      final engine = AudioEngine(
-        playerFactory: () {
-          final p = FakeAudioPlayer();
-          fakes.add(p);
-          return p;
-        },
-      );
-      // Wrap engine so we can detect dispose without subclassing.
+      final engine = _makeFakeBackedEngine();
       final container = ProviderContainer(
         overrides: [
           audioEngineProvider.overrideWith((ref) {
@@ -41,8 +50,6 @@ void main() {
               await engine.dispose();
               disposed = true;
             });
-            // Schedule warm-up off the main path.
-            Future<void>.microtask(engine.warmUp);
             return engine;
           }),
         ],
@@ -58,11 +65,18 @@ void main() {
   );
 
   test('audioEngineProvider survives dependent provider rebuilds', () {
-    final container = ProviderContainer();
+    final engine = _makeFakeBackedEngine();
+    final container = ProviderContainer(
+      overrides: [
+        audioEngineProvider.overrideWith((ref) {
+          ref.onDispose(() async => engine.dispose());
+          return engine;
+        }),
+      ],
+    );
     addTearDown(container.dispose);
     final original = container.read(audioEngineProvider);
-
-    // Read another provider that depends on it.
+    // Read again — same instance (keepAlive contract).
     final stillSame = container.read(audioEngineProvider);
     expect(identical(original, stillSame), isTrue);
   });

@@ -57,8 +57,9 @@ void main() {
           .where((c) => c.method == 'SystemChrome.setEnabledSystemUIMode')
           .toList();
       expect(modeCalls.length, 1);
-      final args = modeCalls.first.arguments as Map<dynamic, dynamic>;
-      expect(args['mode'], 'SystemUiMode.immersive');
+      // Flutter encodes the SystemUiMode as a String enum representation in
+      // the platform-channel call (the framework sends just the name).
+      expect(modeCalls.first.arguments.toString(), contains('immersive'));
     },
   );
 }
