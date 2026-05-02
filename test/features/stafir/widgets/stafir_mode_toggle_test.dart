@@ -57,8 +57,8 @@ void main() {
   });
 
   testWidgets(
-    'M3: icon differs per mode (letters / match / cvc / trace each get '
-    'a distinct icon)',
+    'M3 (Phase 12 UI-02): icon is the SAME across all modes — the '
+    'toggle represents "tap-and-hold to cycle", not "current mode"',
     (tester) async {
       await tester.pumpWidget(_host(mode: StafirMode.letters, onToggle: () {}));
       await tester.pump();
@@ -76,11 +76,25 @@ void main() {
       await tester.pump();
       final traceIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-      // All 4 mode icons must be distinct — kid sees a visual cue
-      // for which surface comes next.
+      // All 4 modes share ONE icon — consistent affordance.
       final all = <IconData?>[lettersIcon, matchIcon, cvcIcon, traceIcon];
-      expect(all.toSet().length, 4,
-          reason: 'all 4 mode icons must be distinct (got $all)');
+      expect(all.toSet().length, 1,
+          reason: 'all 4 mode icons must be identical — '
+              'the toggle is a "cycle" affordance, not a mode badge '
+              '(got $all)');
+    },
+  );
+
+  testWidgets(
+    'M3b (Phase 12 UI-02): icon is Icons.swap_horiz across all modes',
+    (tester) async {
+      for (final m in StafirMode.values) {
+        await tester.pumpWidget(_host(mode: m, onToggle: () {}));
+        await tester.pump();
+        final icon = tester.widget<Icon>(find.byType(Icon)).icon;
+        expect(icon, Icons.swap_horiz,
+            reason: 'mode $m must use Icons.swap_horiz');
+      }
     },
   );
 

@@ -47,8 +47,8 @@ void main() {
     expect(find.byType(Text), findsNothing);
   });
 
-  testWidgets('TM3: icon differs per mode (tapToHear / activity)',
-      (tester) async {
+  testWidgets('TM3 (Phase 12 UI-02): icon is the SAME across modes — '
+      'consistent "cycle" affordance, not a mode badge', (tester) async {
     await tester.pumpWidget(
         _host(mode: TolurMode.tapToHear, onToggle: () {}));
     await tester.pump();
@@ -59,8 +59,19 @@ void main() {
     await tester.pump();
     final actIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-    expect(tthIcon, isNot(actIcon),
-        reason: 'each mode must have a distinct icon');
+    expect(tthIcon, actIcon,
+        reason: 'both modes must use the same toggle icon');
+  });
+
+  testWidgets('TM3b (Phase 12 UI-02): icon is Icons.swap_horiz across modes — '
+      'matches StafirModeToggle (M3b)', (tester) async {
+    for (final m in TolurMode.values) {
+      await tester.pumpWidget(_host(mode: m, onToggle: () {}));
+      await tester.pump();
+      final icon = tester.widget<Icon>(find.byType(Icon)).icon;
+      expect(icon, Icons.swap_horiz,
+          reason: 'mode $m must use Icons.swap_horiz');
+    }
   });
 
   testWidgets('TM4: hold less than 3s does NOT toggle', (tester) async {
