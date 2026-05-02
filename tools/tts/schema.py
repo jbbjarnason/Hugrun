@@ -206,10 +206,27 @@ def validate_reviewed(data: object) -> ValidationResult:
             errors.append(f"reviewed: '{key}': entry must be a mapping")
             continue
 
-        if "reviewed" not in entry:
-            errors.append(f"reviewed: '{key}': missing 'reviewed' field")
+        # Phase 13: `technically_reviewed` is an optional soft-gate field
+        # (engineering invariants only — format / loudness / non-empty),
+        # distinct from the native-speaker `reviewed` field. Either may
+        # be present; an entry with neither is invalid.
+        has_reviewed = "reviewed" in entry
+        has_tech_reviewed = "technically_reviewed" in entry
+
+        if has_tech_reviewed and not isinstance(
+            entry["technically_reviewed"], bool
+        ):
+            errors.append(
+                f"reviewed: '{key}': 'technically_reviewed' must be a boolean"
+            )
+
+        if not has_reviewed and not has_tech_reviewed:
+            errors.append(
+                f"reviewed: '{key}': missing 'reviewed' or 'technically_reviewed' field"
+            )
             continue
-        if not isinstance(entry["reviewed"], bool):
+
+        if has_reviewed and not isinstance(entry["reviewed"], bool):
             errors.append(f"reviewed: '{key}': 'reviewed' must be a boolean")
 
         if entry.get("reviewed") is True:

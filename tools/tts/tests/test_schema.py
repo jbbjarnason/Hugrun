@@ -140,6 +140,87 @@ def test_validate_reviewed_empty():
     assert result.ok is True
 
 
+def test_validate_reviewed_technically_reviewed_field():
+    """Phase 13: technically_reviewed: true is a valid optional field.
+
+    Distinct from the native-speaker `reviewed: true` gate. Used by the
+    Phase 13 technical pass to mark clips that meet format/loudness
+    specs without claiming pronunciation correctness.
+    """
+    from tools.tts.schema import validate_reviewed
+
+    data = {
+        "version": 1,
+        "entries": {
+            "letterA": {
+                "technically_reviewed": True,
+                "technically_reviewed_at": "2026-05-02T18:00:00Z",
+                "technically_reviewed_lufs": -19.1,
+                "reviewed": False,
+            }
+        },
+    }
+    result = validate_reviewed(data)
+    assert result.ok is True, result.errors
+
+
+def test_validate_reviewed_technically_reviewed_only_no_audit_required():
+    """An entry with technically_reviewed: true (and no reviewed: true)
+    does NOT require the reviewer/timestamp/voice/text_hash audit trail."""
+    from tools.tts.schema import validate_reviewed
+
+    data = {
+        "version": 1,
+        "entries": {
+            "letterA": {"technically_reviewed": True},
+        },
+    }
+    result = validate_reviewed(data)
+    assert result.ok is True, result.errors
+
+
+def test_validate_reviewed_technically_reviewed_must_be_bool():
+    from tools.tts.schema import validate_reviewed
+
+    data = {
+        "version": 1,
+        "entries": {
+            "letterA": {"technically_reviewed": "yes"},
+        },
+    }
+    result = validate_reviewed(data)
+    assert result.ok is False
+    assert any("technically_reviewed" in e for e in result.errors)
+
+
+def test_validate_reviewed_full_phase13_shape():
+    """Phase 13 SUMMARY shape — technical pass + native pending."""
+    from tools.tts.schema import validate_reviewed
+
+    data = {
+        "version": 1,
+        "entries": {
+            "letterA": {
+                "technically_reviewed": True,
+                "technically_reviewed_at": "2026-05-02T18:00:00Z",
+                "technically_reviewed_lufs": -19.1,
+                "technically_reviewed_duration_ms": 600,
+                "reviewed": False,
+            },
+            "letterB": {
+                "technically_reviewed": True,
+                "reviewed": True,
+                "reviewer": "Jon",
+                "timestamp": "2026-05-02T18:00:00Z",
+                "voice": "is_IS-steinn-medium",
+                "text_hash": "sha256:abcdef",
+            },
+        },
+    }
+    result = validate_reviewed(data)
+    assert result.ok is True, result.errors
+
+
 def test_validate_manifest_text_max_length():
     """Threat T-03-02-03: extreme text length is rejected (≤500 chars)."""
     from tools.tts.schema import validate_manifest
