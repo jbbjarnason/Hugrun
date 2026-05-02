@@ -10,6 +10,7 @@ import 'cvc/cvc_activity.dart';
 import 'example_word_resolver.dart';
 import 'matching/matching_activity.dart';
 import 'stafir_mode.dart';
+import 'tracing/tracing_activity.dart';
 import 'widgets/example_word_overlay.dart';
 import 'widgets/letter_grid.dart';
 import 'widgets/stafir_mode_toggle.dart';
@@ -83,6 +84,7 @@ class StafirRoomState extends ConsumerState<StafirRoom> {
               StafirMode.letters => LetterGrid(onLetterTap: _onLetterTap),
               StafirMode.match => const MatchingActivity(),
               StafirMode.cvc => const CvcActivity(),
+              StafirMode.trace => const TracingActivity(),
             },
             // Letters-mode-only example word overlay.
             if (_mode == StafirMode.letters)
