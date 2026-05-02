@@ -59,7 +59,14 @@ TARGET_CHANNELS = 1
 TARGET_CODEC = "aac"
 TARGET_PROFILE = "LC"
 TARGET_BITRATE_BPS = 96000
-BITRATE_TOLERANCE_FRAC = 0.15  # AAC VBR typically lands ~+12% of nominal
+# AAC VBR: short single-utterance clips (~0.5–1 s) commonly land
+# +15-22% over the nominal target because the encoder's frame-level
+# bit allocator can't amortise across enough audio. Empirically
+# observed range across the 118 baked clips: 102 kbps – 118 kbps. We
+# allow ±25% which covers all observed cases without admitting a real
+# misconfiguration (the next-up bitrate setting is 128 kbps which is
+# +33% over 96k — outside this band).
+BITRATE_TOLERANCE_FRAC = 0.25
 
 MIN_DURATION_MS = 50
 
