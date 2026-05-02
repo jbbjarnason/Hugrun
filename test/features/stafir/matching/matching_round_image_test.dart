@@ -68,7 +68,7 @@ void main() {
   });
 
   group('MatchingRoundImage', () {
-    Widget _wrap(MatchingRound round) => ProviderScope(
+    Widget wrap(MatchingRound round) => ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: SizedBox(
@@ -82,7 +82,7 @@ void main() {
 
     testWidgets('I1: StockPlaceholder renders Container with slug Text',
         (tester) async {
-      await tester.pumpWidget(_wrap(_stockRound()));
+      await tester.pumpWidget(wrap(_stockRound()));
       await tester.pump();
       expect(find.text('hundur'), findsOneWidget);
       expect(
@@ -93,7 +93,7 @@ void main() {
 
     testWidgets('I2: PhotoOverride renders with photoId-keyed placeholder',
         (tester) async {
-      await tester.pumpWidget(_wrap(_photoRound('photo-uuid-7')));
+      await tester.pumpWidget(wrap(_photoRound('photo-uuid-7')));
       await tester.pump();
       expect(
         find.byKey(const Key('matching-photo-override-photo-uuid-7')),
@@ -104,7 +104,7 @@ void main() {
 
     testWidgets('I3: widget centers content and expands to parent width',
         (tester) async {
-      await tester.pumpWidget(_wrap(_stockRound()));
+      await tester.pumpWidget(wrap(_stockRound()));
       await tester.pump();
       // The placeholder Container should occupy 80% of parent width = 480.
       final containerFinder = find.byKey(
@@ -115,7 +115,7 @@ void main() {
     });
 
     testWidgets('I4: no instructional / score / timer text', (tester) async {
-      await tester.pumpWidget(_wrap(_stockRound()));
+      await tester.pumpWidget(wrap(_stockRound()));
       await tester.pump();
       // Exactly one Text widget (the placeholder/photoId label).
       expect(find.byType(Text), findsOneWidget);
