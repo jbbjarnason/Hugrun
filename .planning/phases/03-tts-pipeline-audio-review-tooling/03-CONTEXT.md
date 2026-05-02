@@ -10,11 +10,22 @@
 A reproducible Python pipeline that turns `manifest.yaml` (one entry per audio clip the app needs) into 100% native-speaker-reviewed, loudness-normalized AAC clips and a regenerated `lib/gen/audio_manifest.g.dart`, with `pronunciation_overrides.yaml` available from day one and a review UI that gates final asset bundling on entry-by-entry reviewer sign-off.
 
 **Stack:**
-- Tiro TTS (Diljá v2) via the public API at `tts.tiro.is`
+- **Piper** (`rhasspy/piper`) — open-source Apache 2.0 on-device neural TTS, run locally as a build-time CLI. Icelandic voice: **Steinn** (male, Grammatek Símarómur). Replaces Tiro after the 2026-05-02 Tiro outage discovery — Tiro service is offline and the upstream repo is frozen since 2022.
 - ffmpeg-normalize (EBU R128, -19 LUFS / -1 dBTP)
 - ffmpeg (AAC-LC encoding, mono, 96 kbps, 48 kHz, M4A container)
-- Python 3.x with `requests` (or `httpx`) + `pyyaml`
+- Python 3.x with `pyyaml` + `Jinja2` (no HTTP client needed — Piper is local CLI)
 - A simple HTML or Flutter review UI
+
+**TTS provider history:**
+- v1 (planned): Tiro TTS via `tts.tiro.is` → service offline 2026-05-02
+- v2 (current): Piper / Grammatek Símarómur, voice "Steinn", local CLI invocation
+- Future: if Steinn quality is insufficient, fall back to Microsoft Azure Neural TTS (`is-IS-GudrunNeural`) per PROJECT.md
+
+**Why Piper:**
+- Apache 2.0 — no licensing risk for kids' app
+- Runs entirely offline (no service availability concerns)
+- Same architectural slot as Tiro (build-time generator → AAC clips ship as static assets)
+- All other tooling (ffmpeg-normalize, manifest_writer, review UI, reviewed.yaml gate) unchanged
 
 **Requirements covered (10):** AUDIO-01..10 (the entire Audio Pipeline category)
 
@@ -78,12 +89,12 @@ A reproducible Python pipeline that turns `manifest.yaml` (one entry per audio c
   - `kind` is one of: `letter_name`, `example_word`, `phoneme` (Phase 6), `numeral_masculine`/`feminine`/`neuter` (Phase 8), `narration`, `celebration`
   - Optional metadata: `voice` (override), `tempo`, `pitch`, `notes_for_reviewer`
 
-### Tiro TTS Client
+### Piper TTS Client (build-time, local)
 
-- **D-05:** Tiro endpoint: `https://tts.tiro.is/v0/speech/synthesize` (verify exact URL via curl in first task — research SUMMARY.md notes auth/voice ID strings need live verification). Voice IDs use Tiro's API conventions (e.g. `Diljá_v2` or `dilja_v2` — verify).
-- **D-06:** First task in the phase is a Tiro verification spike: a tiny Python or curl script that hits Tiro's `/voices` (or equivalent) endpoint and prints available voice IDs + sample synthesis. Findings documented in `tools/tts/README.md`. If Tiro auth requires an API key, the user is prompted to obtain one (signup at tts.tiro.is). Pipeline reads key from `TIRO_API_KEY` env var.
-- **D-07:** Rate limiting: defensive 1 request/second by default. Configurable via `TIRO_RATE_LIMIT` env var. Pipeline retries on 429 with exponential backoff (3 retries max, then escalate).
-- **D-08:** Tiro returns raw PCM (or WAV — verify). Pipeline writes the raw output to `tools/tts/_raw/{utterance_key}.{ext}` as cache; ffmpeg-normalize reads from there.
+- **D-05:** Piper installed via `brew install piper-tts` (recommended) OR `pipx install piper-tts`. Voice model `is_IS-steinn-medium.onnx` + `.json` config file downloaded from the Hugging Face Piper voices repo (`rhasspy/piper-voices`) and cached at `tools/tts/voices/is_IS-steinn-medium.onnx`. Voice file size ~30MB; committed to git LFS or downloaded by `tools/tts/setup_voice.sh` on first run (don't bloat regular git).
+- **D-06:** First task is a Piper verification spike: install Piper, download Steinn voice, synthesize "halló" → WAV file → play it back manually (the executor logs the file path; user confirms quality at review-pass time). Findings documented in `tools/tts/README.md`. No network at runtime, no API keys, no rate limits. If Piper install fails or Steinn voice unavailable → STOP, escalate.
+- **D-07:** No rate limiting needed (local CLI). Parallelizable: pipeline can synthesize multiple clips concurrently (limited by CPU cores). Default: 4 parallel workers.
+- **D-08:** Piper outputs WAV (16-bit PCM 22050 Hz mono). Pipeline writes raw output to `tools/tts/_raw/{utterance_key}.wav`. ffmpeg-normalize reads from there. Cache key includes voice model version + text hash so re-runs are idempotent.
 
 ### Audio Normalization & Encoding
 
@@ -106,18 +117,20 @@ A reproducible Python pipeline that turns `manifest.yaml` (one entry per audio c
 
 ### Pronunciation Overrides
 
-- **D-13:** `pronunciation_overrides.yaml` schema:
+- **D-13:** `pronunciation_overrides.yaml` schema (Piper-flavored):
   ```yaml
   version: 1
   overrides:
     letterEth:
-      ssml: '<phoneme alphabet="x-sampa" ph="ED">eð</phoneme>'
+      # Piper accepts eSpeak-style phoneme markup or raw text substitution
+      text: "eð"  # default: send raw text
+      phonemes: "/eð/"  # optional eSpeak phoneme override
     wordHundur:
-      ssml: '<prosody rate="95%">hundur</prosody>'
-    # Use Tiro SSML if Tiro supports it; otherwise fall back to ice-g2p phoneme spelling
+      text: "hundur"
+      rate: 0.95  # Piper supports length scale (1.0 = normal)
   ```
-- **D-14:** Override file is consulted by `tiro_client.py` before each synthesis call. If a key has an override, the override is sent instead of the raw text from `manifest.yaml`.
-- **D-15:** Document SSML support in `tools/tts/README.md` after Tiro verification (D-06). If Tiro doesn't support SSML, switch to per-utterance text-substitution (e.g. `text: "hund-ur"` to force a hyphen-pause).
+- **D-14:** Override file is consulted by `piper_client.py` before each synthesis call. If a key has an override, the override is applied as Piper CLI args (`--length-scale`, phoneme replacement) or as text substitution.
+- **D-15:** Document Piper phoneme markup in `tools/tts/README.md` after voice verification (D-06). Piper supports limited prosody control via `--length-scale` and `--noise-scale`; for fine pronunciation control, use eSpeak-style phoneme spelling in the text input.
 
 ### Review UI & Sign-off Gate
 
@@ -176,8 +189,8 @@ A reproducible Python pipeline that turns `manifest.yaml` (one entry per audio c
 
 ### ffmpeg / ffmpeg-normalize Installation
 
-- **D-28:** Pipeline requires `ffmpeg` and `ffmpeg-normalize` on PATH. Phase 1 noted these are not currently installed locally. Phase 3 task 1: install via `brew install ffmpeg && pip install ffmpeg-normalize` (or `pipx install ffmpeg-normalize`). Document fallbacks in `tools/tts/README.md`.
-- **D-29:** Pipeline provides a `--check-deps` mode that verifies ffmpeg + ffmpeg-normalize + Python deps + TIRO_API_KEY (if Tiro requires auth) and prints actionable error messages.
+- **D-28:** Pipeline requires `ffmpeg`, `ffmpeg-normalize`, and `piper` on PATH plus the Steinn voice model file. ffmpeg + ffmpeg-normalize already installed (Phase 3 first attempt). Piper install: `brew install piper-tts` (preferred) or `pipx install piper-tts`. Voice download: `tools/tts/setup_voice.sh` fetches `is_IS-steinn-medium.onnx` + config from `huggingface.co/rhasspy/piper-voices` to `tools/tts/voices/`.
+- **D-29:** Pipeline provides a `--check-deps` mode that verifies ffmpeg + ffmpeg-normalize + piper + voice model presence and prints actionable error messages. **No API keys** (local CLI).
 
 ### Reviewer Identity & Trust
 
