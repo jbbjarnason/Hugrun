@@ -97,4 +97,40 @@ enum UtteranceKey {
   wordHus,
   wordHar,
   wordGas,
+
+  // Phase 8 numeral set (D-04, D-05; NUM-01, NUM-02, NUM-03).
+  //
+  // 1..4 declines for grammatical gender in Icelandic — three variants each
+  // (masculine, feminine, neuter); 5..10 does NOT decline — single form.
+  // 18 entries total. Asset paths under assets/audio/numbers/{masculine,
+  // feminine,neuter}/{slug}.aac for 1..4 and assets/audio/numbers/{slug}.aac
+  // for 5..10 (no gender folder for invariants). Naming pattern:
+  //   number<English><Gender>  for 1–4
+  //   number<English>          for 5–10
+  // See manifest.yaml for the (text, asset) mapping; see
+  // lib/core/numbers/numbers.dart for the IcelandicNumber → key bindings.
+  //
+  // Like Phase 6 phoneme keys, these enum entries ship before the audio
+  // review pass completes. Until reviewed.yaml is filled in by Jon and
+  // tools/tts/bake_audio.py regenerates lib/gen/audio_manifest.g.dart, the
+  // keys are absent from kAudioManifest and AudioEngine.play() falls back
+  // silently per the Phase 2 stub-fallback path (D-22, D-23 of Phase 4).
+  numberOneMasc,
+  numberOneFem,
+  numberOneNeut,
+  numberTwoMasc,
+  numberTwoFem,
+  numberTwoNeut,
+  numberThreeMasc,
+  numberThreeFem,
+  numberThreeNeut,
+  numberFourMasc,
+  numberFourFem,
+  numberFourNeut,
+  numberFive,
+  numberSix,
+  numberSeven,
+  numberEight,
+  numberNine,
+  numberTen,
 }
