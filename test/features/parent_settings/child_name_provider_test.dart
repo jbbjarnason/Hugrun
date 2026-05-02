@@ -22,11 +22,19 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // Read the stream and await first non-loading value.
-      final firstValue = await container
-          .read(childNameProvider.future)
-          .timeout(const Duration(seconds: 2));
-      expect(firstValue, 'Hugrún');
+      // Listen first so the stream subscribes; then await first emission.
+      final emissions = <String?>[];
+      final sub = container.listen<AsyncValue<String?>>(
+        childNameProvider,
+        (prev, next) {
+          if (next is AsyncData<String?>) emissions.add(next.value);
+        },
+        fireImmediately: true,
+      );
+      // Allow stream to deliver.
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      sub.close();
+      expect(emissions.last, 'Hugrún');
     },
   );
 
@@ -72,9 +80,16 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final firstValue = await container
-        .read(childNameProvider.future)
-        .timeout(const Duration(seconds: 2));
-    expect(firstValue, isNull);
+    final emissions = <String?>[];
+    final sub = container.listen<AsyncValue<String?>>(
+      childNameProvider,
+      (prev, next) {
+        if (next is AsyncData<String?>) emissions.add(next.value);
+      },
+      fireImmediately: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    sub.close();
+    expect(emissions, contains(null));
   });
 }
