@@ -6,9 +6,20 @@
 # Voice: is_IS-steinn-medium (Piper migration 2026-05-02 — replaces Tiro Diljá v2
 # after Tiro service was found offline; see tools/tts/README.md).
 #
-# 65 entries: 32 letter_name + 32 example_word + 1 narration (D-26).
+# 100 entries: 32 letter_name + 32 example_word + 32 phoneme + 3 new CVC
+# words (hús, hár, gás) + 1 narration (Phase 6 D-01..D-04 extension; the
+# original 65 baseline came from Phase 3 D-26).
 # Phase 2 stub keys preserved (D-22): letterA, letterEth, letterThorn,
 # wordHundur, narrationWelcome.
+#
+# Phase 6 phoneme entries (CVC-02): naming pattern `phoneme<PascalCaseSlug>`
+# (e.g. phonemeA, phonemeAAcute, phonemeOumlaut). Asset paths under
+# assets/audio/letters/phonemes/{slug}.aac. Text input = the raw letter glyph
+# (same as letter names). Native-speaker review pass during Plan 06-01 may
+# add per-key entries to pronunciation_overrides.yaml using eSpeak phoneme
+# markup (e.g. "[[h]]") when Steinn produces a letter NAME instead of the
+# unvoiced phoneme sound. Until reviewed, the Dart manifest write is blocked
+# (D-21) and CvcActivity falls back silently per Phase 4's missing-clip path.
 version: 1
 voice: is_IS-steinn-medium
 language: is-IS
@@ -313,6 +324,195 @@ utterances:
     asset: assets/audio/letters/words/oxl.aac
     kind: example_word
     starts_with: ö
+
+  # ===== 32 phonemes (Phase 6 D-01, D-02; CVC-02) =====
+  # Distinct from letter_name. The kid hears the SOUND, not the NAME.
+  # Text = raw letter glyph; review pass may swap to eSpeak markup via
+  # pronunciation_overrides.yaml when Steinn produces the letter-name sound.
+  - key: phonemeA
+    text: "a"
+    asset: assets/audio/letters/phonemes/a.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short open vowel /a/. NOT the letter name."
+  - key: phonemeAAcute
+    text: "á"
+    asset: assets/audio/letters/phonemes/a_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — diphthong /au/. NOT the letter name."
+  - key: phonemeB
+    text: "b"
+    asset: assets/audio/letters/phonemes/b.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced /p/-like stop. Steinn may produce 'bé' (the name); flag for override if so."
+  - key: phonemeD
+    text: "d"
+    asset: assets/audio/letters/phonemes/d.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced /t/-like stop. Steinn may produce 'dé'; flag if so."
+  - key: phonemeEth
+    text: "ð"
+    asset: assets/audio/letters/phonemes/eth.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — voiced dental fricative /ð/. NOT 'eð' (the name). Hot spot."
+  - key: phonemeE
+    text: "e"
+    asset: assets/audio/letters/phonemes/e.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /ɛ/. NOT the letter name."
+  - key: phonemeEAcute
+    text: "é"
+    asset: assets/audio/letters/phonemes/e_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — diphthong /jɛ/. NOT the letter name."
+  - key: phonemeF
+    text: "f"
+    asset: assets/audio/letters/phonemes/f.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — fricative /f/. Steinn may produce 'eff'; flag if so."
+  - key: phonemeG
+    text: "g"
+    asset: assets/audio/letters/phonemes/g.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — voiced velar /g/. Steinn may produce 'gé'; flag if so."
+  - key: phonemeH
+    text: "h"
+    asset: assets/audio/letters/phonemes/h.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — fricative /h/. Steinn may produce 'há'; flag if so."
+  - key: phonemeI
+    text: "i"
+    asset: assets/audio/letters/phonemes/i.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /ɪ/. NOT the letter name."
+  - key: phonemeIAcute
+    text: "í"
+    asset: assets/audio/letters/phonemes/i_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — long /i/. NOT the letter name."
+  - key: phonemeJ
+    text: "j"
+    asset: assets/audio/letters/phonemes/j.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — palatal /j/. Steinn may produce 'joð'; flag if so."
+  - key: phonemeK
+    text: "k"
+    asset: assets/audio/letters/phonemes/k.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced velar /kʰ/. Steinn may produce 'ká'; flag if so."
+  - key: phonemeL
+    text: "l"
+    asset: assets/audio/letters/phonemes/l.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — lateral /l/. Steinn may produce 'ell'; flag if so."
+  - key: phonemeM
+    text: "m"
+    asset: assets/audio/letters/phonemes/m.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — nasal /m/. Steinn may produce 'emm'; flag if so."
+  - key: phonemeN
+    text: "n"
+    asset: assets/audio/letters/phonemes/n.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — nasal /n/. Steinn may produce 'enn'; flag if so."
+  - key: phonemeO
+    text: "o"
+    asset: assets/audio/letters/phonemes/o.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /ɔ/. NOT the letter name."
+  - key: phonemeOAcute
+    text: "ó"
+    asset: assets/audio/letters/phonemes/o_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — diphthong /ou/. NOT the letter name."
+  - key: phonemeP
+    text: "p"
+    asset: assets/audio/letters/phonemes/p.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced /pʰ/. Steinn may produce 'pé'; flag if so."
+  - key: phonemeR
+    text: "r"
+    asset: assets/audio/letters/phonemes/r.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — alveolar trill /r/. Steinn may produce 'err'; flag if so."
+  - key: phonemeS
+    text: "s"
+    asset: assets/audio/letters/phonemes/s.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced /s/. Steinn may produce 'ess'; flag if so."
+  - key: phonemeT
+    text: "t"
+    asset: assets/audio/letters/phonemes/t.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — unvoiced /tʰ/. Steinn may produce 'té'; flag if so."
+  - key: phonemeU
+    text: "u"
+    asset: assets/audio/letters/phonemes/u.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /ʏ/. NOT the letter name."
+  - key: phonemeUAcute
+    text: "ú"
+    asset: assets/audio/letters/phonemes/u_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — long /u/. NOT the letter name."
+  - key: phonemeV
+    text: "v"
+    asset: assets/audio/letters/phonemes/v.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — fricative /v/. Steinn may produce 'vaff'; flag if so."
+  - key: phonemeX
+    text: "x"
+    asset: assets/audio/letters/phonemes/x.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — /ks/ cluster. x is rare in Icelandic; review carefully."
+  - key: phonemeY
+    text: "y"
+    asset: assets/audio/letters/phonemes/y.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /ɪ/ (homophonous with i). NOT the letter name."
+  - key: phonemeYAcute
+    text: "ý"
+    asset: assets/audio/letters/phonemes/y_acute.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — long /i/ (homophonous with í). NOT the letter name."
+  - key: phonemeThorn
+    text: "þ"
+    asset: assets/audio/letters/phonemes/thorn.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — voiceless dental fricative /θ/. NOT 'þorn' (the name). Hot spot."
+  - key: phonemeAe
+    text: "æ"
+    asset: assets/audio/letters/phonemes/ae.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — diphthong /ai/. NOT the letter name."
+  - key: phonemeOumlaut
+    text: "ö"
+    asset: assets/audio/letters/phonemes/o_umlaut.aac
+    kind: phoneme
+    notes_for_reviewer: "Phoneme — short /œ/. NOT the letter name."
+
+  # ===== 3 additional CVC words for Phase 6 (D-04) =====
+  # The other 5 CVC starter words (kýr, sól, mús, rós, bók) already exist
+  # as wordK / wordS / wordM / wordR / wordB above (the example_word entries
+  # for those letters happen to be the CVC-blending starter words). Phase 6
+  # adds the remaining 3.
+  - key: wordHus
+    text: "hús"
+    asset: assets/audio/cvc/hus.aac
+    kind: example_word
+    starts_with: h
+    notes_for_reviewer: "CVC starter word: house. h-ú-s blend."
+  - key: wordHar
+    text: "hár"
+    asset: assets/audio/cvc/har.aac
+    kind: example_word
+    starts_with: h
+    notes_for_reviewer: "CVC starter word: hair. h-á-r blend."
+  - key: wordGas
+    text: "gás"
+    asset: assets/audio/cvc/gas.aac
+    kind: example_word
+    starts_with: g
+    notes_for_reviewer: "CVC starter word: goose. g-á-s blend."
 
   # ===== 1 welcome narration =====
   - key: narrationWelcome

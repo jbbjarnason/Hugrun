@@ -111,6 +111,7 @@ flutter:
     - assets/audio/letters/names/
     - assets/audio/letters/words/
     - assets/audio/letters/phonemes/
+    - assets/audio/cvc/
     - assets/audio/numbers/masculine/
     - assets/audio/numbers/feminine/
     - assets/audio/numbers/neuter/
