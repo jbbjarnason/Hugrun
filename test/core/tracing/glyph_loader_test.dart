@@ -21,7 +21,6 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/alphabet/alphabet.dart';
-import 'package:hugrun/core/alphabet/icelandic_letter.dart';
 import 'package:hugrun/core/tracing/glyph_loader.dart';
 
 const Set<String> _diacriticSlugs = <String>{
@@ -230,9 +229,3 @@ void main() {
   });
 }
 
-extension<T> on Iterable<T> {
-  Iterable<T> followedBy(Iterable<T> other) sync* {
-    yield* this;
-    yield* other;
-  }
-}

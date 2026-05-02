@@ -255,7 +255,6 @@ void main() {
     final initialLetter = kIcelandicAlphabet.firstWhere((l) => l.glyph == 'a');
 
     await tester.pumpWidget(ProviderScope(
-      // ignore: scoped_providers_should_specify_dependencies
       overrides: [
         audioEngineProvider.overrideWith((ref) => engine),
         traceDataProvider.overrideWith((ref) async => glyphs),
