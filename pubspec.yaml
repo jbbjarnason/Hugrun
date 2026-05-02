@@ -21,6 +21,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
 
+  # Localization delegates — required for MaterialApp(supportedLocales: [Locale('is')])
+  flutter_localizations:
+    sdk: flutter
+
   # State management (Riverpod)
   # Phase 1 deviation D-02 extension: Riverpod codegen (riverpod_annotation +
   # riverpod_generator) is deferred to Phase 4 because riverpod_generator 4.x
