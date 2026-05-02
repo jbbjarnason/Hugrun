@@ -19,7 +19,7 @@ import 'package:hugrun/core/numbers/sequencing_round.dart';
 void main() {
   group('SequencingRound model (D-10, D-11)', () {
     test('S1: SortVariant — all 5 numerals scrambled, no missing slot', () {
-      const round = SequencingRound(
+      final round = SequencingRound(
         targetSequence: <int>[1, 2, 3, 4, 5],
         scrambledOrder: <int>[3, 1, 4, 5, 2],
         missingPosition: null,
@@ -32,7 +32,7 @@ void main() {
     });
 
     test('S2: FillMissing — one position null/missing in render', () {
-      const round = SequencingRound(
+      final round = SequencingRound(
         targetSequence: <int>[1, 2, 3, 4, 5],
         scrambledOrder: <int>[1, 2, 4, 5],
         missingPosition: 2, // index 2 of targetSequence is missing → "3"
@@ -44,12 +44,12 @@ void main() {
     });
 
     test('S3: equality + hashCode', () {
-      const a = SequencingRound(
+      final a = SequencingRound(
         targetSequence: <int>[2, 3, 4, 5, 6],
         scrambledOrder: <int>[6, 4, 2, 5, 3],
         missingPosition: null,
       );
-      const b = SequencingRound(
+      final b = SequencingRound(
         targetSequence: <int>[2, 3, 4, 5, 6],
         scrambledOrder: <int>[6, 4, 2, 5, 3],
         missingPosition: null,
@@ -130,7 +130,7 @@ void main() {
           // FillMissing: scrambledOrder has 4 entries (target minus the
           // missing value), in some order.
           expect(round.scrambledOrder.length, 4);
-          final expectedSet = {...round.targetSequence}..remove(
+          final expectedSet = <int>{...round.targetSequence}..remove(
               round.missingValue);
           expect(round.scrambledOrder.toSet(), expectedSet);
         }
