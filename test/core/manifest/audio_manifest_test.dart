@@ -13,7 +13,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 import 'package:hugrun/gen/audio_manifest.g.dart';
 
-/// Authoritative D-08 path map (the spot-check fixture).
+/// Authoritative D-08 path map for the Phase 2 stub keys (the spot-check
+/// fixture). Phase 6 D-21 adds 40 more enum values that are intentionally
+/// absent from `kAudioManifest` until the audio review pass repopulates
+/// `lib/gen/audio_manifest.g.dart`.
 const Map<UtteranceKey, String> kExpectedPaths = <UtteranceKey, String>{
   UtteranceKey.letterA: 'assets/audio/letters/names/a.aac',
   UtteranceKey.letterEth: 'assets/audio/letters/names/eth.aac',
@@ -22,35 +25,93 @@ const Map<UtteranceKey, String> kExpectedPaths = <UtteranceKey, String>{
   UtteranceKey.narrationWelcome: 'assets/audio/narration/welcome_hugrun.aac',
 };
 
+/// Phase 2 stub keys: present in `kAudioManifest`. Asserts in this group
+/// only iterate over these.
+const Set<UtteranceKey> kPhase2StubKeys = <UtteranceKey>{
+  UtteranceKey.letterA,
+  UtteranceKey.letterEth,
+  UtteranceKey.letterThorn,
+  UtteranceKey.wordHundur,
+  UtteranceKey.narrationWelcome,
+};
+
 /// D-06 path-convention regex (lowercase ASCII alphanumerics + `_`/`-`/`/`/`.`,
 /// must end in `.aac`).
 final RegExp _pathConventionRegex = RegExp(r'^[a-z0-9_./-]+\.aac$');
 
 void main() {
   group('UtteranceKey', () {
-    test('has exactly 5 entries (D-08)', () {
-      expect(UtteranceKey.values.length, 5);
+    test('Phase 2 stub keys are all present (D-22 backward compat)', () {
+      // Phase 6 extends the enum (D-01..D-07) but the 5 Phase 2 stub keys
+      // must remain — Phase 4 + 5 still depend on them.
+      expect(UtteranceKey.values.toSet(), containsAll(kPhase2StubKeys));
     });
 
-    test('contains exactly the 5 D-08 entries', () {
-      expect(UtteranceKey.values.toSet(), {
-        UtteranceKey.letterA,
-        UtteranceKey.letterEth,
-        UtteranceKey.letterThorn,
-        UtteranceKey.wordHundur,
-        UtteranceKey.narrationWelcome,
-      });
+    test('Phase 6 phoneme keys are all present (D-01; CVC-02)', () {
+      // 32 phoneme<X> entries must exist for the 32-letter alphabet.
+      final phonemeKeys = UtteranceKey.values
+          .where((k) => k.name.startsWith('phoneme'))
+          .toSet();
+      expect(phonemeKeys.length, 32,
+          reason: 'Expected 32 phoneme<X> enum entries, got '
+              '${phonemeKeys.length}: ${phonemeKeys.map((k) => k.name).toList()}');
+    });
+
+    test('Phase 6 new CVC word keys are present (D-04)', () {
+      // hús, hár, gás are NEW in Phase 6 (not part of the 32 letter
+      // example-word set in Phase 3).
+      expect(UtteranceKey.values, contains(UtteranceKey.wordHus));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordHar));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordGas));
+    });
+
+    test('Phase 6 reused CVC word keys are present (D-04)', () {
+      // kýr/sól/mús/rós/bók re-use the Phase-3 example_word slots.
+      expect(UtteranceKey.values, contains(UtteranceKey.wordK));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordS));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordM));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordR));
+      expect(UtteranceKey.values, contains(UtteranceKey.wordB));
     });
   });
 
   group('kAudioManifest', () {
-    test('every UtteranceKey maps to a non-null AudioAsset (D-11)', () {
-      for (final key in UtteranceKey.values) {
-        final asset = kAudioManifest[key];
-        expect(asset, isNotNull, reason: 'Missing manifest entry for $key');
-        expect(asset!.path, isNotEmpty, reason: 'Empty path for $key');
-      }
-    });
+    test(
+      'every Phase 2 stub key maps to a non-null AudioAsset (D-11)',
+      () {
+        for (final key in kPhase2StubKeys) {
+          final asset = kAudioManifest[key];
+          expect(asset, isNotNull, reason: 'Missing manifest entry for $key');
+          expect(asset!.path, isNotEmpty, reason: 'Empty path for $key');
+        }
+      },
+    );
+
+    test(
+      'Phase 6 phoneme + new word keys are NOT in the Phase 2 stub manifest (D-21)',
+      () {
+        // D-21: until the review pass regenerates audio_manifest.g.dart,
+        // these keys MUST be absent from kAudioManifest so AudioEngine.play
+        // hits the silent-fallback path. Adding them here would let the
+        // child hear unreviewed audio.
+        final phase6Keys = UtteranceKey.values
+            .where((k) =>
+                k.name.startsWith('phoneme') ||
+                k == UtteranceKey.wordHus ||
+                k == UtteranceKey.wordHar ||
+                k == UtteranceKey.wordGas ||
+                k == UtteranceKey.wordK ||
+                k == UtteranceKey.wordS ||
+                k == UtteranceKey.wordM ||
+                k == UtteranceKey.wordR ||
+                k == UtteranceKey.wordB)
+            .toList();
+        for (final k in phase6Keys) {
+          expect(kAudioManifest[k], isNull,
+              reason: 'D-21 violated: $k present in stub before review pass');
+        }
+      },
+    );
 
     test('every manifest path resolves to a real file on disk (D-11)', () {
       for (final entry in kAudioManifest.entries) {
@@ -97,34 +158,16 @@ void main() {
   });
 
   group('getAudioAsset', () {
-    test('returns the same asset as kAudioManifest[key] for every key', () {
-      for (final key in UtteranceKey.values) {
-        final viaHelper = getAudioAsset(key);
-        final viaMap = kAudioManifest[key]!;
-        expect(viaHelper.path, viaMap.path);
-        expect(viaHelper, viaMap);
-      }
-    });
-
-    test('exhaustive switch over UtteranceKey returns a non-empty path', () {
-      // This is the contract Phase 3 needs: adding a new enum value without
-      // a manifest entry surfaces fast. The exhaustive switch catches at
-      // compile time; the assertion catches at test time if a future hand
-      // edit somehow lets an empty path through.
-      for (final key in UtteranceKey.values) {
-        final path = switch (key) {
-          UtteranceKey.letterA => kAudioManifest[UtteranceKey.letterA]!.path,
-          UtteranceKey.letterEth =>
-            kAudioManifest[UtteranceKey.letterEth]!.path,
-          UtteranceKey.letterThorn =>
-            kAudioManifest[UtteranceKey.letterThorn]!.path,
-          UtteranceKey.wordHundur =>
-            kAudioManifest[UtteranceKey.wordHundur]!.path,
-          UtteranceKey.narrationWelcome =>
-            kAudioManifest[UtteranceKey.narrationWelcome]!.path,
-        };
-        expect(path, isNotEmpty);
-      }
-    });
+    test(
+      'returns the same asset as kAudioManifest[key] for every Phase 2 stub key',
+      () {
+        for (final key in kPhase2StubKeys) {
+          final viaHelper = getAudioAsset(key);
+          final viaMap = kAudioManifest[key]!;
+          expect(viaHelper.path, viaMap.path);
+          expect(viaHelper, viaMap);
+        }
+      },
+    );
   });
 }

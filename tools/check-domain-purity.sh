@@ -11,6 +11,7 @@ DOMAIN_PATHS=(
   "lib/core/alphabet"       # Phase 2 Plan 01: IcelandicLetter + kIcelandicAlphabet
   "lib/core/manifest"       # Phase 2 Plan 02: UtteranceKey + AudioAsset (audio manifest contract types)
   "lib/core/matching"       # Phase 5 Plan 01: MatchingRound + RoundGenerator (pure-Dart round logic, D-05)
+  "lib/core/cvc"            # Phase 6 Plan 02: CvcWord + kCvcWords + phoneme_resolver (pure-Dart CVC domain, D-06)
   # When Phase 4 adds lib/domain/, append it here.
 )
 
