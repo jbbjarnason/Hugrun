@@ -198,7 +198,7 @@ void main() {
           .timeout(const Duration(milliseconds: 500));
     });
 
-    test('play() with a paired word queues both clips as a ConcatenatingAudioSource', () async {
+    test('play() with a paired word queues both clips via setAudioSources', () async {
       final t = makeEngine(
         pairingOverride: const <UtteranceKey, UtteranceKey>{
           UtteranceKey.letterA: UtteranceKey.wordHundur,
@@ -207,15 +207,16 @@ void main() {
       await t.engine.warmUp();
       await t.engine.play(UtteranceKey.letterA);
 
-      // At least one fake should have received a setAudioSource call (the
-      // ConcatenatingAudioSource path), NOT a setAsset (single-clip path).
-      final hasSetAudioSource = t.fakes.any(
-        (p) => p.calls.any((c) => c.method == 'setAudioSource'),
+      // At least one fake should have received a setAudioSources call (the
+      // playlist path), NOT a setAsset (single-clip path).
+      final hasSetSources = t.fakes.any(
+        (p) => p.calls.any((c) => c.method == 'setAudioSources'),
       );
       expect(
-        hasSetAudioSource,
+        hasSetSources,
         isTrue,
-        reason: 'paired letter→word path queues via ConcatenatingAudioSource',
+        reason:
+            'paired letter→word path queues via setAudioSources playlist for gapless playback',
       );
     });
   });

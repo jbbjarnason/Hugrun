@@ -22,6 +22,16 @@ abstract class AudioPlayerLike {
   /// `ja.AudioSource` through.
   Future<void> setAudioSource(Object source);
 
+  /// Sets a playlist of audio sources for gapless playback (D-05). Each
+  /// element is treated by the production [RealAudioPlayer] as a
+  /// `ja.AudioSource`. Typed as `List<Object>` to keep this interface free
+  /// of `package:just_audio` types.
+  ///
+  /// Replaces the deprecated `ConcatenatingAudioSource` path; just_audio
+  /// 0.10.x ships a built-in `setAudioSources(List<AudioSource>)` that
+  /// handles the playlist internally.
+  Future<void> setAudioSources(List<Object> sources);
+
   /// Begins playback (fire-and-forget — caller does NOT await completion).
   Future<void> play();
 

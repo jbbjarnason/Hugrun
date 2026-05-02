@@ -55,6 +55,11 @@ class FakeAudioPlayer implements AudioPlayerLike {
   }
 
   @override
+  Future<void> setAudioSources(List<Object> sources) async {
+    calls.add(FakeAudioPlayerCall('setAudioSources', sources));
+  }
+
+  @override
   Future<void> play() async {
     calls.add(const FakeAudioPlayerCall('play'));
     if (throwOnPlay) {

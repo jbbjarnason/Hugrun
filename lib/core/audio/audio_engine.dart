@@ -7,19 +7,29 @@
 //   D-02  Warm pool of 4 AudioPlayer instances allocated at app start.
 //   D-03  Warm-up sequence: (1) allocate, (2) activate iOS AVAudioSession by
 //         playing a silent priming clip on player 0, (3) ready for play().
+//   D-04  play(key) is idempotent + cancellable. Different key while playing
+//         → stop current, start new on next pool slot. Same key re-tapped →
+//         stop current, replay from beginning. (STAFIR-04, STAFIR-05.)
+//   D-05  Clip queue per tap: letter name → example word, gapless via
+//         just_audio's ConcatenatingAudioSource on a single pool player.
 //   D-08  Cold-start head-clipping: clips arrive pre-padded with silence by
 //         Phase 3. AudioEngine logs (does NOT throw) when a clip's
 //         reportedDuration is too small to plausibly contain a silence pad.
+//   D-22, D-23  Phase 4 builds against Phase 2 stub manifest. Missing clip
+//         → debug warning + silent return. No exceptions to caller, no
+//         user-visible errors.
 //   STAFIR-09  warm pool of >= 2 AudioPlayer instances at app start.
-//
-// Plan 04-02 fills in `play()` and `stop()`; this file ships those as
-// `UnimplementedError` stubs so Plan 04-01 can land independently.
+
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart' as ja;
 
+import '../manifest/audio_asset.dart';
 import '../manifest/utterance_key.dart';
+import '../../gen/audio_manifest.g.dart';
 import 'audio_player_like.dart';
+import 'utterance_resolver.dart';
 
 /// App-scoped audio engine.
 ///
@@ -33,11 +43,26 @@ import 'audio_player_like.dart';
 ///   `await engine.play(key);`    // [Plan 04-02]
 ///   `await engine.dispose();`    // tears down the pool
 class AudioEngine {
-  AudioEngine({AudioPlayerLike Function()? playerFactory})
-    : _playerFactory = playerFactory ?? RealAudioPlayer.new;
+  AudioEngine({
+    AudioPlayerLike Function()? playerFactory,
+    Map<UtteranceKey, AudioAsset>? manifestOverride,
+    Map<UtteranceKey, UtteranceKey>? pairingOverride,
+  }) : _playerFactory = playerFactory ?? RealAudioPlayer.new,
+       _manifestOverride = manifestOverride,
+       _pairingOverride = pairingOverride;
 
   final AudioPlayerLike Function() _playerFactory;
   final List<AudioPlayerLike> _pool = <AudioPlayerLike>[];
+
+  /// Optional test override for kAudioManifest. Production callers leave
+  /// this null and use the real manifest from `lib/gen/audio_manifest.g.dart`.
+  final Map<UtteranceKey, AudioAsset>? _manifestOverride;
+
+  /// Optional test override for kLetterToWord. Same pattern as the manifest.
+  final Map<UtteranceKey, UtteranceKey>? _pairingOverride;
+
+  Map<UtteranceKey, AudioAsset> get _manifest =>
+      _manifestOverride ?? kAudioManifest;
 
   bool _warmedUp = false;
 
@@ -142,20 +167,120 @@ class AudioEngine {
     _warmedUp = false;
   }
 
+  /// The currently-active player + the key it's dispatching, or null if
+  /// nothing is in flight. The cancel-on-retap path stops [_activePlayer]
+  /// before acquiring a fresh slot for the new key (D-04, D-05, STAFIR-04,
+  /// STAFIR-05).
+  AudioPlayerLike? _activePlayer;
+  UtteranceKey? _activeKey;
+
+  @visibleForTesting
+  UtteranceKey? get debugActiveKey => _activeKey;
+
   /// Plays the audio for [key].
   ///
-  /// Plan 04-02 fills this in with the full play queue (letter name +
-  /// example word, gapless via `ConcatenatingAudioSource`, cancel-on-retap
-  /// per D-04 + D-05). Plan 04-01 ships the stub.
+  /// Invariants (D-04, D-05, STAFIR-02..05):
+  /// - Idempotent: calling twice with the same key cancels the in-flight
+  ///   playback and restarts from the beginning of the letter name.
+  /// - Cancellable: calling with a different key cancels the current player
+  ///   and dispatches the new key to the next round-robin pool slot.
+  /// - Fire-and-forget: returns as soon as scheduling is done. The actual
+  ///   playback happens asynchronously on the player.
+  /// - Graceful: missing manifest entry → debug warning + silent return.
+  ///   No exception escapes (Phase 2 stub fallback per D-22 + D-23).
   Future<void> play(UtteranceKey key) async {
-    throw UnimplementedError('Plan 04-02 implements play queue');
+    // Defensive: if onTapDown fires before warmUp() completes, run warmUp
+    // first. This is rare in practice (the provider schedules warm-up via
+    // unawaited microtask at app start, and onTapDown happens after first
+    // user interaction) but the safety net costs nothing.
+    if (!_warmedUp) {
+      debugPrint(
+        '[AudioEngine] play() called before warmUp completed; warming up now.',
+      );
+      await warmUp();
+    }
+
+    // 1. Cancel any in-flight playback (D-04, STAFIR-04, STAFIR-05).
+    final previousPlayer = _activePlayer;
+    _activePlayer = null;
+    _activeKey = null;
+    if (previousPlayer != null) {
+      try {
+        await previousPlayer.stop();
+      } catch (e) {
+        // Cancellation should never throw; if it does, log + continue so
+        // the new tap still dispatches.
+        debugPrint('[AudioEngine] cancel-on-retap stop() failed: $e');
+      }
+    }
+
+    // 2. Resolve clips against the active manifest + pairing table.
+    final resolved = resolveLetterToClips(
+      key,
+      manifestOverride: _manifestOverride,
+      pairingOverride: _pairingOverride,
+    );
+    final nameAsset = _manifest[resolved.nameKey];
+    if (nameAsset == null) {
+      // Phase 2 stub fallback: letter has no audio yet. LetterTile already
+      // animated synchronously on tap-down; we just stay silent. Log so
+      // it's visible during development.
+      debugPrint(
+        '[AudioEngine] no clip for ${key.name} '
+        '(Phase 2 stub manifest fallback). Visual feedback only.',
+      );
+      return;
+    }
+
+    // 3. Acquire next pool player + dispatch.
+    final player = _acquirePlayer();
+    _activePlayer = player;
+    _activeKey = key;
+
+    final wordAsset = resolved.wordKey != null
+        ? _manifest[resolved.wordKey]
+        : null;
+    try {
+      if (wordAsset == null) {
+        // Single clip — just setAsset.
+        final reportedDuration = await player.setAsset(nameAsset.path);
+        if (reportedDuration != null) {
+          warnIfMissingPad(resolved.nameKey, reportedDuration);
+        }
+      } else {
+        // letter name + example word as a setAudioSources playlist for
+        // gapless playback (D-05). Replaces the deprecated
+        // `ConcatenatingAudioSource` path; just_audio 0.10.x natively
+        // handles the playlist via setAudioSources.
+        await player.setAudioSources(<Object>[
+          ja.AudioSource.asset(nameAsset.path),
+          ja.AudioSource.asset(wordAsset.path),
+        ]);
+      }
+      // Fire-and-forget. play() returns; audio plays asynchronously.
+      // The unawaited future is intentional — the visual feedback already
+      // fired in onTapDown (LetterTile, Plan 04-03), and the cancel path
+      // for the next tap will handle the in-flight player via
+      // _activePlayer.stop().
+      unawaited(player.play());
+    } catch (e) {
+      debugPrint('[AudioEngine] play(${key.name}) error: $e');
+      _activePlayer = null;
+      _activeKey = null;
+    }
   }
 
-  /// Stops any in-flight playback.
-  ///
-  /// Plan 04-02 fills this in. Plan 04-01 ships the stub.
+  /// Stops any in-flight playback. No-op if nothing is playing.
   Future<void> stop() async {
-    throw UnimplementedError('Plan 04-02 implements stop');
+    final p = _activePlayer;
+    _activePlayer = null;
+    _activeKey = null;
+    if (p == null) return;
+    try {
+      await p.stop();
+    } catch (e) {
+      debugPrint('[AudioEngine] stop() failed: $e');
+    }
   }
 
   /// Phase 3 silence-pad health check (D-08).
@@ -190,6 +315,10 @@ class RealAudioPlayer implements AudioPlayerLike {
   @override
   Future<void> setAudioSource(Object source) =>
       _player.setAudioSource(source as ja.AudioSource);
+
+  @override
+  Future<void> setAudioSources(List<Object> sources) =>
+      _player.setAudioSources(sources.cast<ja.AudioSource>());
 
   @override
   Future<void> play() => _player.play();
