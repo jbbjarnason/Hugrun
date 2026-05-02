@@ -61,6 +61,17 @@ dependencies:
   # package added so Phase 4's first @freezed type can land without churn)
   freezed_annotation: ^3.1.0
 
+  # Phase 7 D-01: stroke_order_animator (BSD-3-Clause).
+  # Glyph-agnostic — the package consumes Make-Me-A-Hanzi-format JSON
+  # `{character, strokes: [SVG path], medians: [[[x,y]…]]}` for any writing
+  # system. We use it for Ítalíuskrift letter tracing in the Stafir room
+  # (TRACE-01..05). The package transitively depends on `http` for online
+  # MMAH lookup — we DO NOT use that path; we hand-author offline JSONs and
+  # load via `rootBundle.loadString` only. The integration_test
+  # `no_network_test.dart` stays green because we never construct an
+  # HttpClient at runtime.
+  stroke_order_animator: ^3.3.1
+
   # Marionette MCP runtime (D-09 / FOUND-07). marionette_flutter is the
   # leancodepl AI-agent-driven E2E harness — NOT a scripted test framework.
   # We initialize MarionetteBinding only in debug mode (lib/main.dart) so an
@@ -119,3 +130,6 @@ flutter:
     - assets/images/letters/words/
     - assets/images/numbers/
     - assets/images/ui/
+    # Phase 7 D-02 / TRACE-01: 32 Make-Me-A-Hanzi-format JSON glyphs
+    # (one per Icelandic lowercase letter) for letter tracing.
+    - assets/tracing/
