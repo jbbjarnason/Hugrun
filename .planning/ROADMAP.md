@@ -22,6 +22,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 8: Tölur Tap-to-Hear & Sequencing** - Numbers room with digits 1–10, gendered audio for 1–4, sequencing activity, school-convention masculine for abstract counting
 - [ ] **Phase 9: Numeracy Activities (One-to-One, Subitizing, Addition)** - One-to-one correspondence, subitizing 1–5, addition with objects (no `+` symbol), all under no-fail rules
 - [x] **Phase 10: Personalization — Photo System** - Parent photo upload + Icelandic-word tagging, curated lexicon, photo overrides for matching and numeracy, Drift v1→v2 migration with `schemaAt(1)` round-trip test (2026-05-02)
+- [ ] **Phase 11: Stock Image Library** - Source ~30 CC-licensed stock images for the lexicon nouns so all activities show real images instead of text-on-color placeholders
+- [ ] **Phase 12: Kid-Mode UI Polish** - Hide AppBar from kid surfaces, replace inconsistent mode toggle icons with one consistent icon, add iconography to home screen rooms, image-grid lexicon picker
+- [ ] **Phase 13: Audio Manifest Regeneration (Technical Pass)** - Auto-approve baked clips on technical specs (LUFS, format, presence), regenerate audio_manifest.g.dart past the review gate so the app actually plays sound; native-speaker pronunciation review remains pending
 
 ## Phase Details
 
@@ -158,6 +161,40 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The Drift schema migration from v1 (single `child_profile` table) to v2 (adds `photo_tags`) is tested using `schemaAt(1)` and round-trips existing child-profile data without loss
 **UI hint**: yes
 
+### Phase 11: Stock Image Library
+**Goal**: Source ~30 CC-licensed stock images for the lexicon nouns (hundur, kýr, sól, hús, rós, bók, mús, hár, gás, epli, banani, brauð, mjólk, vatn, máni, tré, blóm, bíll, bolti, dúkka, púði, hattur, peysa, sokkar, skór, hár, augu, fiskur, fugl, köttur, hestur). Save to `assets/images/letters/words/{slug}.webp` (or .png fallback). Update pubspec asset paths. Phase 4's `ExampleWordOverlay` and Phase 5/9 activities already prefer real images over placeholders — they'll auto-light-up. The matching activity, CVC, correspondence, and addition all become visually meaningful.
+**Depends on**: Phase 10
+**Requirements**: IMG-01, IMG-02, IMG-03
+**Success Criteria** (what must be TRUE):
+  1. ≥30 lexicon nouns have a real image at `assets/images/letters/words/{slug}.webp` (or .png), each ≤200KB, sourced from a CC0/CC-BY/public-domain provenance documented in `assets/images/CREDITS.md`
+  2. `flutter test` includes an asset-existence test that verifies every entry in `kLexicon` has a corresponding image file on disk
+  3. Phase 4's `ExampleWordOverlay`, Phase 5's matching tile, Phase 9's correspondence/addition objects render the real image when run on device (manually verifiable; no broken-image fallback visible)
+  4. `tools/check-asset-paths.sh` passes with the new files (lowercase, ASCII, no spaces)
+**UI hint**: no (asset-only work, no widget changes)
+
+### Phase 12: Kid-Mode UI Polish
+**Goal**: Fix the three highest-leverage visual issues from the screenshot review: (1) AppBars with text titles ("Stafir", "Tölur", "Veldu orð") are visible on every kid-facing screen, violating PROJECT.md's "zero text instructions visible to child" — hide them. (2) The Stafir mode toggle uses 4 different icons across the 4 modes (image-frame, grid, Aa-checkmark, pencil) — replace with one consistent cycle icon and add a visible "hold to switch" affordance. (3) Home-screen rooms are blank rectangles with text labels — add big alphabet glyph + numeral glyph icons so a pre-reader can navigate.
+**Depends on**: Phase 10
+**Requirements**: UI-01, UI-02, UI-03, UI-04
+**Success Criteria** (what must be TRUE):
+  1. AppBar is removed (or `toolbarHeight: 0` + transparent) on StafirRoom, TolurRoom, MatchingActivity, CvcActivity, TracingActivity, SequencingActivity, CorrespondenceActivity, SubitizingActivity, AdditionActivity. Widget tests assert `find.byType(AppBar)` returns nothing on these screens.
+  2. Stafir mode toggle uses one consistent icon (suggest: `Icons.cycle` or `Icons.next_plan` or a custom hold-affordance icon) regardless of current mode. Tölur 2-mode toggle uses the same icon.
+  3. Home screen room buttons render a styled `Aa` glyph (Stafir) and a styled `1 2 3` glyph (Tölur) at large size, instead of being blank rectangles with text labels. Color rotation uses the locked palette.
+  4. Lexicon picker uses a 2-column image-grid layout: each entry shows the word's default stock image (from Phase 11) + the noun text. Falls back to text-only entry if no image exists.
+**UI hint**: yes
+
+### Phase 13: Audio Manifest Regeneration (Technical Pass)
+**Goal**: Phase 3 + Phase 6 + Phase 8 all left clips baked but unreviewed (~100 audio files: 32 letter names, 32 example words, 32 phonemes, 18 numerals, narrations). Native-speaker pronunciation review is the user's responsibility. This phase does the **technical** review pass: verify each clip meets format spec (AAC-LC mono 96kbps 48kHz M4A), passes loudness target (-19 LUFS ±0.5 LU after normalize), and is non-empty. Auto-mark `reviewed.yaml` as `technically_reviewed: true` (NOT `reviewed: true`). Modify `manifest_writer.py` to accept `technically_reviewed` as a soft gate that emits `audio_manifest.g.dart` with all entries (so the app actually plays sound), but adds a `// PRONUNCIATION REVIEW PENDING` warning comment per unreviewed entry. Document clearly in 03-VERIFICATION.md and 06/08-VERIFICATION that pronunciation correctness is still subject to a native-speaker review pass.
+**Depends on**: Phase 10
+**Requirements**: AUDIO-T-01, AUDIO-T-02, AUDIO-T-03
+**Success Criteria** (what must be TRUE):
+  1. A new `tools/tts/technical_review.py` script runs `ffprobe` + `ffmpeg-normalize --print` on every clip in `manifest.yaml` and writes per-clip pass/fail to `tools/tts/last-technical-review.json`
+  2. Every clip currently in `assets/audio/` passes the technical check (format + loudness + non-empty), or the failures are surfaced for re-bake
+  3. `reviewed.yaml` is auto-populated with `technically_reviewed: true` for every passing clip; existing `reviewed: true` entries (from native-speaker review) are preserved
+  4. `lib/gen/audio_manifest.g.dart` is regenerated and committed; `flutter test` 443+ pass; `flutter run` actually produces audio when tapping letters/numbers (verifiable manually)
+  5. 03/06/08-VERIFICATION.md updated to clarify that pronunciation review (native-speaker) is still pending and document the path to mark `reviewed: true` per clip
+**UI hint**: no (build-time tooling; runtime is unchanged)
+
 ## Progress
 
 **Execution Order:**
@@ -175,6 +212,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (MVP) → 5 → 6 → 7 →
 | 8. Tölur Tap-to-Hear & Sequencing | 0/TBD | Not started | - |
 | 9. Numeracy Activities (One-to-One, Subitizing, Addition) | 0/TBD | Not started | - |
 | 10. Personalization — Photo System | 0/TBD | Not started | - |
+| 11. Stock Image Library | 0/TBD | Not started | - |
+| 12. Kid-Mode UI Polish | 0/TBD | Not started | - |
+| 13. Audio Manifest Regeneration | 0/TBD | Not started | - |
 
 ## Research Flags
 
