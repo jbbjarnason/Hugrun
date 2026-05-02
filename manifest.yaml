@@ -6,9 +6,9 @@
 # Voice: is_IS-steinn-medium (Piper migration 2026-05-02 — replaces Tiro Diljá v2
 # after Tiro service was found offline; see tools/tts/README.md).
 #
-# 100 entries: 32 letter_name + 32 example_word + 32 phoneme + 3 new CVC
-# words (hús, hár, gás) + 1 narration (Phase 6 D-01..D-04 extension; the
-# original 65 baseline came from Phase 3 D-26).
+# 118 entries: 32 letter_name + 32 example_word + 32 phoneme + 3 new CVC
+# words (hús, hár, gás) + 18 numerals + 1 narration (Phase 8 D-04..D-06
+# extension; the previous 100 baseline came from Phase 6 D-01..D-04).
 # Phase 2 stub keys preserved (D-22): letterA, letterEth, letterThorn,
 # wordHundur, narrationWelcome.
 #
@@ -513,6 +513,117 @@ utterances:
     kind: example_word
     starts_with: g
     notes_for_reviewer: "CVC starter word: goose. g-á-s blend."
+
+  # ===== 18 numerals (Phase 8 D-04, D-05; NUM-01, NUM-02, NUM-03) =====
+  # Icelandic 1..4 declines for grammatical gender (M/F/N); 5..10 does NOT
+  # decline (single form). Tölur tap-to-hear uses masculine (NUM-03 / D-08
+  # — abstract counting school convention); Phase 9 picture counting will
+  # resolve via the depicted noun's gender. All 18 keys ship before the
+  # native-speaker review pass — see Phase 8 SUMMARY for status.
+  #
+  # Gendered slugs (1..4):
+  #   masculine: einn, tveir, þrír, fjórir → einn, tveir, thrir, fjorir
+  #   feminine:  ein, tvær, þrjár, fjórar → ein, tvaer, thrjar, fjorar
+  #   neuter:    eitt, tvö, þrjú, fjögur → eitt, tvo, thrju, fjogur
+  # Invariant slugs (5..10): fimm, sex, sjö → sjo, átta → atta, níu → niu, tíu → tiu
+
+  # 1..4 masculine
+  - key: numberOneMasc
+    text: "einn"
+    asset: assets/audio/numbers/masculine/einn.aac
+    kind: numeral_masculine
+    notes_for_reviewer: "Numeral 1 masculine. Used for abstract counting (NUM-03)."
+  - key: numberTwoMasc
+    text: "tveir"
+    asset: assets/audio/numbers/masculine/tveir.aac
+    kind: numeral_masculine
+    notes_for_reviewer: "Numeral 2 masculine."
+  - key: numberThreeMasc
+    text: "þrír"
+    asset: assets/audio/numbers/masculine/thrir.aac
+    kind: numeral_masculine
+    notes_for_reviewer: "Numeral 3 masculine."
+  - key: numberFourMasc
+    text: "fjórir"
+    asset: assets/audio/numbers/masculine/fjorir.aac
+    kind: numeral_masculine
+    notes_for_reviewer: "Numeral 4 masculine."
+
+  # 1..4 feminine
+  - key: numberOneFem
+    text: "ein"
+    asset: assets/audio/numbers/feminine/ein.aac
+    kind: numeral_feminine
+    notes_for_reviewer: "Numeral 1 feminine."
+  - key: numberTwoFem
+    text: "tvær"
+    asset: assets/audio/numbers/feminine/tvaer.aac
+    kind: numeral_feminine
+    notes_for_reviewer: "Numeral 2 feminine."
+  - key: numberThreeFem
+    text: "þrjár"
+    asset: assets/audio/numbers/feminine/thrjar.aac
+    kind: numeral_feminine
+    notes_for_reviewer: "Numeral 3 feminine."
+  - key: numberFourFem
+    text: "fjórar"
+    asset: assets/audio/numbers/feminine/fjorar.aac
+    kind: numeral_feminine
+    notes_for_reviewer: "Numeral 4 feminine."
+
+  # 1..4 neuter
+  - key: numberOneNeut
+    text: "eitt"
+    asset: assets/audio/numbers/neuter/eitt.aac
+    kind: numeral_neuter
+    notes_for_reviewer: "Numeral 1 neuter."
+  - key: numberTwoNeut
+    text: "tvö"
+    asset: assets/audio/numbers/neuter/tvo.aac
+    kind: numeral_neuter
+    notes_for_reviewer: "Numeral 2 neuter."
+  - key: numberThreeNeut
+    text: "þrjú"
+    asset: assets/audio/numbers/neuter/thrju.aac
+    kind: numeral_neuter
+    notes_for_reviewer: "Numeral 3 neuter."
+  - key: numberFourNeut
+    text: "fjögur"
+    asset: assets/audio/numbers/neuter/fjogur.aac
+    kind: numeral_neuter
+    notes_for_reviewer: "Numeral 4 neuter."
+
+  # 5..10 invariant (no gender folder — single form per NUM-02)
+  - key: numberFive
+    text: "fimm"
+    asset: assets/audio/numbers/fimm.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 5 — invariant (does not decline)."
+  - key: numberSix
+    text: "sex"
+    asset: assets/audio/numbers/sex.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 6 — invariant."
+  - key: numberSeven
+    text: "sjö"
+    asset: assets/audio/numbers/sjo.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 7 — invariant."
+  - key: numberEight
+    text: "átta"
+    asset: assets/audio/numbers/atta.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 8 — invariant."
+  - key: numberNine
+    text: "níu"
+    asset: assets/audio/numbers/niu.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 9 — invariant."
+  - key: numberTen
+    text: "tíu"
+    asset: assets/audio/numbers/tiu.aac
+    kind: numeral_invariant
+    notes_for_reviewer: "Numeral 10 — invariant."
 
   # ===== 1 welcome narration =====
   - key: narrationWelcome

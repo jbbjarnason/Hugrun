@@ -25,6 +25,7 @@ ALLOWED_KINDS = frozenset(
         "numeral_masculine",
         "numeral_feminine",
         "numeral_neuter",
+        "numeral_invariant",
         "narration",
         "celebration",
     }
