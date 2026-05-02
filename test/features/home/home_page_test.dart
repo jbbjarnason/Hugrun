@@ -19,7 +19,9 @@ void main() {
     expect(find.byType(Scaffold), findsWidgets);
   });
 
-  testWidgets('HugrunApp title is "Hugrún" with Icelandic locale', (tester) async {
+  testWidgets('HugrunApp title is "Hugrún" with Icelandic locale', (
+    tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: HugrunApp()));
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.title, 'Hugrún');
@@ -28,7 +30,9 @@ void main() {
 
   testWidgets('HomePage shows two RoomButtons (Stafir, Tölur)', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: HugrunApp()));
-    final buttons = tester.widgetList<RoomButton>(find.byType(RoomButton)).toList();
+    final buttons = tester
+        .widgetList<RoomButton>(find.byType(RoomButton))
+        .toList();
     expect(buttons.length, 2);
     final labels = buttons.map((b) => b.label).toSet();
     expect(labels, containsAll(<String>['Stafir', 'Tölur']));
@@ -48,7 +52,9 @@ void main() {
     expect(find.byType(TolurRoom), findsOneWidget);
   });
 
-  testWidgets('HomePage contains parent-gate-wrapped settings icon', (tester) async {
+  testWidgets('HomePage contains parent-gate-wrapped settings icon', (
+    tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: HugrunApp()));
     expect(find.byIcon(Icons.settings), findsOneWidget);
   });

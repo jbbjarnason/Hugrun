@@ -75,16 +75,24 @@ void main() {
   group('ParentGate widget', () {
     testWidgets('long hold for holdDuration calls onCompleted', (tester) async {
       var completed = false;
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ParentGate(
-            holdDuration: const Duration(milliseconds: 100),
-            onCompleted: () => completed = true,
-            child: const SizedBox(width: 100, height: 100, child: Text('press')),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ParentGate(
+              holdDuration: const Duration(milliseconds: 100),
+              onCompleted: () => completed = true,
+              child: const SizedBox(
+                width: 100,
+                height: 100,
+                child: Text('press'),
+              ),
+            ),
           ),
         ),
-      ));
-      final gesture = await tester.startGesture(tester.getCenter(find.text('press')));
+      );
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('press')),
+      );
       await tester.pump(const Duration(milliseconds: 110));
       await gesture.up();
       await tester.pump();
@@ -93,16 +101,24 @@ void main() {
 
     testWidgets('short hold does NOT call onCompleted', (tester) async {
       var completed = false;
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ParentGate(
-            holdDuration: const Duration(milliseconds: 100),
-            onCompleted: () => completed = true,
-            child: const SizedBox(width: 100, height: 100, child: Text('press')),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ParentGate(
+              holdDuration: const Duration(milliseconds: 100),
+              onCompleted: () => completed = true,
+              child: const SizedBox(
+                width: 100,
+                height: 100,
+                child: Text('press'),
+              ),
+            ),
           ),
         ),
-      ));
-      final gesture = await tester.startGesture(tester.getCenter(find.text('press')));
+      );
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('press')),
+      );
       await tester.pump(const Duration(milliseconds: 30));
       await gesture.up();
       await tester.pump(const Duration(milliseconds: 200));
@@ -110,18 +126,26 @@ void main() {
     });
 
     testWidgets('ring widget appears during hold', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ParentGate(
-            holdDuration: const Duration(milliseconds: 100),
-            onCompleted: () {},
-            child: const SizedBox(width: 100, height: 100, child: Text('press')),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ParentGate(
+              holdDuration: const Duration(milliseconds: 100),
+              onCompleted: () {},
+              child: const SizedBox(
+                width: 100,
+                height: 100,
+                child: Text('press'),
+              ),
+            ),
           ),
         ),
-      ));
+      );
       // Initially no ring.
       expect(find.byKey(const Key('parent-gate-ring')), findsNothing);
-      final gesture = await tester.startGesture(tester.getCenter(find.text('press')));
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('press')),
+      );
       await tester.pump(const Duration(milliseconds: 30));
       expect(find.byKey(const Key('parent-gate-ring')), findsOneWidget);
       await gesture.up();
@@ -129,16 +153,24 @@ void main() {
     });
 
     testWidgets('ring disappears on release before completion', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ParentGate(
-            holdDuration: const Duration(milliseconds: 100),
-            onCompleted: () {},
-            child: const SizedBox(width: 100, height: 100, child: Text('press')),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ParentGate(
+              holdDuration: const Duration(milliseconds: 100),
+              onCompleted: () {},
+              child: const SizedBox(
+                width: 100,
+                height: 100,
+                child: Text('press'),
+              ),
+            ),
           ),
         ),
-      ));
-      final gesture = await tester.startGesture(tester.getCenter(find.text('press')));
+      );
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('press')),
+      );
       await tester.pump(const Duration(milliseconds: 30));
       expect(find.byKey(const Key('parent-gate-ring')), findsOneWidget);
       await gesture.up();
