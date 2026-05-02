@@ -72,6 +72,21 @@ dependencies:
   # HttpClient at runtime.
   stroke_order_animator: ^3.3.1
 
+  # Phase 10 D-22: Photo personalization deps. All three are platform-clean
+  # (no analytics, ads, or trackers in transitive graph) — verified by
+  # tools/check-no-tracking.sh in CI. `image` and `uuid` are already pulled
+  # in transitively but we declare them as direct deps so the photo upload
+  # code path doesn't break if a transitive parent removes them.
+  #
+  # image_picker: ^1.x — wraps native iOS/Android camera + gallery pickers.
+  # No network calls; no telemetry; pure platform-channel API.
+  # image: ^4.x — pure-Dart codec for downsizing photos to 1024 px / JPEG q=85
+  # before saving to the app documents directory (D-11).
+  # uuid: ^4.x — generates the random filename for stored photos.
+  image_picker: ^1.1.2
+  image: ^4.8.0
+  uuid: ^4.5.3
+
   # Marionette MCP runtime (D-09 / FOUND-07). marionette_flutter is the
   # leancodepl AI-agent-driven E2E harness — NOT a scripted test framework.
   # We initialize MarionetteBinding only in debug mode (lib/main.dart) so an
