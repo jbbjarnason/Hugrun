@@ -2,16 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-05-02T09:35:05.385Z"
-last_activity: 2026-05-02 — Roadmap created (10 phases, 61/61 v1 requirements mapped)
+status: blocked
+stopped_at: Phase 3 Plan 01 complete; Plans 02-07 BLOCKED on TTS provider outage (tts.tiro.is offline)
+last_updated: "2026-05-02T13:30:00.000Z"
+last_activity: 2026-05-02 — Phase 3 Plan 01 tooling shipped (5 commits); live Tiro spike returned HTTP 404 across all endpoints; Phase 3 Plans 02-07 blocked pending TTS provider decision (Azure Neural / Grammatek / Polly / self-hosted)
 progress:
   total_phases: 10
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
-  percent: 0
+  partial_plans: 1
+  percent: 1
 ---
 
 # Project State
@@ -21,16 +22,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-02)
 
 **Core value:** A five-year-old can pick up a tablet, tap, and learn — discoverable through visuals and audio alone, with no failure states, no scores, no instructions to read.
-**Current focus:** Phase 1 — Skeleton & Drift Schema
+**Current focus:** Phase 3 — TTS Pipeline & Audio Review Tooling (BLOCKED on provider outage)
 
 ## Current Position
 
-Phase: 1 of 10 (Skeleton & Drift Schema)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-05-02 — Roadmap created (10 phases, 61/61 v1 requirements mapped)
+Phase: 3 of 10 (TTS Pipeline & Audio Review Tooling)
+Plan: 03-01 done (tooling baseline + spike); 03-02..03-07 BLOCKED
+Status: BLOCKED — pending user decision on TTS provider (see .planning/phases/03-tts-pipeline-audio-review-tooling/03-VERIFICATION.md)
+Last activity: 2026-05-02 — Plan 01 tooling shipped (5 commits); live Tiro spike returned HTTP 404; outage + 4 escalation paths documented in tools/tts/README.md
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 5%
 
 ## Performance Metrics
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - Init: MVP cut = end of Phase 4 (Stafir tap-to-hear); ASAP playable
 - Init: Public release (REL-*) deferred to v2
 - Init: TDD with Marionette E2E as project-level constraint
+- 2026-05-02 (Plan 03-01): ffmpeg via Homebrew (8.1), ffmpeg-normalize via pipx (1.37.6), HTTP client = `requests` (synchronous-only sufficient given 1 req/sec rate limit)
+- 2026-05-02 (Plan 03-01): Tiro TTS endpoint paths confirmed from upstream `icelandic-lt/tiro-tts` source — POST /v0/speech, GET /v0/voices (not the /v0/speech/synthesize speculated in research/STACK.md)
+- 2026-05-02 (Plan 03-01): Tiro service at `tts.tiro.is` is offline (404 on every endpoint). User decision required: pivot to api2.grammatek.com (paid), Azure Neural TTS (free tier), AWS Polly (free tier), or self-hosted tiro-tts via Docker.
 
 ### Pending Todos
 
@@ -72,8 +76,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- **CRITICAL (2026-05-02):** Phase 3 Plans 02-07 blocked — `tts.tiro.is` returns HTTP 404 on every documented endpoint. Phase 4 (Stafir MVP) transitively blocked. See `.planning/phases/03-tts-pipeline-audio-review-tooling/03-VERIFICATION.md` for the four escalation paths. **User decision required.**
 - Phase 7 (Tracing) flagged for `/gsd-research-phase` before planning — Ítalíuskrift digitization has no published SVG path library; expect 1–2 days of design work
-- Tiro TTS auth and rate limits documented at MEDIUM confidence — verify via curl in Phase 3 before pipeline build (per Phase 3 Success Criterion 4)
 - Riverpod 3.x vs 4.x is mid-migration — pin a consistent family at Phase 1 `flutter create` time (`dart pub outdated`)
 
 ## Deferred Items
@@ -88,6 +92,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-02T09:35:05.382Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-skeleton-drift-schema/01-CONTEXT.md
+Last session: 2026-05-02T13:30:00.000Z
+Stopped at: Phase 3 Plan 01 complete; Plans 02-07 BLOCKED on TTS provider outage
+Resume file: .planning/phases/03-tts-pipeline-audio-review-tooling/03-VERIFICATION.md
