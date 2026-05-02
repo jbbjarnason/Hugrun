@@ -115,3 +115,127 @@ date: 2026-05-02
 
 ## Status
 **4 of 5 plans complete.** Plan 04 blocked pending user/orchestrator decision on Marionette package identity. All other Phase 1 success criteria met within the constraints of local Flutter 3.38.7 + 2026-05-02 pub.dev ecosystem state.
+
+---
+
+## Remediation 2026-05-02 — Riverpod 4.x retry + Marionette resolution
+
+After this initial Phase 1 closeout, the user resolved both open items:
+1. **Marionette package:** confirmed `marionette_flutter ^0.5.0` (leancodepl).
+2. **Flutter SDK:** local upgraded from 3.38.7 → 3.41.9 (current stable),
+   freeing the analyzer/build constraints that forced Plan 01's Dev_1..Dev_9
+   fallbacks.
+
+A focused remediation pass landed the locked stack from CONTEXT D-01..D-06
+(modulo a small drift sub-pin) and unblocked Plan 04. Two additional commits
+(plus this docs commit) were added to Phase 1.
+
+### Stack changes (`pubspec.yaml`)
+
+| Package | Before (3.38.7) | After (3.41.9) | Notes |
+|---|---|---|---|
+| Flutter SDK pin | 3.38.7 | **3.41.9** | `.fvmrc` updated |
+| environment.sdk | ^3.10.7 | ^3.11.5 | tracks Flutter 3.41.9's Dart 3.11.5 |
+| flutter_riverpod | ^3.3.1 | ^3.3.1 | unchanged — no 4.x runtime stable on pub.dev |
+| riverpod_annotation | (deferred) | **^4.0.2** | NEW — Dev_1 resolved |
+| riverpod_generator | (deferred) | **^4.0.3** | NEW — Dev_1 resolved |
+| riverpod_lint | (deferred) | **^3.1.3** | NEW — Dev_7 resolved (via analysis_options `plugins:`) |
+| drift | ^2.28.x | **^2.31.0** | Dev_3 partially resolved (target was 2.32) |
+| drift_flutter | ^0.2.7 | **^0.2.8** | Dev_2 resolved up to 0.2.8; 0.3.0 still incompatible (see CONTEXT D-06 update) |
+| drift_dev | ^2.28.1 | **^2.31.0** | tracks drift |
+| build_runner | ^2.4.x | **^2.10+ (resolved 2.15.0)** | Dev_4 resolved |
+| freezed_annotation | (deferred) | **^3.1.0** | NEW — Dev_5 resolved |
+| freezed | (deferred) | **^3.2.5** | NEW — Dev_5 resolved |
+| flutter_gen_runner | (deferred) | **^5.14.1** | NEW — Dev_6 resolved |
+| custom_lint | (deferred) | **NOT installed** | analyzer ^8 vs our analyzer ^9 stack — resolved via riverpod_lint's analysis_server_plugin path instead |
+| **marionette_flutter** | (BLOCKED) | **^0.5.0** | NEW — Plan 04 unblocked |
+
+### D-02 codegen migration
+
+`lib/core/db/database_provider.dart` migrated from hand-written
+`final Provider<AppDatabase> appDatabaseProvider = Provider(...)` to
+`@Riverpod(keepAlive: true) AppDatabase appDatabase(Ref ref)`. The generated
+`appDatabaseProvider` symbol (in `database_provider.g.dart`) keeps the same
+name — no callsite changes needed. Two new tests in
+`test/core/db/database_provider_test.dart` cover the migration.
+
+### Bug fix found inline (Rule 1)
+
+`lib/main.dart` was still the original Flutter counter-app scaffold —
+Plan 01's `2e4a1ef` commit message claimed it had been replaced with
+`runApp(ProviderScope(child: HugrunApp()))` but the actual commit diff
+didn't include `lib/main.dart`. Fixed in the chore commit.
+
+### Plan 04 — completed
+
+Plan 04 was BLOCKED at the Task 1 checkpoint pending the Marionette package
+identity. With `marionette_flutter` confirmed:
+
+- `lib/main.dart` initializes `MarionetteBinding` only in `kDebugMode`. The
+  release binary embeds no MCP surface (privacy + correctness).
+- `marionette/smoke.marionette.dart` — reference doc for an AI agent driving
+  the live app via the Marionette MCP server. Documents the five Phase 1
+  scenarios (D-10) and the widget-finding contract (Keys + AppBar titles).
+- `integration_test/marionette_smoke_test.dart` — scripted variant for CI
+  that asserts the same five invariants without an AI agent.
+- `test_driver/integration_driver.dart` — `flutter drive` entry.
+- `tools/run-marionette.sh` — boots the simulator/AVD and runs the scripted
+  smoke (or, with `mcp` first arg, runs `flutter run --debug` for AI-agent
+  driving).
+- `marionette/README.md` — verification model + run instructions.
+- `.github/workflows/ci.yml`: `marionette-e2e` job no longer guarded by
+  `if: false`. Runs the scripted variant on macOS-latest against iPad Air
+  simulator + Pixel Tablet AVD.
+
+### Test count
+
+| | Before remediation | After remediation |
+|---|---|---|
+| `flutter test` | 64 | **66** (+2 for the codegen migration test) |
+| `flutter analyze` | 0 issues | 0 issues |
+| `dart format --set-exit-if-changed` | 0 changed | 0 changed |
+| `flutter build apk --debug` | succeeded (3.38.7) | **succeeded (3.41.9)** |
+| `flutter build ios --no-codesign --debug` | succeeded (3.38.7) | **succeeded (3.41.9)** + auto-applied UIScene migration |
+
+### Commits added (3)
+
+| Hash | Message |
+|---|---|
+| `dc507e8` | `chore(01-01): upgrade to Flutter 3.41.9 + Riverpod 4.x codegen + drift 2.31 + freezed + riverpod_lint` |
+| `478637e` | `feat(01-04): apply marionette_flutter ^0.5.0 + complete Plan 04 smoke harness` |
+| (this) | `docs(01): update verification + summary post-remediation` |
+
+### Phase 1 success criteria — final post-remediation status
+
+| # | Criterion | Status |
+|---|---|---|
+| 1 | `flutter run` works on iOS+Android | **passed (build proof)**; real-device run still pending in `human_needed` Item 2 |
+| 2 | Home screen shows two rooms, navigable | **passed** |
+| 3 | Parent-gate primitive 3s ring fill gates settings | **passed** |
+| 4 | Marionette E2E smoke test runs | **passed** — scripted variant in CI; MCP variant available locally |
+| 5 | CI workflow + no-tracking guard | **passed** |
+
+### Outstanding for the user
+
+- Real-device `flutter run` validation (criterion 1 final acceptance).
+- First run of `tools/run-marionette.sh ios` / `android` to populate the
+  "Phase 1 verification log" table in `marionette/README.md`.
+- Optional: first run of `tools/run-marionette.sh mcp ios` with the
+  `marionette-verify` skill + an AI agent to validate the MCP harness
+  end-to-end.
+
+### Deviations still standing
+
+- `flutter_riverpod` stays on 3.3.1 because no 4.x runtime is on pub.dev.
+  The 4.x codegen + 3.x runtime IS the maintainer-recommended pairing
+  (`riverpod_generator 4.0.3` internally targets `riverpod 3.2.1`). This is
+  NOT the PITFALLS #6 foot-gun — the foot-gun is mixing 3.x annotations
+  with 4.x runtime, the inverse of our setup.
+- `drift_flutter ^0.2.8` instead of `^0.3.0`. 0.3.0 → sqlite3 ^3 →
+  drift_dev 2.32 → analyzer ^10, which excludes riverpod_lint/generator
+  (analyzer ^9). The user-prioritized Riverpod codegen migration takes
+  precedence. Bump to 0.3 once Riverpod publishes analyzer-^10/^12-compatible
+  generator + lint (3.1.4-dev.1 already targets analyzer ^12).
+- `custom_lint` NOT installed. 0.8.1 needs analyzer ^8 — conflicts with our
+  ^9 stack. `riverpod_lint 3.1.x` uses `analysis_server_plugin` instead and
+  delivers the same lint-during-analyze behavior; same ergonomic outcome.

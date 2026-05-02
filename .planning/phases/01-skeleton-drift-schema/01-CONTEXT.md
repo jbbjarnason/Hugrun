@@ -21,12 +21,35 @@ A runnable Flutter app on iOS and Android with the architectural foundations eve
 - **D-01:** Pin Riverpod 4.x family — `flutter_riverpod ^4.x`, `riverpod_annotation ^4.x`, `riverpod_generator ^4.x`. Verify alignment via `dart pub outdated` at project creation. The generator is the productivity win; mixing 3.x runtime with 4.x annotations is a documented foot-gun (research Finding 6).
 - **D-02:** Use `@riverpod` annotations (codegen). Hand-written `Provider`/`StateNotifierProvider` is reserved only for the AudioEngine root provider in Phase 4 if codegen ergonomics conflict with the warm-pool lifecycle.
 
+> **Resolved on Flutter 3.41.9 (remediation 2026-05-02):** Riverpod's runtime
+> stays on `flutter_riverpod ^3.3.1` because there is no 4.x runtime stable
+> on pub.dev as of execution. The maintainer ships matching codegen at
+> `riverpod_annotation 4.0.2` + `riverpod_generator 4.0.3`, which
+> internally target `riverpod 3.2.1` — i.e., the 4.x codegen IS designed for
+> a 3.x runtime, and PITFALLS #6's "foot-gun" warning does not apply to the
+> maintainer-recommended pairing. D-02 codegen migration completed:
+> `lib/core/db/database_provider.dart` now uses `@Riverpod(keepAlive: true)`.
+> `riverpod_lint ^3.1.3` is also installed (via `analysis_options.yaml`
+> `plugins:`) — the previous Dev_7 deferral is resolved.
+
 ### Drift Schema v1
 
 - **D-03:** `child_profiles` table with columns `id INTEGER PRIMARY KEY, name TEXT NOT NULL, created_at INTEGER NOT NULL`. Single row only (single child). Default name "Hugrún" inserted on first launch by an idempotent bootstrap.
 - **D-04:** `schemaVersion = 1`. Stepwise migration framework wired up via `MigrationStrategy(onUpgrade: stepByStep(...))` even with no upgrades needed yet — this avoids retrofitting the framework when Phase 10 adds `photo_tags`.
 - **D-05:** `drift_dev schema dump 1` snapshot committed to `drift_schemas/v1.json` for future migration tests using `schemaAt(1)`. Standard pattern from research.
 - **D-06:** Use `drift_flutter ^0.3.0` — do NOT add `sqlite3_flutter_libs` directly (research Finding 7).
+
+> **Partial resolution on Flutter 3.41.9:** `drift ^2.31.0` and
+> `drift_flutter ^0.2.8` (NOT 0.3.0 as D-06 specifies). drift_flutter 0.3.0
+> requires sqlite3 ^3 → forces drift_dev 2.32.x → analyzer ^10. analyzer
+> ^10 is incompatible with riverpod_lint 3.1.x and riverpod_generator 4.0.3
+> (both need analyzer ^9). Per the remediation prompt's prioritization
+> ("the user explicitly chose to retry rather than accept the previous
+> fallback" — and the codegen migration is the more visible win), Phase 1
+> holds at drift_flutter 0.2.8 and bumps to 0.3 once Riverpod publishes
+> analyzer-^10/^12-compatible {generator, lint} pair (3.1.4-dev.1 already
+> targets analyzer ^12 — should be quick). The "no direct sqlite3_flutter_libs"
+> intent of D-06 is preserved.
 
 ### Project Layout (Feature-First with Peer mechanics/)
 
@@ -62,6 +85,29 @@ A runnable Flutter app on iOS and Android with the architectural foundations eve
 - **D-09:** Install Marionette as a `dev_dependency` (latest stable from pub.dev — verify name and version at install time; if naming differs from `marionette`, document in CONTEXT or escalate). Marionette is the user's mandated E2E framework (project-level constraint).
 - **D-10:** Phase 1 smoke test script asserts: (a) app launches without exceptions, (b) home screen renders both Stafir and Tölur entry points with tap targets ≥2 cm physical, (c) tapping each room navigates to its placeholder screen, (d) parent gate primitive exists and the ring-fill animation completes after a 3s sustained press, (e) no network requests fire during the test session.
 - **D-11:** Marionette runs on both iOS Simulator (iPad Air) and Android Emulator (Pixel Tablet) in CI. Local dev can run on either.
+
+> **Resolved (remediation 2026-05-02):** the user-confirmed package is
+> `marionette_flutter ^0.5.0` (leancode.co — pub.dev verified publisher).
+> It is NOT a scripted-assertion E2E framework; it is the in-app side of
+> the Marionette MCP toolkit, which lets an external AI agent
+> (Claude Code / Cursor / Copilot / Gemini CLI) drive the running app via
+> the Model Context Protocol. The package therefore appears in
+> `dependencies:` (not dev_dependencies) because `lib/main.dart` imports
+> `MarionetteBinding.ensureInitialized()` (debug-only — release builds use
+> the default `WidgetsFlutterBinding`). Phase 1 ships TWO complementary
+> E2E paths covering the same D-10 invariants:
+>
+>   1. **Scripted variant** at `integration_test/marionette_smoke_test.dart`
+>      (driven by `flutter drive` + `IntegrationTestWidgetsFlutterBinding`).
+>      Fast, deterministic, runs in CI on macOS-latest. Asserts D-10
+>      criteria a, b, c, d.
+>   2. **MCP variant** at `marionette/smoke.marionette.dart` — reference
+>      doc for the AI agent. Driven via `tools/run-marionette.sh mcp ios`
+>      which launches the app with MarionetteBinding initialized. NOT in
+>      CI; pre-merge interactive verification only.
+>
+> CONTEXT D-11's "in CI" qualifier applies to the SCRIPTED variant only.
+> The MCP variant requires an interactive AI agent and lives outside CI.
 
 ### CI Provider
 
