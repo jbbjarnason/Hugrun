@@ -1,12 +1,18 @@
-// Phase 10 Plan 04 — LexiconPicker widget tests (RED first).
+// Phase 10 Plan 04 — LexiconPicker widget tests.
+// Phase 12 UI-04 — picker becomes a 2-column image grid (was vertical
+// text-only ListView). Falls back to text-only when the lexicon entry's
+// stock image (`defaultImagePath`) is missing on disk.
 //
 // LexiconPicker:
-//   * Renders a scrollable alphabetical grid/list of all kStarterLexicon
-//     entries.
-//   * Each entry is tappable; tapping calls the provided onSelected callback
-//     with the LexiconEntry.
-//   * Cancellable via the AppBar back button (no separate "Cancel" button —
-//     standard MaterialApp Navigator pattern).
+//   * Renders a 2-column scrollable grid of all kStarterLexicon entries.
+//   * Each tile shows the entry's stock image at top + the noun word
+//     beneath; falls back to text-only when image asset is absent.
+//   * Each entry is tappable; tapping calls the provided onSelected
+//     callback with the LexiconEntry.
+//   * Cancellable via the AppBar back button (no separate "Cancel"
+//     button — standard MaterialApp Navigator pattern). Parent-facing
+//     screen — AppBar stays per Phase 12 scope (only kid-mode screens
+//     drop AppBars).
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/lexicon/lexicon.dart';
@@ -17,29 +23,57 @@ Widget _wrap(Widget child) => MaterialApp(home: child);
 
 void main() {
   group('LexiconPicker', () {
-    testWidgets('renders the configured number of itemBuilder slots',
-        (tester) async {
-      LexiconEntry? selected;
+    testWidgets('Phase 12 UI-04: renders a 2-column GridView '
+        '(was vertical ListView)', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
-        _wrap(
-          LexiconPicker(
-            onSelected: (e) => selected = e,
-          ),
-        ),
+        _wrap(LexiconPicker(onSelected: (_) {})),
       );
+      // The body should be a GridView, not a ListView.
+      expect(find.byType(GridView), findsOneWidget);
+      expect(find.byType(ListView), findsNothing);
 
-      // ListView.builder lazily constructs tiles. The contract here is
-      // "the picker exposes every kStarterLexicon entry"; we verify
-      // structurally by checking the ListView.itemCount matches and that
-      // each entry's tile is reachable when scrolled to.
-      final listView = tester.widget<ListView>(find.byType(ListView));
-      final delegate = listView.childrenDelegate as SliverChildBuilderDelegate;
+      // The grid must declare exactly 2 cross-axis cells (cross-axis
+      // count). Pull it off the SliverGridDelegateWithFixedCrossAxisCount.
+      final gridView = tester.widget<GridView>(find.byType(GridView));
+      final delegate =
+          gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      expect(delegate.crossAxisCount, 2);
+    });
+
+    testWidgets('Phase 12 UI-04: grid declares one slot per lexicon entry',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        _wrap(LexiconPicker(onSelected: (_) {})),
+      );
+      final gridView = tester.widget<GridView>(find.byType(GridView));
+      final delegate = gridView.childrenDelegate as SliverChildBuilderDelegate;
       expect(delegate.estimatedChildCount, kStarterLexicon.length);
-      expect(selected, isNull);
+    });
+
+    testWidgets('Phase 12 UI-04: every visible tile renders the noun word '
+        'as a text fallback even when the stock image file is missing',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        _wrap(LexiconPicker(onSelected: (_) {})),
+      );
+      // First few visible tiles — the alphabetical first words include
+      // 'auga' and 'banani' (alphabetical sort).
+      // Pump enough frames for any Image.asset errorBuilder to fire.
+      await tester.pumpAndSettle(const Duration(milliseconds: 100));
+      // Pick a stable early word.
+      expect(find.text('auga'), findsOneWidget);
     });
 
     testWidgets('a sample of off-screen entries can be scrolled into view',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
         _wrap(
@@ -51,7 +85,6 @@ void main() {
 
       // Pick three words that span the alphabetical range — the first
       // few are on-screen, but words from the middle and end need scrolling.
-      // Use scrollUntilVisible (works when the target is below) for those.
       final scrollable = find.byType(Scrollable).first;
       for (final word in ['hundur', 'sól', 'tré']) {
         final finder = find.byKey(Key('lexicon-tile-$word'));
@@ -66,6 +99,8 @@ void main() {
 
     testWidgets('tapping a tile invokes onSelected with the entry',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
         _wrap(
@@ -75,12 +110,13 @@ void main() {
         ),
       );
 
-      await tester.scrollUntilVisible(
-        find.text('hundur'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.tap(find.text('hundur'));
+      final scrollable = find.byType(Scrollable).first;
+      final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
+      if (hundurTile.evaluate().isEmpty) {
+        await tester.scrollUntilVisible(hundurTile, 300.0,
+            scrollable: scrollable);
+      }
+      await tester.tap(hundurTile);
       await tester.pumpAndSettle();
 
       expect(selected, isNotNull);
@@ -88,15 +124,21 @@ void main() {
     });
 
     testWidgets('AppBar shows Icelandic title "Veldu orð"', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
         _wrap(
           LexiconPicker(onSelected: (_) {}),
         ),
       );
+      // AppBar persists on the parent-facing picker screen — Phase 12
+      // only removes AppBars from kid-mode screens.
       expect(find.text('Veldu orð'), findsOneWidget);
     });
 
     testWidgets('every entry tile is tappable', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
         _wrap(
@@ -105,12 +147,13 @@ void main() {
       );
       // Pick a non-first word to ensure we're not just hitting the
       // top-of-list tile.
-      await tester.scrollUntilVisible(
-        find.text('epli'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.tap(find.text('epli'));
+      final scrollable = find.byType(Scrollable).first;
+      final epliTile = find.byKey(const Key('lexicon-tile-epli'));
+      if (epliTile.evaluate().isEmpty) {
+        await tester.scrollUntilVisible(epliTile, 300.0,
+            scrollable: scrollable);
+      }
+      await tester.tap(epliTile);
       await tester.pumpAndSettle();
       expect(selected, isNotNull);
       expect(selected!.word, 'epli');
