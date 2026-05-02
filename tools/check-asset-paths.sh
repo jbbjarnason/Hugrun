@@ -10,7 +10,8 @@
 #     dot `.` (extension separator) only — no diacritics, no non-ASCII bytes.
 #   - No spaces in filenames or directory names.
 #   - Allowed file extensions: .aac (audio), .webp / .png (raster image),
-#     .svg (vector). `.gitkeep` is allowlisted.
+#     .svg (vector), .json (Phase 7 D-02 — MMAH-format glyph data under
+#     assets/tracing/). `.gitkeep` is allowlisted.
 #
 # PITFALL #20 motivation: macOS Simulator (case-insensitive APFS) silently
 # accepts `Hundur.aac` references that fail on Linux CI / Android (case-
@@ -24,7 +25,7 @@ if [[ ! -d "$ROOT" ]]; then
 fi
 
 ALLOWED_COMPONENT='^[a-z0-9._-]+$'
-ALLOWED_EXTS=('aac' 'webp' 'png' 'svg')
+ALLOWED_EXTS=('aac' 'webp' 'png' 'svg' 'json')
 FAIL=0
 
 # Strip trailing slash from ROOT for clean relative-path math.
@@ -88,7 +89,7 @@ if [[ "$FAIL" -eq 1 ]]; then
   echo "" >&2
   echo "Build failed: $ROOT contains asset paths that violate D-06." >&2
   echo "  Convention: lowercase ASCII alphanumerics + . _ - / only." >&2
-  echo "  No spaces. No diacritics. No uppercase. Allowed extensions: .aac, .webp, .png, .svg." >&2
+  echo "  No spaces. No diacritics. No uppercase. Allowed extensions: .aac, .webp, .png, .svg, .json." >&2
   exit 1
 fi
 echo "tools/check-asset-paths.sh: $ROOT passes (asset paths conform to D-06)"
