@@ -56,8 +56,9 @@ class TolurRoomState extends ConsumerState<TolurRoom> {
 
   @override
   Widget build(BuildContext context) {
+    // Phase 12 UI-01: NO AppBar. Mirror of StafirRoom's kid-surface
+    // posture — zero text titles visible to a non-reading 5-year-old.
     return Scaffold(
-      appBar: AppBar(title: const Text('Tölur')),
       body: SafeArea(
         child: Stack(
           children: <Widget>[

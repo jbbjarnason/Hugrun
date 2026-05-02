@@ -74,8 +74,12 @@ class StafirRoomState extends ConsumerState<StafirRoom> {
 
   @override
   Widget build(BuildContext context) {
+    // Phase 12 UI-01: NO AppBar. The kid surface must contain zero
+    // text titles visible to a non-reading 5-year-old (PROJECT.md
+    // "no text instructions" invariant). The mode toggle (top-right)
+    // and the system back swipe / Navigator.pop on parent gesture
+    // remain available; the activity itself fills the screen.
     return Scaffold(
-      appBar: AppBar(title: const Text('Stafir')),
       body: SafeArea(
         child: Stack(
           children: <Widget>[
