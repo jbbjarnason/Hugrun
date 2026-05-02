@@ -58,6 +58,7 @@ A five-year-old can pick up a tablet, tap, and learn — discoverable through vi
 - **Multi-child support** — keep simple; one child, one device.
 - **Cloud, sync, accounts, server** — fully local, no network during play.
 - **Parent-companion review app** — possible future, not now.
+- **ElevenLabs TTS** — excluded by their Prohibited Use Policy (bans bundled solutions targeting under-13s). Not evaluated, not a fallback.
 - **Rive animation** — deferred until tracing/matching activities are in scope (out of MVP).
 
 ## Context
@@ -74,7 +75,7 @@ A five-year-old can pick up a tablet, tap, and learn — discoverable through vi
 
 **Audio strategy (TTS):** All ~200–400 short clips pre-generated at build time, manually reviewed for pronunciation, bundled as compressed AAC. Generation pipeline: YAML utterance manifest → TTS API → AAC files → loudness normalization (`ffmpeg-normalize`) → Flutter asset map. Mispronunciations get manual overrides via SSML or `ice-g2p` phoneme spelling.
 
-**TTS providers (v1 evaluates two):** Tiro TTS (`tts.tiro.is`) — Icelandic government-funded, neural, free, voices Diljá v2 / Álfur v2 / Bjartur / Rósa, default starting point. ElevenLabs — commercial multilingual, evaluated in parallel for v1; commercial/kids-app licensing must be checked before relying on it. One primary "narrator" voice for the whole app.
+**TTS provider (v1 locked to Tiro):** Tiro TTS (`tts.tiro.is`) — Icelandic government-funded, neural, free, Apache 2.0, voices Diljá v2 / Álfur v2 / Bjartur / Rósa. Diljá v2 is the v1 default narrator. **ElevenLabs is excluded** — their Prohibited Use Policy bans bundled solutions targeting children under 13, and Hugrún is 5. Microsoft Azure Neural TTS (Gudrun / Gunnar voices) is the documented fallback if Tiro voice quality is ever insufficient. One primary "narrator" voice across the whole app.
 
 **Imagery:** Created or sourced by the assistant during build (illustrate or download licensed/free images). Parent-supplied photos override per-tag once personalization ships.
 
@@ -101,7 +102,7 @@ A five-year-old can pick up a tablet, tap, and learn — discoverable through vi
 | Riverpod for state | User specified | — Pending |
 | Drift (SQLite) for persistence | User specified, overrides original Hive/Isar plan | — Pending |
 | Pre-baked TTS audio (no runtime calls) | Avoids network, latency, quality variance; manual review pass possible | — Pending |
-| Tiro + ElevenLabs evaluated in parallel for v1 | Best-of-both decision deferred until clips can be A/B'd | — Pending |
+| Tiro TTS as sole v1 provider; ElevenLabs excluded | ElevenLabs Prohibited Use Policy bans bundled solutions targeting under-13s; Tiro is Apache 2.0, Icelandic-native, no kids' restrictions. Azure Neural (Gudrun/Gunnar) is the fallback if needed. | ✓ Good |
 | MVP = build steps 1–2 only (tap-to-hear, full alphabet) | "ASAP playable" — ship the loop first, expand only if it lands | — Pending |
 | App named "Hugrún" (= the child's name) | The app is for one child first; name reinforces personalization-as-moat | — Pending |
 | Both iOS + Android from day one | Future-proof; child's tablet may change; testing on both validates platform abstractions early | — Pending |
