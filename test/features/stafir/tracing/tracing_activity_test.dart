@@ -71,17 +71,25 @@ Map<IcelandicLetter, TraceGlyph> _loadAllShippedGlyphs() {
   return result;
 }
 
+class _ForcedLetterNotifier extends TracingCurrentLetter {
+  _ForcedLetterNotifier(this._initial);
+  final IcelandicLetter _initial;
+  @override
+  IcelandicLetter build() => _initial;
+}
+
 Widget _wrap({
   required _RecordingEngine engine,
   required Map<IcelandicLetter, TraceGlyph> glyphs,
   IcelandicLetter? forcedLetter,
 }) {
   return ProviderScope(
-    overrides: <Override>[
+    overrides: [
       audioEngineProvider.overrideWith((ref) => engine),
-      traceDataProvider.overrideWith((ref) => glyphs),
+      traceDataProvider.overrideWith((ref) async => glyphs),
       if (forcedLetter != null)
-        tracingCurrentLetterProvider.overrideWith((ref) => forcedLetter),
+        tracingCurrentLetterProvider
+            .overrideWith(() => _ForcedLetterNotifier(forcedLetter)),
     ],
     child: const MaterialApp(home: Scaffold(body: TracingActivity())),
   );
@@ -134,6 +142,11 @@ void main() {
       glyphs: glyphs,
       forcedLetter: letter,
     ));
+    // First pump: build empty (Future is loading or post-frame pending).
+    // Second pump: Future resolves; build() requests a controller via
+    // addPostFrameCallback. Third pump: setState after callback.
+    await tester.pump();
+    await tester.pump();
     await tester.pump();
     expect(find.byType(StrokeOrderAnimator), findsOneWidget);
   });
@@ -243,9 +256,9 @@ void main() {
 
     await tester.pumpWidget(ProviderScope(
       // ignore: scoped_providers_should_specify_dependencies
-      overrides: <Override>[
+      overrides: [
         audioEngineProvider.overrideWith((ref) => engine),
-        traceDataProvider.overrideWith((ref) => glyphs),
+        traceDataProvider.overrideWith((ref) async => glyphs),
       ],
       child: const MaterialApp(home: Scaffold(body: TracingActivity())),
     ));
