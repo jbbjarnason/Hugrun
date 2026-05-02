@@ -6,6 +6,7 @@
 // gate, just smaller chrome.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/features/stafir/stafir_mode.dart';
 import 'package:hugrun/features/stafir/widgets/stafir_mode_toggle.dart';
@@ -108,28 +109,29 @@ void main() {
     expect(callCount, 2);
   });
 
-  testWidgets('M7: no haptic feedback (no platform channel calls)',
+  testWidgets('M7: no haptic feedback invoked during hold-to-toggle',
       (tester) async {
+    // Spy on SystemChannels.platform and record method names. We pass-through
+    // to the original handler so MaterialApp's chrome calls (Title widget,
+    // setApplicationSwitcherDescription) keep working — we just record.
     final logged = <String>[];
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      const MethodChannel('flutter/platform'),
-      (call) async {
-        logged.add(call.method);
-        return null;
-      },
-    );
-    addTearDown(() {
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        const MethodChannel('flutter/platform'),
-        null,
-      );
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      logged.add(call.method);
+      return null;
     });
+    addTearDown(() => messenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ));
     var callCount = 0;
     await tester.pumpWidget(_host(
       mode: StafirMode.letters,
       onToggle: () => callCount++,
     ));
     await tester.pump();
+    // Reset the log AFTER MaterialApp boot so we only see toggle interactions.
+    logged.clear();
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(StafirModeToggle)),
     );
