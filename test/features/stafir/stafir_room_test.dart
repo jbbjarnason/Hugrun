@@ -11,6 +11,7 @@ import 'package:hugrun/features/stafir/cvc/cvc_activity.dart';
 import 'package:hugrun/features/stafir/matching/matching_activity.dart';
 import 'package:hugrun/features/stafir/stafir_mode.dart';
 import 'package:hugrun/features/stafir/stafir_room.dart';
+import 'package:hugrun/features/stafir/tracing/tracing_activity.dart';
 import 'package:hugrun/features/stafir/widgets/letter_grid.dart';
 import 'package:hugrun/features/stafir/widgets/letter_tile.dart';
 import 'package:hugrun/features/stafir/widgets/stafir_mode_toggle.dart';
@@ -222,6 +223,60 @@ void main() {
     await tester.pump();
     expect(find.byType(LetterGrid), findsOneWidget);
   });
+
+  testWidgets(
+    'S4d (Phase 7): programmatic mode swap to trace shows TracingActivity',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(_wrap());
+      await tester.pump();
+      final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
+      state.debugSetMode(StafirMode.trace);
+      // Multiple pumps so the FutureProvider for traceData attempts to
+      // resolve. In the StafirRoom widget test we don't override
+      // traceDataProvider — the real provider hits rootBundle which is
+      // not ServicesBinding-mocked here. The TracingActivity widget
+      // renders empty (SizedBox.shrink) on loading/error — that's fine
+      // because the test asserts on widget TYPE, not subwidgets.
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(TracingActivity), findsOneWidget);
+      expect(find.byType(LetterGrid), findsNothing);
+      expect(find.byType(MatchingActivity), findsNothing);
+      expect(find.byType(CvcActivity), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'S4e (Phase 7): full 4-mode cycle letters → match → cvc → trace → letters',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(_wrap());
+      await tester.pump();
+      final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
+
+      state.debugSetMode(StafirMode.match);
+      await tester.pump();
+      expect(find.byType(MatchingActivity), findsOneWidget);
+
+      state.debugSetMode(StafirMode.cvc);
+      await tester.pump();
+      expect(find.byType(CvcActivity), findsOneWidget);
+
+      state.debugSetMode(StafirMode.trace);
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(TracingActivity), findsOneWidget);
+
+      state.debugSetMode(StafirMode.letters);
+      await tester.pump();
+      expect(find.byType(LetterGrid), findsOneWidget);
+    },
+  );
 
   testWidgets('S6: AppBar still shows "Stafir" — no per-mode title drift',
       (tester) async {

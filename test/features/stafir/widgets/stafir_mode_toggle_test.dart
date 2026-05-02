@@ -29,16 +29,23 @@ Widget _host({
     );
 
 void main() {
-  test('M1: StafirMode.values is exactly [letters, match, cvc]', () {
-    expect(StafirMode.values,
-        <StafirMode>[StafirMode.letters, StafirMode.match, StafirMode.cvc]);
+  test('M1: StafirMode.values is exactly [letters, match, cvc, trace]',
+      () {
+    expect(StafirMode.values, <StafirMode>[
+      StafirMode.letters,
+      StafirMode.match,
+      StafirMode.cvc,
+      StafirMode.trace,
+    ]);
   });
 
-  test('M1b: StafirModeToggleExt.next cycles letters → match → cvc → letters',
-      () {
+  test(
+      'M1b: StafirModeToggleExt.next cycles letters → match → cvc → '
+      'trace → letters (Phase 7 D-15 — 4-mode cycle)', () {
     expect(StafirMode.letters.next, StafirMode.match);
     expect(StafirMode.match.next, StafirMode.cvc);
-    expect(StafirMode.cvc.next, StafirMode.letters);
+    expect(StafirMode.cvc.next, StafirMode.trace);
+    expect(StafirMode.trace.next, StafirMode.letters);
   });
 
   testWidgets('M2: toggle renders exactly one Icon and zero Text widgets',
@@ -50,7 +57,8 @@ void main() {
   });
 
   testWidgets(
-    'M3: icon differs per mode (letters / match / cvc each get a distinct icon)',
+    'M3: icon differs per mode (letters / match / cvc / trace each get '
+    'a distinct icon)',
     (tester) async {
       await tester.pumpWidget(_host(mode: StafirMode.letters, onToggle: () {}));
       await tester.pump();
@@ -64,11 +72,15 @@ void main() {
       await tester.pump();
       final cvcIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-      // Each mode must have a distinct icon — kid sees a visual cue
+      await tester.pumpWidget(_host(mode: StafirMode.trace, onToggle: () {}));
+      await tester.pump();
+      final traceIcon = tester.widget<Icon>(find.byType(Icon)).icon;
+
+      // All 4 mode icons must be distinct — kid sees a visual cue
       // for which surface comes next.
-      expect(lettersIcon, isNot(matchIcon));
-      expect(matchIcon, isNot(cvcIcon));
-      expect(lettersIcon, isNot(cvcIcon));
+      final all = <IconData?>[lettersIcon, matchIcon, cvcIcon, traceIcon];
+      expect(all.toSet().length, 4,
+          reason: 'all 4 mode icons must be distinct (got $all)');
     },
   );
 
