@@ -35,7 +35,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The app has a 3-second hold-to-open parent gate primitive with a visible ring-fill that gates a stub parent settings screen
   4. A Marionette E2E smoke test runs in CI on both iOS and Android, opens the app, and asserts the home screen renders both rooms
   5. CI pipeline runs `flutter test` on every commit, and a CI check on `pubspec.lock` fails the build if any analytics, ads, or IAP SDK is added
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 01-01-PLAN-bootstrap.md — Flutter create + pubspec pinning + Icelandic locale + ProviderScope + D-07 directory skeleton + first widget test (TDD RED→GREEN)
+- [ ] 01-02-PLAN-database.md — Drift v1 child_profiles table + DAO + bootstrap (default 'Hugrún') + schemaAt(1) snapshot + Riverpod provider
+- [ ] 01-03-PLAN-rooms-and-gate.md — Two-room home shell + StafirRoom/TolurRoom/ParentSettingsScreen placeholders + ParentGate widget primitive (3s hold + ring fill, no haptics)
+- [ ] 01-04-PLAN-marionette-e2e.md — Marionette package install (verify name on pub.dev) + smoke test green on iPad Air simulator + Pixel Tablet AVD
+- [ ] 01-05-PLAN-ci-and-guards.md — GitHub Actions 3-job CI + check-no-tracking.sh (block 9 banned SDKs) + NoNetworkHttpOverrides integration test + check-flutter-version.sh + check-domain-purity.sh
 **UI hint**: yes
 
 ### Phase 2: Alphabet, Asset Conventions & Manifest Stub
@@ -140,7 +145,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (MVP) → 5 → 6 → 7 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Skeleton & Drift Schema | 0/TBD | Not started | - |
+| 1. Skeleton & Drift Schema | 0/5 | Planned | - |
 | 2. Alphabet, Asset Conventions & Manifest Stub | 0/TBD | Not started | - |
 | 3. TTS Pipeline & Audio Review Tooling | 0/TBD | Not started | - |
 | 4. Stafir Tap-to-Hear MVP | 0/TBD | Not started | - |
