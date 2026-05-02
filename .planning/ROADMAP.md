@@ -84,6 +84,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Each of the 32 letters has at least one example-word audio clip and matching image where the example word starts with the target letter (in IPA-equivalent terms, e.g. *þrír* for þ); the AudioEngine warms a pool of ≥2 AudioPlayer instances at app start and never creates one per tap
   4. There are zero text instructions visible to the child anywhere in Stafir, no failure states, no scores, no timers, and no progress indicators visible to the child
   5. Parent can enter the child's name in the parent settings screen (default "Hugrún"); the name persists across app restart in Drift, and is used in at least one voice-over (e.g. an open-app greeting) by selecting from a pre-baked clip set, with a name-less fallback when no pre-baked clip exists
+**Plans**: 7 plans
+- [ ] 04-01-PLAN-orientation-and-warmup.md — Landscape lock + immersive mode + AudioEngine 4-player warm pool + keepAlive Riverpod provider (TDD RED→GREEN→REFACTOR)
+- [ ] 04-02-PLAN-audio-engine-play-queue.md — AudioEngine.play() with letter→word ConcatenatingAudioSource queue, cancel-on-retap, missing-clip fallback for Phase 2 stub manifest
+- [ ] 04-03-PLAN-letter-tile-widget.md — LetterTile leaf widget: synchronous onTapDown scale animation, locked 6-color pastel palette, ≥200 logical-px tap target, no-text/no-fail-UI invariants
+- [ ] 04-04-PLAN-stafir-room.md — StafirRoom replaces Phase 1 placeholder: 32-tile grid in MMS order, AudioEngine wiring, example-word overlay, manifest swap-in instructions inline
+- [ ] 04-05-PLAN-child-name-and-settings.md — childNameProvider (Drift Stream) + filled-out ParentSettingsScreen with Vista save + Icelandic copy + DB round-trip integration test
+- [ ] 04-06-PLAN-welcome-narration.md — Once-per-session welcome with name-aware variant selection (narrationWelcome vs narrationWelcomeGeneric), no mid-session re-narration
+- [ ] 04-07-PLAN-marionette-e2e-and-mvp-verification.md — Stafir flow integration test + Marionette MCP Phase-4 reference + LATENCY-VERIFICATION.md procedure + checkpoint:human-verify for STAFIR-02
 **UI hint**: yes
 
 ### Phase 5: Letter-to-Word Matching
@@ -160,7 +168,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (MVP) → 5 → 6 → 7 →
 | 1. Skeleton & Drift Schema | 0/5 | Planned | - |
 | 2. Alphabet, Asset Conventions & Manifest Stub | 0/3 | Planned | - |
 | 3. TTS Pipeline & Audio Review Tooling | 0/7 | Planned | - |
-| 4. Stafir Tap-to-Hear MVP | 0/TBD | Not started | - |
+| 4. Stafir Tap-to-Hear MVP | 0/7 | Planned | - |
 | 5. Letter-to-Word Matching | 0/TBD | Not started | - |
 | 6. CVC Blending & Phoneme Audio Set | 0/TBD | Not started | - |
 | 7. Letter Tracing (Ítalíuskrift) | 0/TBD | Not started | - |
