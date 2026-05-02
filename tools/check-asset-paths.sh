@@ -11,7 +11,9 @@
 #   - No spaces in filenames or directory names.
 #   - Allowed file extensions: .aac (audio), .webp / .png (raster image),
 #     .svg (vector), .json (Phase 7 D-02 — MMAH-format glyph data under
-#     assets/tracing/). `.gitkeep` is allowlisted.
+#     assets/tracing/). `.gitkeep` is allowlisted. `CREDITS.md` is
+#     allowlisted (Phase 11 — image provenance documentation; not a
+#     runtime asset, not bundled by Flutter).
 #
 # PITFALL #20 motivation: macOS Simulator (case-insensitive APFS) silently
 # accepts `Hundur.aac` references that fail on Linux CI / Android (case-
@@ -45,6 +47,9 @@ while IFS= read -r -d '' entry; do
     [[ -z "$c" ]] && continue
     # Allow .gitkeep explicitly (the only permitted dotfile).
     [[ "$c" == ".gitkeep" ]] && continue
+    # Allow CREDITS.md explicitly (Phase 11 image provenance docs;
+    # not a runtime asset — Flutter does not bundle .md files).
+    [[ "$c" == "CREDITS.md" ]] && continue
 
     if [[ "$c" =~ [A-Z] ]]; then
       echo "ASSET PATH VIOLATION (uppercase): $entry" >&2
@@ -67,6 +72,7 @@ while IFS= read -r -d '' entry; do
   if [[ -f "$entry" ]]; then
     base="$(basename "$entry")"
     [[ "$base" == ".gitkeep" ]] && continue
+    [[ "$base" == "CREDITS.md" ]] && continue
     # Files without an extension are flagged.
     if [[ "$base" != *.* ]]; then
       echo "ASSET PATH VIOLATION (no extension): $entry" >&2
