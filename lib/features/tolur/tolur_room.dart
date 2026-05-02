@@ -1,8 +1,9 @@
-// Tölur (Numbers) room. Phase 8 Plans 08-02 + 08-04.
+// Tölur (Numbers) room. Phase 8 Plans 08-02 + 08-04 + Phase 9 Plan 09-04.
 //
 // Hosts two child surfaces switched via a 3-second-hold mode toggle:
 //   - TapToHear (default): 10 NumberTiles, tap to play numeral audio
-//   - Sequence: SequencingActivity drag-to-order surface (NUM-06)
+//   - Activity: ActivityRotator picks one of {Sequencing, Correspondence,
+//               Subitizing, Addition} per round (Phase 9 D-15).
 //
 // Mirror of StafirRoom's mode-switch pattern (Phase 5 D-01 / Phase 6 D-15):
 // the toggle widget lives top-right; the body uses a switch-on-enum.
@@ -22,7 +23,7 @@ import '../../core/audio/audio_engine_provider.dart';
 import '../../core/numbers/gender.dart';
 import '../../core/numbers/icelandic_number.dart';
 import '../../core/numbers/number_audio_resolver.dart';
-import 'sequencing/sequencing_activity.dart';
+import 'activity_rotator.dart';
 import 'tolur_mode.dart';
 import 'widgets/number_grid.dart';
 import 'widgets/tolur_mode_toggle.dart';
@@ -62,7 +63,7 @@ class TolurRoomState extends ConsumerState<TolurRoom> {
           children: <Widget>[
             switch (_mode) {
               TolurMode.tapToHear => NumberGrid(onNumberTap: _onNumberTap),
-              TolurMode.sequence => const SequencingActivity(),
+              TolurMode.activity => const ActivityRotator(),
             },
             Positioned(
               top: 8,

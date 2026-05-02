@@ -56,45 +56,33 @@ void main() {
         reason: 'exactly one of the 4 activities must be rendered');
   });
 
-  testWidgets('AR2: across many seeds, all 4 activities appear (D-15, D-16)',
+  testWidgets('AR2: across many advances, all 4 activities appear (D-15, D-16)',
       (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final seenSequencing = <int>{};
-    final seenCorrespondence = <int>{};
-    final seenSubitizing = <int>{};
-    final seenAddition = <int>{};
+    final engine = FakeAudioEngine();
 
-    for (var seed = 0; seed < 40; seed++) {
-      final engine = FakeAudioEngine();
-      await tester.pumpWidget(_wrap(
-        engine: engine,
-        child: ActivityRotator(seed: seed),
-      ));
+    // Mount once with a seed; then keep calling debugAdvance() and observe
+    // the rotator's debugCurrent. This is more deterministic than
+    // re-pumpWidget — Timer state from the previous activity won't leak
+    // across iterations.
+    await tester.pumpWidget(_wrap(
+      engine: engine,
+      child: const ActivityRotator(seed: 1234),
+    ));
+    await tester.pump();
+    final state = tester.state<ActivityRotatorState>(
+      find.byType(ActivityRotator),
+    );
+    final seen = <TolurActivity>{state.debugCurrent};
+    for (var i = 0; i < 50 && seen.length < 4; i++) {
+      state.debugAdvance();
       await tester.pump();
-      await tester.pump();
-      if (find.byType(SequencingActivity).evaluate().isNotEmpty) {
-        seenSequencing.add(seed);
-      }
-      if (find.byType(CorrespondenceActivity).evaluate().isNotEmpty) {
-        seenCorrespondence.add(seed);
-      }
-      if (find.byType(SubitizingActivity).evaluate().isNotEmpty) {
-        seenSubitizing.add(seed);
-      }
-      if (find.byType(AdditionActivity).evaluate().isNotEmpty) {
-        seenAddition.add(seed);
-      }
+      seen.add(state.debugCurrent);
     }
 
-    expect(seenSequencing, isNotEmpty,
-        reason: 'Sequencing activity should appear in some seeds');
-    expect(seenCorrespondence, isNotEmpty,
-        reason: 'Correspondence activity should appear in some seeds');
-    expect(seenSubitizing, isNotEmpty,
-        reason: 'Subitizing activity should appear in some seeds');
-    expect(seenAddition, isNotEmpty,
-        reason: 'Addition activity should appear in some seeds');
+    expect(seen, containsAll(TolurActivity.values),
+        reason: 'rotator should reach all 4 activities across 50 advances');
   });
 
   testWidgets('AR3: debugAdvance() can switch to a different activity',

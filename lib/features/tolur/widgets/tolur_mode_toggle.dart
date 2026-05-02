@@ -91,14 +91,14 @@ class _TolurModeToggleState extends State<TolurModeToggle>
   @override
   Widget build(BuildContext context) {
     // D-15: 2 distinct icons.
-    //  tapToHear → image_outlined  (the digit grid)
-    //  sequence  → format_list_numbered  (numbers in order)
+    //  tapToHear → image_outlined        (the digit grid)
+    //  activity  → category_outlined     (mixed-activity rotation)
     final IconData iconData;
     switch (widget.currentMode) {
       case TolurMode.tapToHear:
         iconData = Icons.image_outlined;
-      case TolurMode.sequence:
-        iconData = Icons.format_list_numbered;
+      case TolurMode.activity:
+        iconData = Icons.category_outlined;
     }
     return Listener(
       behavior: HitTestBehavior.opaque,
