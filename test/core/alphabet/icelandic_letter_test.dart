@@ -18,18 +18,16 @@ void main() {
       expect(a, isNot(equals(b)));
     });
 
-    test('copyWith returns a new instance with the new field, others unchanged',
-        () {
-      const original = IcelandicLetter(
-        glyph: 'a',
-        name: 'a',
-        assetSlug: 'a',
-      );
-      final copy = original.copyWith(assetSlug: 'x_test');
-      expect(copy.assetSlug, 'x_test');
-      expect(copy.glyph, original.glyph);
-      expect(copy.name, original.name);
-      expect(copy, isNot(equals(original)));
-    });
+    test(
+      'copyWith returns a new instance with the new field, others unchanged',
+      () {
+        const original = IcelandicLetter(glyph: 'a', name: 'a', assetSlug: 'a');
+        final copy = original.copyWith(assetSlug: 'x_test');
+        expect(copy.assetSlug, 'x_test');
+        expect(copy.glyph, original.glyph);
+        expect(copy.name, original.name);
+        expect(copy, isNot(equals(original)));
+      },
+    );
   });
 }

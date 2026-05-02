@@ -6,14 +6,41 @@
 // her school does.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/alphabet/alphabet.dart';
-import 'package:hugrun/core/alphabet/icelandic_letter.dart';
 
 /// Authoritative MMS school order (CONTEXT D-02).
 const List<String> kExpectedGlyphs = <String>[
-  'a', 'á', 'b', 'd', 'ð', 'e', 'é', 'f',
-  'g', 'h', 'i', 'í', 'j', 'k', 'l', 'm',
-  'n', 'o', 'ó', 'p', 'r', 's', 't', 'u',
-  'ú', 'v', 'x', 'y', 'ý', 'þ', 'æ', 'ö',
+  'a',
+  'á',
+  'b',
+  'd',
+  'ð',
+  'e',
+  'é',
+  'f',
+  'g',
+  'h',
+  'i',
+  'í',
+  'j',
+  'k',
+  'l',
+  'm',
+  'n',
+  'o',
+  'ó',
+  'p',
+  'r',
+  's',
+  't',
+  'u',
+  'ú',
+  'v',
+  'x',
+  'y',
+  'ý',
+  'þ',
+  'æ',
+  'ö',
 ];
 
 /// CONTEXT D-03 mapping table (verbatim).

@@ -8,6 +8,7 @@ DOMAIN_PATHS=(
   "lib/core/db/tables"      # Drift table definitions are pure-Dart
   "lib/core/parent_gate"    # ParentGateController must stay pure-Dart;
                             # parent_gate.dart is a widget — see EXCEPTIONS below
+  "lib/core/alphabet"       # Phase 2 Plan 01: IcelandicLetter + kIcelandicAlphabet
   # When Phase 2 adds lib/core/manifest/types/, append it here.
   # When Phase 4 adds lib/domain/, append it here.
 )
