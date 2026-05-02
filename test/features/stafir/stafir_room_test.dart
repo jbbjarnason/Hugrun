@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/audio/audio_engine.dart';
 import 'package:hugrun/core/audio/audio_engine_provider.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
+import 'package:hugrun/features/stafir/cvc/cvc_activity.dart';
 import 'package:hugrun/features/stafir/matching/matching_activity.dart';
 import 'package:hugrun/features/stafir/stafir_mode.dart';
 import 'package:hugrun/features/stafir/stafir_room.dart';
@@ -182,6 +183,44 @@ void main() {
     await tester.pump();
     expect(find.byType(LetterGrid), findsOneWidget);
     expect(find.byType(MatchingActivity), findsNothing);
+  });
+
+  testWidgets('S4b: programmatic mode swap to cvc shows CvcActivity (Phase 6)',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_wrap());
+    await tester.pump();
+    final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
+    state.debugSetMode(StafirMode.cvc);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(CvcActivity), findsOneWidget);
+    expect(find.byType(LetterGrid), findsNothing);
+    expect(find.byType(MatchingActivity), findsNothing);
+  });
+
+  testWidgets('S4c: cvc → letters → match cycle preserves room',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_wrap());
+    await tester.pump();
+    final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
+    // letters → match
+    state.debugSetMode(StafirMode.match);
+    await tester.pump();
+    expect(find.byType(MatchingActivity), findsOneWidget);
+    // match → cvc
+    state.debugSetMode(StafirMode.cvc);
+    await tester.pump();
+    expect(find.byType(CvcActivity), findsOneWidget);
+    // cvc → letters
+    state.debugSetMode(StafirMode.letters);
+    await tester.pump();
+    expect(find.byType(LetterGrid), findsOneWidget);
   });
 
   testWidgets('S6: AppBar still shows "Stafir" — no per-mode title drift',

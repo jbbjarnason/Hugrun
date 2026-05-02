@@ -29,8 +29,16 @@ Widget _host({
     );
 
 void main() {
-  test('M1: StafirMode.values is exactly [letters, match]', () {
-    expect(StafirMode.values, <StafirMode>[StafirMode.letters, StafirMode.match]);
+  test('M1: StafirMode.values is exactly [letters, match, cvc]', () {
+    expect(StafirMode.values,
+        <StafirMode>[StafirMode.letters, StafirMode.match, StafirMode.cvc]);
+  });
+
+  test('M1b: StafirModeToggleExt.next cycles letters → match → cvc → letters',
+      () {
+    expect(StafirMode.letters.next, StafirMode.match);
+    expect(StafirMode.match.next, StafirMode.cvc);
+    expect(StafirMode.cvc.next, StafirMode.letters);
   });
 
   testWidgets('M2: toggle renders exactly one Icon and zero Text widgets',
@@ -41,16 +49,28 @@ void main() {
     expect(find.byType(Text), findsNothing);
   });
 
-  testWidgets('M3: icon is image_outlined in letters mode, grid_view_outlined in match mode',
-      (tester) async {
-    await tester.pumpWidget(_host(mode: StafirMode.letters, onToggle: () {}));
-    await tester.pump();
-    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+  testWidgets(
+    'M3: icon differs per mode (letters / match / cvc each get a distinct icon)',
+    (tester) async {
+      await tester.pumpWidget(_host(mode: StafirMode.letters, onToggle: () {}));
+      await tester.pump();
+      final lettersIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-    await tester.pumpWidget(_host(mode: StafirMode.match, onToggle: () {}));
-    await tester.pump();
-    expect(find.byIcon(Icons.grid_view_outlined), findsOneWidget);
-  });
+      await tester.pumpWidget(_host(mode: StafirMode.match, onToggle: () {}));
+      await tester.pump();
+      final matchIcon = tester.widget<Icon>(find.byType(Icon)).icon;
+
+      await tester.pumpWidget(_host(mode: StafirMode.cvc, onToggle: () {}));
+      await tester.pump();
+      final cvcIcon = tester.widget<Icon>(find.byType(Icon)).icon;
+
+      // Each mode must have a distinct icon — kid sees a visual cue
+      // for which surface comes next.
+      expect(lettersIcon, isNot(matchIcon));
+      expect(matchIcon, isNot(cvcIcon));
+      expect(lettersIcon, isNot(cvcIcon));
+    },
+  );
 
   testWidgets('M4: hold less than 3s does NOT toggle', (tester) async {
     var callCount = 0;
