@@ -1,9 +1,14 @@
-# Local cache for raw Tiro outputs — pre-review audio that must not enter git.
+# Local cache for raw TTS outputs — pre-review audio that must not enter git.
 # (D-08 / Plan 01 threat model T-03-01-01.)
 # The directory itself is committed via _raw/.gitkeep so the path always exists;
 # everything else under _raw/ is ignored.
 _raw/*
 !_raw/.gitkeep
+
+# Piper voice models — ~76MB ONNX file downloaded by setup_voice.sh on first run.
+# Don't bloat the repo; setup_voice.sh is idempotent.
+voices/*.onnx
+voices/*.onnx.json
 
 # Python tooling artifacts
 __pycache__/

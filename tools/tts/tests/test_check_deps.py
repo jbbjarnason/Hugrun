@@ -137,6 +137,51 @@ def test_main_check_deps_nonzero_on_missing_binary():
     assert rc != 0
 
 
+def test_check_piper_voice_present():
+    """Test 7 (Piper migration 2026-05-02): check_piper_voice reports ok when both
+    .onnx and .onnx.json exist with non-zero size."""
+    from tools.tts.check_deps import check_piper_voice
+    from pathlib import Path
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp)
+        onnx = d / "is_IS-steinn-medium.onnx"
+        cfg = d / "is_IS-steinn-medium.onnx.json"
+        # Write fake but non-empty content (50 MB threshold from setup_voice.sh
+        # is what *download* uses; check_piper_voice uses presence + non-empty).
+        onnx.write_bytes(b"x" * 1024)
+        cfg.write_text("{}")
+        results = check_piper_voice(d)
+
+    assert len(results) >= 1
+    assert all(r.ok for r in results)
+
+
+def test_check_piper_voice_missing_files():
+    """Test 7b: check_piper_voice surfaces ok=False with an actionable hint when
+    voice files are missing (suggests `bash tools/tts/setup_voice.sh`)."""
+    from tools.tts.check_deps import check_piper_voice
+    from pathlib import Path
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp)
+        # Empty directory — both files absent.
+        results = check_piper_voice(d)
+
+    assert any(not r.ok for r in results)
+    msgs = " ".join(r.message for r in results).lower()
+    assert "setup_voice.sh" in msgs or "is_is-steinn-medium" in msgs
+
+
+def test_main_includes_piper_in_required_binaries():
+    """Test 7c: main() now checks `piper` as one of REQUIRED_BINARIES."""
+    from tools.tts import check_deps
+
+    assert "piper" in check_deps.REQUIRED_BINARIES
+
+
 def test_main_json_emits_single_line_json():
     """Test 6: main(--json) emits a single-line JSON document with all CheckResults."""
     from tools.tts.check_deps import main
