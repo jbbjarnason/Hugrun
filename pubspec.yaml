@@ -5,17 +5,18 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.10.7
+  sdk: ^3.11.5
 
 # Phase 1 dependencies. See .planning/phases/01-skeleton-drift-schema/01-CONTEXT.md
 # for decisions D-01..D-25 driving the choices below.
 #
-# Riverpod family note (D-01 deviation):
-#   pub.dev as of 2026-05-02 publishes flutter_riverpod 3.3.1 (latest stable),
-#   riverpod_annotation 4.0.2, and riverpod_generator 4.0.3. These are the
-#   designed-to-go-together set per maintainer (riverpod_generator 4.0.3
-#   internally targets riverpod 3.2.1). research/STACK.md flags this:
-#   "use whichever pair aligns." We do.
+# Riverpod family note (D-01 honest pinning):
+#   pub.dev as of 2026-05-02 publishes flutter_riverpod 3.3.1 as the latest
+#   stable; there is NO flutter_riverpod 4.x stable released. The Riverpod
+#   maintainer ships matching codegen at 4.x (riverpod_annotation 4.0.2,
+#   riverpod_generator 4.0.3) which internally targets riverpod 3.2.1 — i.e.,
+#   the maintainer's intended "Riverpod 4 codegen" cuts against a 3.x runtime.
+#   We follow the maintainer's intended pairing.
 dependencies:
   flutter:
     sdk: flutter
@@ -25,32 +26,40 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # State management (Riverpod)
-  # Phase 1 deviation D-02 extension: Riverpod codegen (riverpod_annotation +
-  # riverpod_generator) is deferred to Phase 4 because riverpod_generator 4.x
-  # requires analyzer ^9 while drift_dev 2.31+ requires analyzer 8.1+ <11 with
-  # sqlite3 ^3 (forcing analyzer 10+). The two codegens are temporarily
-  # mutually exclusive on pub.dev as of 2026-05-02. Phase 1 uses hand-written
-  # providers (Phase 1 only needs one — appDatabaseProvider). See
-  # 01-01-SUMMARY.md for full deviation rationale.
+  # State management (Riverpod). 3.3.1 runtime + 4.x codegen per maintainer
+  # (see note above). Phase 1 has the appDatabaseProvider migrated to
+  # @riverpod codegen per D-02.
   flutter_riverpod: ^3.3.1
+  riverpod_annotation: ^4.0.2
 
   # Persistence (Drift). drift_flutter pulls sqlite3_flutter_libs transitively;
   # we do NOT add sqlite3_flutter_libs as a direct dep (D-06).
-  # drift_flutter pinned to 0.2.8 (forced) — 0.3.0 requires sqlite3 ^3.0.0 which
-  # forces drift_dev to analyzer ^10, incompatible with Flutter 3.38.7 SDK's
-  # bundled test_api 0.7.7 / meta 1.17.0. Phase 4 revisits when SDK aligns.
-  drift: ">=2.28.0 <2.29.0"
-  drift_flutter: ^0.2.7
+  #
+  # Version pinning rationale (vs. CONTEXT D-06 "drift_flutter 0.3.x" + the
+  # remediation prompt's "drift 2.32.x + drift_flutter 0.3.x" target):
+  #   drift_flutter 0.3.0 requires sqlite3 ^3.0.0, which forces drift_dev to
+  #   2.32.x with analyzer ^10. analyzer ^10 in turn excludes riverpod_lint
+  #   3.1.3 (needs analyzer ^9), riverpod_generator 4.0.3 (analyzer ^9), and
+  #   freezed 3.2.5 (analyzer >=9 <11 — partial). The remediation prompt
+  #   explicitly prioritizes the Riverpod codegen migration (D-02) over the
+  #   drift_flutter 0.3.x bump, so we hold drift at 2.31.x + drift_flutter
+  #   0.2.8 (drift ^2.30 floor — same drift runtime API as 2.31). This also
+  #   keeps sqlite3 on 2.4.x. The future bump to drift_flutter 0.3 + drift_dev
+  #   2.32 is gated on Riverpod publishing analyzer-^10-compatible
+  #   {generator, lint} pair (3.1.4-dev.1 already targets analyzer ^12 —
+  #   should be quick).
+  drift: ^2.31.0
+  drift_flutter: ^0.2.8
   path_provider: ^2.1.5
 
-  # Audio
+  # Audio (deferred to Phase 4 for actual use; pubspec entry kept so phase 1
+  # skeleton tests still see them in pubspec.lock)
   just_audio: ^0.10.5
   audio_session: ^0.2.3
 
-  # freezed_annotation deferred to Phase 4 — incompatible analyzer constraints
-  # with drift_dev 2.31+ and Flutter 3.38.7's bundled test_api 0.7.7. Phase 1
-  # has no @freezed types (only Drift companions, which are auto-generated).
+  # Immutable models (no @freezed types in Phase 1 yet; runtime annotation
+  # package added so Phase 4's first @freezed type can land without churn)
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -59,35 +68,29 @@ dev_dependencies:
     sdk: flutter
 
   # `path` is used by test/tools/check_no_tracking_test.dart to construct
-  # absolute fixture paths. Already pulled transitively, listing here removes
-  # depend_on_referenced_packages warning.
+  # absolute fixture paths.
   path: ^1.9.0
 
   flutter_lints: ^6.0.0
-  # build_runner pinned to 2.4.x — newer (2.10+) generates build scripts using
-  # Dart's "build hook" feature which `dart compile` does not support; the
-  # workaround `dart build` is incompatible with `flutter pub run build_runner`.
-  # Phase 4 revisits when ecosystem aligns. See 01-01-SUMMARY.md.
-  build_runner: ">=2.4.0 <2.5.0"
 
-  # riverpod_generator deferred — see deviation note in dependencies above.
+  # Codegen pipeline. drift_dev 2.31.x analyzer 8.1-10.x overlaps
+  # riverpod_generator 4.0.3 analyzer ^9 + freezed 3.2.5 analyzer 9-10.
+  build_runner: ^2.10.0
+  drift_dev: ^2.31.0
+  riverpod_generator: ^4.0.3
+  freezed: ^3.2.5
 
-  # Drift codegen — pinned to 2.28.1 (last version before drift_dev moved to
-  # build ^3, which requires build_runner 2.10+ which is incompatible with
-  # Dart 3.10.7's `dart compile` build-hook handling).
-  drift_dev: ">=2.28.0 <2.28.2"
+  # Typed asset references (Phase 2 will start using these for audio assets;
+  # installed in Phase 1 so the codegen pipeline is exercised).
+  flutter_gen_runner: ^5.14.1
 
-  # freezed deferred to Phase 4 — analyzer constraints conflict with drift_dev
-  # 2.31+. Phase 1 has no @freezed-annotated types.
-
-  # flutter_gen_runner deferred to Phase 2 — requires build_runner ^2.10
-  # which is incompatible with current Dart 3.10.7 (build hook + dart compile
-  # mismatch). Phase 2 has the first audio assets that benefit from typed refs.
-
-  # custom_lint + riverpod_lint deferred — analyzer-version conflict between
-  # custom_lint 0.8.1 (analyzer ^8) and drift_dev 2.32.1 (analyzer >=10 <13).
-  # Phase 4 revisits when versions align. Documented as deviation in
-  # 01-01-SUMMARY.md / 01-SUMMARY.md.
+  # Lints (D-07 / D-08).
+  # riverpod_lint 3.1.x is wired via analysis_options.yaml `plugins:` (uses
+  # analysis_server_plugin, NOT custom_lint). We DO NOT install custom_lint
+  # because custom_lint 0.8.1 requires analyzer ^8 which conflicts with
+  # riverpod_generator/freezed analyzer ^9 — riverpod_lint 3.1.x is the only
+  # one of the two we actually need for Phase 1.
+  riverpod_lint: ^3.1.3
 
 flutter:
   uses-material-design: true

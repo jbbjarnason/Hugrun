@@ -36,10 +36,11 @@ migrate_working_dir/
 # fvm cache directory (D-14)
 .fvm/
 
-# Generated Drift / Riverpod / freezed codegen output. Regenerated on every
-# `dart run build_runner build`. Phase 1 has nothing committed under lib/gen/
-# yet (placeholder .gitkeep only).
+# Generated Drift / Riverpod / freezed / flutter_gen codegen output.
+# Regenerated on every `dart run build_runner build`. Phase 1 has nothing
+# committed under lib/gen/ yet (placeholder .gitkeep only).
 **/*.g.dart
+**/*.gen.dart
 **/*.freezed.dart
 !lib/gen/audio_manifest.g.dart
 
