@@ -3,6 +3,10 @@
 // No C, Q, W, or Z. ASCII-safe slugs per CONTEXT D-03.
 //
 // Pure Dart — see Phase 1 D-08 / Phase 2 D-13 (no package:flutter imports).
+//
+// The 32 entries are grouped into 4 rows of 8 for diff legibility: any drift
+// shows as a single-row diff. test/core/alphabet/alphabet_test.dart enforces
+// the order, the slug map (D-03), uniqueness, and the slug regex.
 import 'icelandic_letter.dart';
 
 /// The canonical 32-letter Icelandic alphabet in MMS (Menntamálastofnun)
