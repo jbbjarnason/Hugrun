@@ -1,0 +1,21 @@
+# reviewed.yaml — reviewer sign-off log (D-17).
+#
+# Empty at Phase 3 plan 02; populated by tools/tts/review_server.py (Plan 05)
+# during Plan 07's review pass. Schema validated by
+# tools/tts/schema.validate_reviewed.
+#
+# Approved entry shape:
+#   <key>:
+#     reviewed: true
+#     reviewer: "Jon"
+#     timestamp: "2026-05-02T14:30:00Z"   # ISO 8601 UTC
+#     voice: "is_IS-steinn-medium"
+#     text_hash: "sha256:<hex>"
+#     notes: "OK"
+#
+# Re-record entry shape:
+#   <key>:
+#     reviewed: false
+#     issue: "ð sounds like d"
+version: 1
+entries: {}

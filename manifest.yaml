@@ -1,0 +1,322 @@
+# manifest.yaml — single source of truth for Phase 3 audio pipeline.
+#
+# Each entry produces one AAC file under assets/audio/ via tools/tts/bake_audio.py.
+# Schema validated by tools/tts/schema.validate_manifest (Plan 02).
+#
+# Voice: is_IS-steinn-medium (Piper migration 2026-05-02 — replaces Tiro Diljá v2
+# after Tiro service was found offline; see tools/tts/README.md).
+#
+# 65 entries: 32 letter_name + 32 example_word + 1 narration (D-26).
+# Phase 2 stub keys preserved (D-22): letterA, letterEth, letterThorn,
+# wordHundur, narrationWelcome.
+version: 1
+voice: is_IS-steinn-medium
+language: is-IS
+utterances:
+  # ===== 32 letter names (MMS alphabetical order — matches kIcelandicAlphabet) =====
+  - key: letterA
+    text: "a"
+    asset: assets/audio/letters/names/a.aac
+    kind: letter_name
+  - key: letterAAcute
+    text: "á"
+    asset: assets/audio/letters/names/a_acute.aac
+    kind: letter_name
+  - key: letterB
+    text: "bé"
+    asset: assets/audio/letters/names/b.aac
+    kind: letter_name
+  - key: letterD
+    text: "dé"
+    asset: assets/audio/letters/names/d.aac
+    kind: letter_name
+  - key: letterEth
+    text: "eð"
+    asset: assets/audio/letters/names/eth.aac
+    kind: letter_name
+    notes_for_reviewer: "Hot spot: ð voiced dental fricative — must NOT sound like 'd'."
+  - key: letterE
+    text: "e"
+    asset: assets/audio/letters/names/e.aac
+    kind: letter_name
+  - key: letterEAcute
+    text: "é"
+    asset: assets/audio/letters/names/e_acute.aac
+    kind: letter_name
+  - key: letterF
+    text: "eff"
+    asset: assets/audio/letters/names/f.aac
+    kind: letter_name
+  - key: letterG
+    text: "ge"
+    asset: assets/audio/letters/names/g.aac
+    kind: letter_name
+  - key: letterH
+    text: "há"
+    asset: assets/audio/letters/names/h.aac
+    kind: letter_name
+  - key: letterI
+    text: "i"
+    asset: assets/audio/letters/names/i.aac
+    kind: letter_name
+  - key: letterIAcute
+    text: "í"
+    asset: assets/audio/letters/names/i_acute.aac
+    kind: letter_name
+  - key: letterJ
+    text: "joð"
+    asset: assets/audio/letters/names/j.aac
+    kind: letter_name
+  - key: letterK
+    text: "ká"
+    asset: assets/audio/letters/names/k.aac
+    kind: letter_name
+  - key: letterL
+    text: "ell"
+    asset: assets/audio/letters/names/l.aac
+    kind: letter_name
+  - key: letterM
+    text: "emm"
+    asset: assets/audio/letters/names/m.aac
+    kind: letter_name
+  - key: letterN
+    text: "enn"
+    asset: assets/audio/letters/names/n.aac
+    kind: letter_name
+  - key: letterO
+    text: "o"
+    asset: assets/audio/letters/names/o.aac
+    kind: letter_name
+  - key: letterOAcute
+    text: "ó"
+    asset: assets/audio/letters/names/o_acute.aac
+    kind: letter_name
+  - key: letterP
+    text: "pé"
+    asset: assets/audio/letters/names/p.aac
+    kind: letter_name
+  - key: letterR
+    text: "err"
+    asset: assets/audio/letters/names/r.aac
+    kind: letter_name
+  - key: letterS
+    text: "ess"
+    asset: assets/audio/letters/names/s.aac
+    kind: letter_name
+  - key: letterT
+    text: "té"
+    asset: assets/audio/letters/names/t.aac
+    kind: letter_name
+  - key: letterU
+    text: "u"
+    asset: assets/audio/letters/names/u.aac
+    kind: letter_name
+  - key: letterUAcute
+    text: "ú"
+    asset: assets/audio/letters/names/u_acute.aac
+    kind: letter_name
+  - key: letterV
+    text: "vaff"
+    asset: assets/audio/letters/names/v.aac
+    kind: letter_name
+  - key: letterX
+    text: "ex"
+    asset: assets/audio/letters/names/x.aac
+    kind: letter_name
+    notes_for_reviewer: "x is rare in Icelandic; expect Steinn may render unevenly — flag for re-record if unclear."
+  - key: letterY
+    text: "y"
+    asset: assets/audio/letters/names/y.aac
+    kind: letter_name
+  - key: letterYAcute
+    text: "ý"
+    asset: assets/audio/letters/names/y_acute.aac
+    kind: letter_name
+  - key: letterThorn
+    text: "þorn"
+    asset: assets/audio/letters/names/thorn.aac
+    kind: letter_name
+    notes_for_reviewer: "Hot spot: þ voiceless dental fricative — must NOT sound like 't'."
+  - key: letterAe
+    text: "æ"
+    asset: assets/audio/letters/names/ae.aac
+    kind: letter_name
+    notes_for_reviewer: "Distinct from 'e'; review carefully."
+  - key: letterOumlaut
+    text: "ö"
+    asset: assets/audio/letters/names/o_umlaut.aac
+    kind: letter_name
+    notes_for_reviewer: "Distinct from 'o'."
+
+  # ===== 32 example words (one per letter; MMS order) =====
+  - key: wordA
+    text: "api"
+    asset: assets/audio/letters/words/api.aac
+    kind: example_word
+    starts_with: a
+  - key: wordAAcute
+    text: "ár"
+    asset: assets/audio/letters/words/ar.aac
+    kind: example_word
+    starts_with: á
+  - key: wordB
+    text: "bók"
+    asset: assets/audio/letters/words/bok.aac
+    kind: example_word
+    starts_with: b
+  - key: wordD
+    text: "dúkka"
+    asset: assets/audio/letters/words/dukka.aac
+    kind: example_word
+    starts_with: d
+  - key: wordEth
+    text: "maður"
+    asset: assets/audio/letters/words/madur.aac
+    kind: example_word
+    starts_with: ð
+    notes_for_reviewer: "ð is rare word-initially in Icelandic; using a word with medial ð (maður) per planning context."
+  - key: wordE
+    text: "epli"
+    asset: assets/audio/letters/words/epli.aac
+    kind: example_word
+    starts_with: e
+  - key: wordEAcute
+    text: "él"
+    asset: assets/audio/letters/words/el.aac
+    kind: example_word
+    starts_with: é
+  - key: wordF
+    text: "fiskur"
+    asset: assets/audio/letters/words/fiskur.aac
+    kind: example_word
+    starts_with: f
+  - key: wordG
+    text: "gata"
+    asset: assets/audio/letters/words/gata.aac
+    kind: example_word
+    starts_with: g
+  - key: wordHundur
+    text: "hundur"
+    asset: assets/audio/letters/words/hundur.aac
+    kind: example_word
+    starts_with: h
+    notes_for_reviewer: "Phase 2 stub key (D-22). Doubles as the example word for letter h — wordHundur IS wordH."
+  - key: wordI
+    text: "ilmur"
+    asset: assets/audio/letters/words/ilmur.aac
+    kind: example_word
+    starts_with: i
+    notes_for_reviewer: "ilmur = scent. Plain-i word avoiding the í-vs-i collision."
+  - key: wordIAcute
+    text: "íþrótt"
+    asset: assets/audio/letters/words/ithrott.aac
+    kind: example_word
+    starts_with: í
+  - key: wordJ
+    text: "jól"
+    asset: assets/audio/letters/words/jol.aac
+    kind: example_word
+    starts_with: j
+  - key: wordK
+    text: "kýr"
+    asset: assets/audio/letters/words/kyr.aac
+    kind: example_word
+    starts_with: k
+  - key: wordL
+    text: "lampi"
+    asset: assets/audio/letters/words/lampi.aac
+    kind: example_word
+    starts_with: l
+  - key: wordM
+    text: "mús"
+    asset: assets/audio/letters/words/mus.aac
+    kind: example_word
+    starts_with: m
+  - key: wordN
+    text: "nef"
+    asset: assets/audio/letters/words/nef.aac
+    kind: example_word
+    starts_with: n
+  - key: wordO
+    text: "ostur"
+    asset: assets/audio/letters/words/ostur.aac
+    kind: example_word
+    starts_with: o
+  - key: wordOAcute
+    text: "ólafur"
+    asset: assets/audio/letters/words/olafur.aac
+    kind: example_word
+    starts_with: ó
+  - key: wordP
+    text: "pera"
+    asset: assets/audio/letters/words/pera.aac
+    kind: example_word
+    starts_with: p
+  - key: wordR
+    text: "rós"
+    asset: assets/audio/letters/words/ros.aac
+    kind: example_word
+    starts_with: r
+  - key: wordS
+    text: "sól"
+    asset: assets/audio/letters/words/sol.aac
+    kind: example_word
+    starts_with: s
+  - key: wordT
+    text: "tönn"
+    asset: assets/audio/letters/words/tonn.aac
+    kind: example_word
+    starts_with: t
+  - key: wordU
+    text: "uggi"
+    asset: assets/audio/letters/words/uggi.aac
+    kind: example_word
+    starts_with: u
+  - key: wordUAcute
+    text: "úr"
+    asset: assets/audio/letters/words/ur.aac
+    kind: example_word
+    starts_with: ú
+  - key: wordV
+    text: "vatn"
+    asset: assets/audio/letters/words/vatn.aac
+    kind: example_word
+    starts_with: v
+  - key: wordX
+    text: "xýlófónn"
+    asset: assets/audio/letters/words/xylofonn.aac
+    kind: example_word
+    starts_with: x
+    notes_for_reviewer: "x is rare word-initially in Icelandic; expect Steinn to mispronounce — likely needs override."
+  - key: wordY
+    text: "ylur"
+    asset: assets/audio/letters/words/ylur.aac
+    kind: example_word
+    starts_with: y
+  - key: wordYAcute
+    text: "ýta"
+    asset: assets/audio/letters/words/yta.aac
+    kind: example_word
+    starts_with: ý
+  - key: wordThorn
+    text: "þrír"
+    asset: assets/audio/letters/words/thrir.aac
+    kind: example_word
+    starts_with: þ
+  - key: wordAe
+    text: "æða"
+    asset: assets/audio/letters/words/aeda.aac
+    kind: example_word
+    starts_with: æ
+  - key: wordOumlaut
+    text: "öxl"
+    asset: assets/audio/letters/words/oxl.aac
+    kind: example_word
+    starts_with: ö
+
+  # ===== 1 welcome narration =====
+  - key: narrationWelcome
+    text: "Halló Hugrún. Veldu stafi eða tölur."
+    asset: assets/audio/narration/welcome_hugrun.aac
+    kind: narration
+    notes_for_reviewer: "Hot spot — pronunciation of 'Hugrún' (proper noun). Review carefully."

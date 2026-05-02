@@ -1,0 +1,13 @@
+# pronunciation_overrides.yaml — per-utterance pronunciation overrides for Piper.
+#
+# Empty at Phase 3 plan 02; entries added during Plan 07's review pass when Jon
+# finds a mispronunciation. Schema validated by tools/tts/schema.validate_overrides.
+#
+# Override fields (D-13 — Piper-flavored):
+#   text          — substitute the synthesis text (e.g. "hund-ur" instead of "hundur")
+#   phonemes      — eSpeak-style phoneme markup (mutually exclusive with text)
+#   length_scale  — Piper --length-scale flag (1.0 = normal; >1 slower)
+#   noise_scale   — Piper --noise-scale flag
+#   ssml          — historical / Tiro compatibility (ignored by Piper client)
+version: 1
+overrides: {}
