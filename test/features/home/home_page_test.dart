@@ -15,7 +15,9 @@ void main() {
     expect(find.byType(Scaffold), findsWidgets);
   });
 
-  testWidgets('HugrunApp title is "Hugrún" with Icelandic locale', (tester) async {
+  testWidgets('HugrunApp title is "Hugrún" with Icelandic locale', (
+    tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: HugrunApp()));
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.title, 'Hugrún');

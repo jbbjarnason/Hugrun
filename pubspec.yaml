@@ -40,8 +40,8 @@ dependencies:
   # drift_flutter pinned to 0.2.8 (forced) — 0.3.0 requires sqlite3 ^3.0.0 which
   # forces drift_dev to analyzer ^10, incompatible with Flutter 3.38.7 SDK's
   # bundled test_api 0.7.7 / meta 1.17.0. Phase 4 revisits when SDK aligns.
-  drift: ^2.31.0
-  drift_flutter: ^0.2.8
+  drift: ">=2.28.0 <2.29.0"
+  drift_flutter: ^0.2.7
   path_provider: ^2.1.5
 
   # Audio
@@ -59,19 +59,25 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-  # build_runner — pinned for compatibility with Flutter 3.38.7 SDK
-  build_runner: ^2.10.4
+  # build_runner pinned to 2.4.x — newer (2.10+) generates build scripts using
+  # Dart's "build hook" feature which `dart compile` does not support; the
+  # workaround `dart build` is incompatible with `flutter pub run build_runner`.
+  # Phase 4 revisits when ecosystem aligns. See 01-01-SUMMARY.md.
+  build_runner: ">=2.4.0 <2.5.0"
 
   # riverpod_generator deferred — see deviation note in dependencies above.
 
-  # Drift codegen pinned to 2.31.x (matches drift runtime; analyzer 8.1-10)
-  drift_dev: ^2.31.0
+  # Drift codegen — pinned to 2.28.1 (last version before drift_dev moved to
+  # build ^3, which requires build_runner 2.10+ which is incompatible with
+  # Dart 3.10.7's `dart compile` build-hook handling).
+  drift_dev: ">=2.28.0 <2.28.2"
 
   # freezed deferred to Phase 4 — analyzer constraints conflict with drift_dev
   # 2.31+. Phase 1 has no @freezed-annotated types.
 
-  # type-safe asset references
-  flutter_gen_runner: ^5.14.1
+  # flutter_gen_runner deferred to Phase 2 — requires build_runner ^2.10
+  # which is incompatible with current Dart 3.10.7 (build hook + dart compile
+  # mismatch). Phase 2 has the first audio assets that benefit from typed refs.
 
   # custom_lint + riverpod_lint deferred — analyzer-version conflict between
   # custom_lint 0.8.1 (analyzer ^8) and drift_dev 2.32.1 (analyzer >=10 <13).
