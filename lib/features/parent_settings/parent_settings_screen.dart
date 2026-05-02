@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/db/database_provider.dart';
 import 'child_name_provider.dart';
+import 'photo_upload/photo_upload_screen.dart';
 
 /// Phase 4 D-17 / D-20 / PERS-01 + PERS-02. Replaces the Phase 1 stub.
 ///
@@ -102,6 +103,20 @@ class _ParentSettingsScreenState extends ConsumerState<ParentSettingsScreen> {
                 ParentSettingsStrings.savedConfirmation,
                 key: Key('parent-settings-saved-confirm'),
               ),
+            const SizedBox(height: 32),
+            // Phase 10 D-08: Myndir entry — opens PhotoUploadScreen.
+            FilledButton.tonalIcon(
+              key: const Key('parent-settings-myndir'),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const PhotoUploadScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.photo_library),
+              label: const Text(ParentSettingsStrings.photosButton),
+            ),
           ],
         ),
       ),
@@ -131,4 +146,6 @@ abstract class ParentSettingsStrings {
   static const String savedConfirmation = 'Vistað ✓';
   static const String errorEmpty = 'Nafnið má ekki vera tómt';
   static const String errorTooLong = 'Nafn má ekki vera lengra en 32 stafir';
+  // Phase 10 D-08
+  static const String photosButton = 'Myndir';
 }

@@ -117,9 +117,15 @@ void main() {
         // LexiconPicker should now be visible.
         expect(find.text('Veldu orð'), findsOneWidget);
 
-        // Tap "hundur".
-        await tester.ensureVisible(find.text('hundur'));
-        await tester.tap(find.text('hundur'));
+        // Tap "hundur" — scroll the alphabetical list until it's in view
+        // (kStarterLexicon has ≥30 entries; "hundur" can be below the fold).
+        final hundurFinder = find.text('hundur');
+        await tester.scrollUntilVisible(
+          hundurFinder,
+          200.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(hundurFinder);
         await tester.pumpAndSettle();
 
         expect(repo.addCalls, hasLength(1));
