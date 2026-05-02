@@ -90,10 +90,23 @@ def test_check_sync_renders_dart(tmp_path, monkeypatch):
 
 
 def test_pipeline_with_mocked_client(tmp_path, monkeypatch):
-    """Smoke test: run_pipeline with a mocked PiperClient + Normalizer."""
+    """Smoke test: run_pipeline with a mocked PiperClient + Normalizer.
+
+    Phase 13.1 (Rule 1 fix): the mocked fake_norm previously wrote a
+    `b"AAC\\x00"` placeholder to its `target` Path argument. Combined with
+    `monkeypatch.chdir(REPO_ROOT)` and the manifest's relative
+    `assets/audio/...` paths, that destroyed the real baked AAC files
+    every time the test ran. The fix: monkeypatch.chdir into tmp_path so
+    relative-asset writes land in the tmp tree, never touching the
+    real repo assets.
+    """
     from tools.tts.bake_audio import run_pipeline
 
-    monkeypatch.chdir(REPO_ROOT)
+    # Run from a tmp tree so relative `assets/audio/...` paths resolved
+    # by run_pipeline land in tmp_path, not the real repo. We still need
+    # to read manifest.yaml / pronunciation_overrides.yaml / reviewed.yaml
+    # from the repo root, so we pass absolute paths for those.
+    monkeypatch.chdir(tmp_path)
 
     fake_client = mock.MagicMock()
     fake_normalizer = mock.MagicMock()
@@ -110,6 +123,13 @@ def test_pipeline_with_mocked_client(tmp_path, monkeypatch):
         )
 
     def fake_norm(raw, target):
+        # Belt-and-braces: even with chdir(tmp_path), refuse to write
+        # under the real repo's assets tree if `target` is somehow
+        # absolute. This guards against future regressions where a test
+        # forgets to chdir.
+        target = Path(target)
+        if target.is_absolute() and str(target).startswith(str(REPO_ROOT)):
+            target = tmp_path / target.relative_to(REPO_ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(b"AAC\x00")
         return mock.MagicMock(
@@ -152,11 +172,17 @@ def test_pipeline_with_mocked_client(tmp_path, monkeypatch):
 
 
 def test_pipeline_per_utterance_atomicity(tmp_path, monkeypatch):
-    """One utterance failure does NOT abort the whole run (D-03)."""
+    """One utterance failure does NOT abort the whole run (D-03).
+
+    Phase 13.1 (Rule 1 fix): same destructive-fake_norm bug as
+    test_pipeline_with_mocked_client. Switch chdir to tmp_path so the
+    fake's `target.write_bytes(b"AAC\\x00")` lands in the tmp tree
+    rather than overwriting the real repo's assets/audio/ tree.
+    """
     from tools.tts.bake_audio import run_pipeline
     from tools.tts.piper_client import PiperError
 
-    monkeypatch.chdir(REPO_ROOT)
+    monkeypatch.chdir(tmp_path)
 
     fake_client = mock.MagicMock()
     fake_normalizer = mock.MagicMock()
@@ -175,6 +201,9 @@ def test_pipeline_per_utterance_atomicity(tmp_path, monkeypatch):
         )
 
     def fake_norm(raw, target):
+        target = Path(target)
+        if target.is_absolute() and str(target).startswith(str(REPO_ROOT)):
+            target = tmp_path / target.relative_to(REPO_ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(b"AAC\x00")
         return mock.MagicMock(
