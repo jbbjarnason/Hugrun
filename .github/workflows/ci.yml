@@ -49,6 +49,12 @@ jobs:
       - name: tools/check-no-tracking_test.sh (self-test)
         run: bash tools/check-no-tracking_test.sh
 
+      - name: tools/check-asset-paths.sh
+        run: bash tools/check-asset-paths.sh
+
+      - name: tools/check-asset-paths_test.sh (self-test)
+        run: bash tools/check-asset-paths_test.sh
+
       - name: tools/check-domain-purity.sh
         run: bash tools/check-domain-purity.sh
 
