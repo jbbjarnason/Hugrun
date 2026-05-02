@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/core/db/database.dart';
-import 'package:hugrun/core/lexicon/gender.dart';
 import 'package:hugrun/core/lexicon/lexicon_entry.dart';
 import 'package:hugrun/features/parent_settings/photo_upload/photo_picker.dart';
 import 'package:hugrun/features/parent_settings/photo_upload/photo_upload_providers.dart';
