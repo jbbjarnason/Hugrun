@@ -1,14 +1,17 @@
-// Phase 8 Plan 08-04 Workstream E — end-to-end integration test for the
-// Tölur flow.
+// Phase 8 Plan 08-04 / Phase 9 Plan 09-04 — end-to-end integration test
+// for the Tölur flow.
 //
 // Walks through the full child experience under a real platform binding:
 //   1. Boot HugrunApp under ProviderScope with FakeAudioEngine + a stub
 //      sequencing generator (deterministic Sort round 1..5).
 //   2. Tap into Tölur from home.
 //   3. Tap a digit — masculine audio dispatches.
-//   4. Hold the TolurModeToggle for 3+s — mode swaps to Sequence.
-//   5. Drive a round-complete via the public test hook
-//      debugCompleteRound — celebration appears, auto-advance.
+//   4. Hold the TolurModeToggle for 3+s — mode swaps to Activity (Phase 9
+//      D-15: 2-mode shape; Activity renders the ActivityRotator).
+//   5. Confirm one of the 4 numeracy activities is mounted under the
+//      rotator. Drive a sequence round-complete via the public test hook
+//      if Sequencing happens to be the rotated activity; otherwise just
+//      assert the rotator is present.
 //   6. Hold toggle 3+s — back to TapToHear mode.
 //
 // Asserts no exceptions, no Timer leaks. Drag-and-drop gestures across
@@ -30,6 +33,7 @@ import 'package:hugrun/core/db/database_provider.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 import 'package:hugrun/core/numbers/sequencing_round.dart';
 import 'package:hugrun/features/stafir/matching/matching_celebration.dart';
+import 'package:hugrun/features/tolur/activity_rotator.dart';
 import 'package:hugrun/features/tolur/sequencing/sequencing_activity.dart';
 import 'package:hugrun/features/tolur/sequencing/sequencing_providers.dart';
 import 'package:hugrun/features/tolur/tolur_room.dart';
@@ -109,32 +113,35 @@ void main() {
       await tester.pump(const Duration(milliseconds: 3200));
       await gesture.up();
       await tester.pumpAndSettle();
-      expect(find.byType(SequencingActivity), findsOneWidget);
+      // Phase 9 D-15: Activity mode renders an ActivityRotator that picks
+      // one of 4 numeracy activities at random.
+      expect(find.byType(ActivityRotator), findsOneWidget);
       expect(find.byType(NumberGrid), findsNothing);
 
-      // -- Step 5: drive round-complete via debug hook (DragTarget gestures
-      // are flaky in widget-test mode; the integration_test variant simply
-      // exercises the same hook end-to-end against a real binding).
-      final state = tester.state<SequencingActivityState>(
-        find.byType(SequencingActivity),
-      );
-      state.debugCompleteRound();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-      expect(
-        find.byKey(const Key('matching-celebration-active')),
-        findsOneWidget,
-      );
+      // -- Step 5: if the rotator chose Sequencing, exercise its debug hook
+      // end-to-end. Otherwise just confirm the rotator is mounted (the
+      // dedicated activity_rotator_test exercises the rotation invariants
+      // deterministically).
+      if (find.byType(SequencingActivity).evaluate().isNotEmpty) {
+        final state = tester.state<SequencingActivityState>(
+          find.byType(SequencingActivity),
+        );
+        state.debugCompleteRound();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(
+          find.byKey(const Key('matching-celebration-active')),
+          findsOneWidget,
+        );
 
-      // -- Auto-advance.
-      await tester.pump(MatchingCelebration.duration);
-      await tester.pump();
-      expect(
-        find.byKey(const Key('matching-celebration-active')),
-        findsNothing,
-      );
-      // Still in sequence mode; SequencingActivity remains mounted.
-      expect(find.byType(SequencingActivity), findsOneWidget);
+        // -- Auto-advance.
+        await tester.pump(MatchingCelebration.duration);
+        await tester.pump();
+        expect(
+          find.byKey(const Key('matching-celebration-active')),
+          findsNothing,
+        );
+      }
 
       // -- Step 6: toggle back to TapToHear.
       gesture = await tester.startGesture(tester.getCenter(toggleFinder));
@@ -142,7 +149,7 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
       expect(find.byType(NumberGrid), findsOneWidget);
-      expect(find.byType(SequencingActivity), findsNothing);
+      expect(find.byType(ActivityRotator), findsNothing);
 
       // No exceptions throughout the flow.
       expect(tester.takeException(), isNull);
