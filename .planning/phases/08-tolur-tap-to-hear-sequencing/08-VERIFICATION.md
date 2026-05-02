@@ -2,6 +2,9 @@
 phase: 08
 status: human_needed
 date: 2026-05-02
+phase13_update: 2026-05-02
+pronunciation_review: pending
+technical_review: passed
 ---
 
 # Phase 8 Verification
@@ -9,12 +12,25 @@ date: 2026-05-02
 ## Status: `human_needed`
 
 The 18 new numeral AAC clips need a native-Icelandic-speaker review pass
-before they can be wired into `kAudioManifest` and played back to
-Hugrún.
+before they can be CERTIFIED for pronunciation correctness.
 
-## What's blocking
+**Phase 13 update (2026-05-02):** the Phase 13 technical review pass
+auto-marked all 18 numeral clips as `technically_reviewed: true` and
+regenerated `lib/gen/audio_manifest.g.dart` with all 118 entries. Tölur
+tap-to-hear NOW PRODUCES AUDIO at runtime — the silent-fallback path
+(Phase 4 D-22, D-23) is no longer taken for the numeral keys. The Dart
+manifest carries `// PRONUNCIATION REVIEW PENDING` markers per entry
+until the native-speaker pass runs.
 
-`reviewed.yaml` has no entries for the 18 keys:
+## What's blocking (NUM-02 native-speaker pronunciation certification only)
+
+After Phase 13: the 18 numeral keys ARE present in `kAudioManifest` and
+the app DOES produce numeral audio at runtime. What remains is the
+native-speaker pronunciation certification (`reviewed: true` with the
+full reviewer + timestamp + voice + text_hash audit trail).
+
+`reviewed.yaml` currently has `technically_reviewed: true` (Phase 13
+soft gate) for all 18 keys, but no `reviewed: true` entries:
 
 - `numberOneMasc`, `numberTwoMasc`, `numberThreeMasc`, `numberFourMasc`
 - `numberOneFem`, `numberTwoFem`, `numberThreeFem`, `numberFourFem`
@@ -22,23 +38,29 @@ Hugrún.
 - `numberFive`, `numberSix`, `numberSeven`, `numberEight`,
   `numberNine`, `numberTen`
 
-Until they are reviewed, `tools/tts/bake_audio.py` blocks Dart manifest
-emission (the D-19 review gate, same posture as Phase 3 and Phase 6).
+Until they are natively reviewed, `tools/tts/bake_audio.py` (the strict
+gate path) blocks the Dart manifest emission. Phase 13's
+`tools/tts/regenerate_manifest.py` uses the soft gate
+(`allow_technically_reviewed=True`) and produces the runtime-playable
+manifest with PRONUNCIATION PENDING markers — that is the file
+currently committed at `lib/gen/audio_manifest.g.dart`.
 
 ## What's not blocking
 
 All Phase 8 code is **functionally and structurally complete**:
 
-- 348 tests pass (`flutter test`).
+- 455 tests pass (`flutter test`) — was 348 at Phase 8 close;
+  Phase 9, 10, 13 added more tests on top.
 - `flutter analyze` clean (modulo known riverpod_lint warnings on test
   files, same family Phase 5/6/7 documented).
 - `flutter build apk --debug` succeeds.
 - `tools/check-domain-purity.sh`, `tools/check-asset-paths.sh`, and
   `tools/check-no-tracking.sh` all pass.
 - Tap-to-hear surface dispatches `numberAudioKey(value, masculine)`
-  to AudioEngine for digits 1..10. The play call hits the
-  silent-fallback path (Phase 4 D-22, D-23) until the manifest
-  regenerates.
+  to AudioEngine for digits 1..10. **Post Phase 13**, the play call
+  resolves to a real AAC clip (the silent-fallback path is no longer
+  taken). Pronunciation correctness still subject to the native-
+  speaker pass below.
 - Sequencing activity renders correctly + accepts correct drops +
   rejects wrong drops silently + celebrates on completion +
   auto-advances.
