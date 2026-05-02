@@ -65,6 +65,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The pipeline rejects the asset bundle (non-zero exit) if any clip lacks a `reviewed: true` flag or if any clip deviates more than ±0.5 LU from the -19 LUFS target after normalization
   3. A review UI (HTML page or Flutter screen) plays each clip alongside its label and lets a native-speaker reviewer mark each entry reviewed; reviewer sign-off persists into the manifest
   4. Tiro TTS auth, voice ID strings (Diljá v2), and rate limits are verified via live curl call and documented in `tools/tts/README.md`
+**Plans**: 7 plans
+- [ ] 03-01-PLAN-tooling-and-tiro-spike.md — ffmpeg + ffmpeg-normalize install, Python deps, Tiro TTS verification spike (D-06, D-28, D-29) with human-verify checkpoint on Tiro reachability + Diljá v2 sanity check
+- [ ] 03-02-PLAN-manifest-yaml-and-overrides.md — manifest.yaml (65 entries: 32 letter_name + 32 example_word + welcome) + pronunciation_overrides.yaml (empty) + reviewed.yaml (empty) + tools/tts/schema.py validators (D-04, D-13, D-17, D-22)
+- [ ] 03-03-PLAN-tiro-client-and-normalize.md — TDD: tools/tts/tiro_client.py (rate limit, retry, override priority, caching) + tools/tts/normalize.py (ffmpeg-normalize wrapper, ±0.5 LU reject, silence pad, AAC-LC mono 96k 48k)
+- [ ] 03-04-PLAN-bake-and-manifest-writer.md — tools/tts/bake_audio.py orchestrator (plan/generate/normalize/review-gate/manifest stages, per-utterance atomic) + tools/tts/manifest_writer.py (Jinja2 → audio_manifest.g.dart + utterance_key.dart, D-22 backward compat)
+- [ ] 03-05-PLAN-review-ui.md — tools/tts/review_server.py (stdlib http.server, 127.0.0.1:8765, Approve / Re-record / Bulk-approve, atomic YAML writes) + HTML/CSS/JS templates
+- [ ] 03-06-PLAN-ci-manifest-sync-guard.md — tools/check-manifest-sync.sh + self-test wired into analyze-and-test job (D-23, D-24); has Phase-3-not-yet-baked carve-out
+- [ ] 03-07-PLAN-bake-and-review-pass.md — Run pipeline end-to-end against live Tiro → 65 AAC clips → review pass (HUMAN-VERIFY checkpoint) → regenerate audio_manifest.g.dart + utterance_key.dart with all 65 entries → atomic ship commit
 
 ### Phase 4: Stafir Tap-to-Hear MVP
 **Goal**: Hugrún can pick up the tablet, open Stafir, and tap any of the 32 letters to hear the letter name followed by an example word and see the matching image — at sub-50ms perceived latency, with no fail states, no scores, no text, and no audio overlap. Parent can enter Hugrún's name in settings and the app uses it in at least one voice-over. **This is the MVP "playable" milestone.**
@@ -151,7 +159,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (MVP) → 5 → 6 → 7 →
 |-------|----------------|--------|-----------|
 | 1. Skeleton & Drift Schema | 0/5 | Planned | - |
 | 2. Alphabet, Asset Conventions & Manifest Stub | 0/3 | Planned | - |
-| 3. TTS Pipeline & Audio Review Tooling | 0/TBD | Not started | - |
+| 3. TTS Pipeline & Audio Review Tooling | 0/7 | Planned | - |
 | 4. Stafir Tap-to-Hear MVP | 0/TBD | Not started | - |
 | 5. Letter-to-Word Matching | 0/TBD | Not started | - |
 | 6. CVC Blending & Phoneme Audio Set | 0/TBD | Not started | - |
