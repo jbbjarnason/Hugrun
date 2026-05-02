@@ -51,6 +51,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A `kIcelandicAlphabet` constant exists with all 32 letters in MMS school order (a á b d ð e é f g h i í j k l m n o ó p r s t u ú v x y ý þ æ ö); a unit test asserts the exact order and the absence of C/Q/W/Z
   2. A generated asset manifest enforces lowercase ASCII-safe paths (e.g. `eth.aac` for ð, `ae.aac` for æ); a CI check fails the build on any non-ASCII or uppercase asset filename
   3. `lib/gen/audio_manifest.g.dart` is committed to git with at least 3 placeholder entries (e.g. `letterA`, `letterH`, `wordHundur`) and matching placeholder AAC files in `assets/audio/`, so Flutter widget code can compile and reference real `UtteranceKey`s before the Python pipeline exists
+**Plans**: 3 plans
+- [ ] 02-01-PLAN-alphabet.md — IcelandicLetter freezed model + kIcelandicAlphabet (32 letters MMS order) + D-04 exhaustive tests + lib/core/alphabet domain-purity wiring (TDD RED→GREEN→REFACTOR)
+- [ ] 02-02-PLAN-manifest-stub.md — assets/ folder skeleton (D-05) + 5 placeholder AAC clips + UtteranceKey enum + AudioAsset + hand-written lib/gen/audio_manifest.g.dart + D-11 tests
+- [ ] 02-03-PLAN-asset-paths-guard.md — tools/check-asset-paths.sh (D-06) + self-test with bad/good fixtures (D-07) + CI wiring into analyze-and-test (D-14, D-15)
 
 ### Phase 3: TTS Pipeline & Audio Review Tooling
 **Goal**: A reproducible Python pipeline that turns `manifest.yaml` into 100% native-speaker-reviewed, loudness-normalized AAC clips and a regenerated `audio_manifest.g.dart`, with `pronunciation_overrides.yaml` available from day one and a review UI that gates final asset bundling on entry-by-entry reviewer sign-off.
@@ -146,7 +150,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (MVP) → 5 → 6 → 7 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Skeleton & Drift Schema | 0/5 | Planned | - |
-| 2. Alphabet, Asset Conventions & Manifest Stub | 0/TBD | Not started | - |
+| 2. Alphabet, Asset Conventions & Manifest Stub | 0/3 | Planned | - |
 | 3. TTS Pipeline & Audio Review Tooling | 0/TBD | Not started | - |
 | 4. Stafir Tap-to-Hear MVP | 0/TBD | Not started | - |
 | 5. Letter-to-Word Matching | 0/TBD | Not started | - |
