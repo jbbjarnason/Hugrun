@@ -91,22 +91,16 @@ class _StafirModeToggleState extends State<StafirModeToggle>
 
   @override
   Widget build(BuildContext context) {
-    // Phase 6 D-15 + Phase 7 D-15: 4 distinct icons, one per mode.
-    //  letters → image_outlined  (the alphabet grid)
-    //  match   → grid_view_outlined  (the matching round options)
-    //  cvc     → spellcheck         (blending letters into a word)
-    //  trace   → edit              (a pencil — drawing/tracing a letter)
-    final IconData iconData;
-    switch (widget.currentMode) {
-      case StafirMode.letters:
-        iconData = Icons.image_outlined;
-      case StafirMode.match:
-        iconData = Icons.grid_view_outlined;
-      case StafirMode.cvc:
-        iconData = Icons.spellcheck;
-      case StafirMode.trace:
-        iconData = Icons.edit;
-    }
+    // Phase 12 UI-02 — ONE consistent icon across every mode.
+    // The toggle is a "tap-and-hold to cycle" affordance, NOT a
+    // "current mode badge". Icons.swap_horiz reads as "swap to
+    // the next thing" without requiring literacy.
+    //
+    // Previous (Phase 6/7) per-mode icon mapping is dropped; the
+    // hold-ring (which fills during the 3s hold gesture) is the
+    // sole visual hint that something happens on hold. The
+    // `currentMode` field is kept on the widget for API
+    // compatibility (callers pass it) but no longer drives the icon.
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (_) => _start(),
@@ -118,7 +112,11 @@ class _StafirModeToggleState extends State<StafirModeToggle>
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Icon(iconData, size: 28, color: const Color(0xFF555555)),
+            const Icon(
+              Icons.swap_horiz,
+              size: 28,
+              color: Color(0xFF555555),
+            ),
             if (_holding)
               Positioned.fill(
                 child: IgnorePointer(

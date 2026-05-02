@@ -90,16 +90,11 @@ class _TolurModeToggleState extends State<TolurModeToggle>
 
   @override
   Widget build(BuildContext context) {
-    // D-15: 2 distinct icons.
-    //  tapToHear → image_outlined        (the digit grid)
-    //  activity  → category_outlined     (mixed-activity rotation)
-    final IconData iconData;
-    switch (widget.currentMode) {
-      case TolurMode.tapToHear:
-        iconData = Icons.image_outlined;
-      case TolurMode.activity:
-        iconData = Icons.category_outlined;
-    }
+    // Phase 12 UI-02 — mirror StafirModeToggle: ONE consistent icon
+    // across both modes (Icons.swap_horiz). The hold-ring is the
+    // affordance hint for "tap-and-hold to cycle"; the icon itself
+    // is invariant. The `currentMode` field is preserved on the
+    // widget for API compatibility but no longer drives the icon.
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (_) => _start(),
@@ -111,7 +106,11 @@ class _TolurModeToggleState extends State<TolurModeToggle>
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Icon(iconData, size: 28, color: const Color(0xFF555555)),
+            const Icon(
+              Icons.swap_horiz,
+              size: 28,
+              color: Color(0xFF555555),
+            ),
             if (_holding)
               Positioned.fill(
                 child: IgnorePointer(
