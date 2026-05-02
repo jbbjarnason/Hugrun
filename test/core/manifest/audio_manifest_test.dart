@@ -10,7 +10,6 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugrun/core/manifest/audio_asset.dart';
 import 'package:hugrun/core/manifest/utterance_key.dart';
 import 'package:hugrun/gen/audio_manifest.g.dart';
 
@@ -34,16 +33,13 @@ void main() {
     });
 
     test('contains exactly the 5 D-08 entries', () {
-      expect(
-        UtteranceKey.values.toSet(),
-        {
-          UtteranceKey.letterA,
-          UtteranceKey.letterEth,
-          UtteranceKey.letterThorn,
-          UtteranceKey.wordHundur,
-          UtteranceKey.narrationWelcome,
-        },
-      );
+      expect(UtteranceKey.values.toSet(), {
+        UtteranceKey.letterA,
+        UtteranceKey.letterEth,
+        UtteranceKey.letterThorn,
+        UtteranceKey.wordHundur,
+        UtteranceKey.narrationWelcome,
+      });
     });
   });
 
@@ -79,8 +75,11 @@ void main() {
         );
         expect(path.contains('..'), isFalse, reason: '$path contains ".."');
         expect(path.contains('//'), isFalse, reason: '$path contains "//"');
-        expect(path.startsWith('/'), isFalse,
-            reason: '$path is absolute, expected project-relative');
+        expect(
+          path.startsWith('/'),
+          isFalse,
+          reason: '$path is absolute, expected project-relative',
+        );
       }
     });
 
@@ -88,8 +87,11 @@ void main() {
       for (final entry in kExpectedPaths.entries) {
         final asset = kAudioManifest[entry.key];
         expect(asset, isNotNull, reason: 'Missing entry for ${entry.key}');
-        expect(asset!.path, entry.value,
-            reason: 'Path mismatch for ${entry.key}');
+        expect(
+          asset!.path,
+          entry.value,
+          reason: 'Path mismatch for ${entry.key}',
+        );
       }
     });
   });
