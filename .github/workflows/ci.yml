@@ -55,6 +55,20 @@ jobs:
       - name: tools/check-asset-paths_test.sh (self-test)
         run: bash tools/check-asset-paths_test.sh
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps for TTS pipeline guards
+        run: |
+          pip install -r tools/tts/requirements.txt
+
+      - name: tools/check-manifest-sync.sh
+        run: bash tools/check-manifest-sync.sh
+
+      - name: tools/check-manifest-sync_test.sh (self-test)
+        run: bash tools/check-manifest-sync_test.sh
+
       - name: tools/check-domain-purity.sh
         run: bash tools/check-domain-purity.sh
 
