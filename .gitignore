@@ -54,3 +54,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local screenshot tour artifacts (one-off observation runs).
+/screenshots/
+
+# Spectral / acoustic review outputs (regenerable via tools/audio_review/*.py).
+# Scripts and REVIEW.md are committed; PNG / JSON outputs and the venv are not.
+/audio-review/*
+!/audio-review/REVIEW.md
+/tools/audio_review/.venv/

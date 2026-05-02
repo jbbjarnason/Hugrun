@@ -1,0 +1,11 @@
+# Spectral / acoustic review of baked AAC clips.
+# Independent venv from tools/tts/ to avoid conflicts.
+# Install:
+#   python3 -m venv tools/audio_review/.venv
+#   source tools/audio_review/.venv/bin/activate
+#   pip install -r tools/audio_review/requirements.txt
+librosa>=0.10
+numpy>=1.26
+matplotlib>=3.8
+soundfile>=0.12
+pyyaml>=6.0
