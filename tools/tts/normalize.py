@@ -1,7 +1,10 @@
 """tools/tts/normalize.py — Plan 03 audio normalization wrapper.
 
 Wraps `ffmpeg-normalize` + `ffmpeg` + `ffprobe` to:
-  1. Normalize a raw WAV to -19 LUFS / -1 dBTP via EBU R128 (D-09).
+  0. Trim Piper's leading/trailing silence with `silenceremove` (Phase 13.1
+     fix — Piper output frequently carries 70-1140 ms of leading silence
+     that previously survived all the way to the baked AAC).
+  1. Normalize a trimmed WAV to -19 LUFS / -1 dBTP via EBU R128 (D-09).
   2. Encode AAC-LC mono 96 kbps 48 kHz M4A (D-12).
   3. Pad with 30 ms leading silence (D-10).
   4. Re-measure with ebur128; reject ±0.5 LU drift (D-11).
@@ -51,6 +54,15 @@ class Normalizer:
         sample_rate: int = 48000,
         channels: int = 1,
         leading_silence_ms: int = 30,
+        # Phase 13.1: silenceremove tuning. -40 dBFS threshold catches
+        # Piper's leading-silence noise floor without eating the actual
+        # speech onset (Piper renders silence at ~-60 dBFS, voiced
+        # phonemes start ≥ -25 dBFS within a few frames). 10 ms minimum
+        # at the head means we leave 10 ms of pre-onset to avoid clipping
+        # plosive bursts; 200 ms at the tail leaves a natural decay.
+        silence_trim_threshold_db: float = -40.0,
+        silence_trim_start_ms: int = 10,
+        silence_trim_stop_ms: int = 200,
         ffmpeg: str = "ffmpeg",
         ffmpeg_normalize: str = "ffmpeg-normalize",
         ffprobe: str = "ffprobe",
@@ -62,6 +74,9 @@ class Normalizer:
         self.sample_rate = sample_rate
         self.channels = channels
         self.leading_silence_ms = leading_silence_ms
+        self.silence_trim_threshold_db = silence_trim_threshold_db
+        self.silence_trim_start_ms = silence_trim_start_ms
+        self.silence_trim_stop_ms = silence_trim_stop_ms
         self.ffmpeg = ffmpeg
         self.ffmpeg_normalize = ffmpeg_normalize
         self.ffprobe = ffprobe
@@ -85,8 +100,13 @@ class Normalizer:
         input_duration = self._measure_input_duration(raw)
 
         with tempfile.TemporaryDirectory() as tmpdir:
+            # Phase 13.1: trim Piper's leading/trailing silence BEFORE
+            # ffmpeg-normalize. The intentional 30 ms pad applied later
+            # (D-10) is the only leading silence the user should hear.
+            trimmed = Path(tmpdir) / "trimmed.wav"
+            self._silence_trim(raw, trimmed)
             normalized = Path(tmpdir) / "normalized.m4a"
-            self._run_ffmpeg_normalize(raw, normalized)
+            self._run_ffmpeg_normalize(trimmed, normalized)
             self._pad_with_silence(normalized, target)
 
         measured_lufs, true_peak = self._measure_lufs(target)
@@ -158,6 +178,76 @@ class Normalizer:
         effective_tolerance) rather than pad.
         """
         return raw
+
+    def _silence_trim(self, raw: Path, trimmed: Path) -> None:
+        """Phase 13.1: strip Piper's upstream leading/trailing silence.
+
+        Two `silenceremove` passes — one anchored to the start (`start_periods=1`)
+        and one stripping every trailing run (`stop_periods=-1`). Threshold
+        and minimum-silence values are passed through from the constructor
+        so callers can tune per-clip if a specific phoneme's onset is being
+        clipped.
+
+        We re-encode to WAV (pcm_s16le) at the input sample rate so the
+        downstream ffmpeg-normalize step sees a clean PCM file with the
+        same characteristics as the original Piper output minus the
+        silence padding. We do NOT change the sample rate here — that's
+        ffmpeg-normalize's job (it resamples to 48 kHz).
+        """
+        # silenceremove parameter syntax (per ffmpeg docs):
+        #   start_periods=1           — strip a single silence run at the start
+        #   start_threshold=-40dB     — anything quieter than -40 dBFS counts as silence
+        #   start_silence=0.01        — keep 10 ms of leading silence (don't shave the onset)
+        #   detection=peak            — use peak amplitude (not RMS) — fastest & matches Piper's profile
+        #   stop_periods=-1           — strip every trailing silence run, not just the last
+        #   stop_silence=0.20         — leave 200 ms of trailing silence as a natural decay
+        start_silence_s = self.silence_trim_start_ms / 1000.0
+        stop_silence_s = self.silence_trim_stop_ms / 1000.0
+        thr = self.silence_trim_threshold_db
+        af = (
+            f"silenceremove="
+            f"start_periods=1:"
+            f"start_threshold={thr}dB:"
+            f"start_silence={start_silence_s}:"
+            f"detection=peak,"
+            f"silenceremove="
+            f"stop_periods=-1:"
+            f"stop_threshold={thr}dB:"
+            f"stop_silence={stop_silence_s}:"
+            f"detection=peak"
+        )
+        argv = [
+            self.ffmpeg,
+            "-y",
+            "-i",
+            str(raw),
+            "-af",
+            af,
+            "-ac",
+            str(self.channels),
+            "-c:a",
+            "pcm_s16le",
+            str(trimmed),
+        ]
+        try:
+            completed = subprocess.run(
+                argv, capture_output=True, timeout=60.0, check=False
+            )
+        except FileNotFoundError as exc:
+            raise NormalizeError(f"ffmpeg not on PATH: {exc}") from exc
+        if completed.returncode != 0:
+            stderr = (completed.stderr or b"").decode("utf-8", errors="replace")
+            raise NormalizeError(
+                f"silenceremove failed: rc={completed.returncode} {stderr[:500]}"
+            )
+        # If silenceremove eats the entire clip (e.g. a true-silence input),
+        # fall back to the original raw input so the rest of the pipeline can
+        # surface the LUFS-reject path with a meaningful error rather than
+        # an "input is empty" failure from ffmpeg-normalize.
+        if not trimmed.is_file() or trimmed.stat().st_size == 0:
+            import shutil as _shutil
+
+            _shutil.copyfile(raw, trimmed)
 
     def _run_ffmpeg_normalize(self, raw: Path, intermediate: Path) -> None:
         argv = [
