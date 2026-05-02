@@ -26,15 +26,16 @@ Widget _host({
     );
 
 void main() {
-  test('TM1: TolurMode.values is exactly [tapToHear, sequence]', () {
+  test('TM1: TolurMode.values is exactly [tapToHear, activity] (Phase 9 D-15)',
+      () {
     expect(TolurMode.values,
-        <TolurMode>[TolurMode.tapToHear, TolurMode.sequence]);
+        <TolurMode>[TolurMode.tapToHear, TolurMode.activity]);
   });
 
-  test('TM1b: TolurModeToggleExt.next cycles tapToHear → sequence → tapToHear',
+  test('TM1b: TolurModeToggleExt.next cycles tapToHear → activity → tapToHear',
       () {
-    expect(TolurMode.tapToHear.next, TolurMode.sequence);
-    expect(TolurMode.sequence.next, TolurMode.tapToHear);
+    expect(TolurMode.tapToHear.next, TolurMode.activity);
+    expect(TolurMode.activity.next, TolurMode.tapToHear);
   });
 
   testWidgets('TM2: toggle renders exactly one Icon and zero Text widgets',
@@ -46,7 +47,7 @@ void main() {
     expect(find.byType(Text), findsNothing);
   });
 
-  testWidgets('TM3: icon differs per mode (tapToHear / sequence)',
+  testWidgets('TM3: icon differs per mode (tapToHear / activity)',
       (tester) async {
     await tester.pumpWidget(
         _host(mode: TolurMode.tapToHear, onToggle: () {}));
@@ -54,11 +55,11 @@ void main() {
     final tthIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
     await tester.pumpWidget(
-        _host(mode: TolurMode.sequence, onToggle: () {}));
+        _host(mode: TolurMode.activity, onToggle: () {}));
     await tester.pump();
-    final seqIcon = tester.widget<Icon>(find.byType(Icon)).icon;
+    final actIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-    expect(tthIcon, isNot(seqIcon),
+    expect(tthIcon, isNot(actIcon),
         reason: 'each mode must have a distinct icon');
   });
 
