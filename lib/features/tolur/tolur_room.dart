@@ -1,13 +1,11 @@
-// Tölur (Numbers) room. Phase 8 Plan 08-02 (Workstream B).
+// Tölur (Numbers) room. Phase 8 Plans 08-02 + 08-04.
 //
-// Phase 8 Workstream B (this commit) ships the tap-to-hear surface only:
-// 10 NumberTiles for digits 1..10, tapping plays the masculine variant
-// for 1..4 (NUM-03 abstract counting) and the invariant key for 5..10.
+// Hosts two child surfaces switched via a 3-second-hold mode toggle:
+//   - TapToHear (default): 10 NumberTiles, tap to play numeral audio
+//   - Sequence: SequencingActivity drag-to-order surface (NUM-06)
 //
-// Workstream C/D extend the room with a sequencing activity and a
-// TolurMode toggle (TapToHear / Sequence). The toggle reuses the Phase 5
-// mode-toggle pattern (3-second hold via ParentGateController) — added
-// in a later commit so the diff stays focused on the tap-to-hear loop.
+// Mirror of StafirRoom's mode-switch pattern (Phase 5 D-01 / Phase 6 D-15):
+// the toggle widget lives top-right; the body uses a switch-on-enum.
 //
 // Manifest swap-in: like Phase 4 + Phase 6, the 18 numeral keys ship in
 // the enum but are absent from kAudioManifest until the audio review
@@ -24,7 +22,10 @@ import '../../core/audio/audio_engine_provider.dart';
 import '../../core/numbers/gender.dart';
 import '../../core/numbers/icelandic_number.dart';
 import '../../core/numbers/number_audio_resolver.dart';
+import 'sequencing/sequencing_activity.dart';
+import 'tolur_mode.dart';
 import 'widgets/number_grid.dart';
+import 'widgets/tolur_mode_toggle.dart';
 
 class TolurRoom extends ConsumerStatefulWidget {
   const TolurRoom({super.key});
@@ -33,9 +34,17 @@ class TolurRoom extends ConsumerStatefulWidget {
   ConsumerState<TolurRoom> createState() => TolurRoomState();
 }
 
-/// Public so widget tests can drive helpers without simulating gestures
-/// (mirrors StafirRoomState pattern).
+/// Public so widget tests + integration tests can drive [debugSetMode]
+/// without simulating a 3-second hold gesture (mirrors StafirRoomState).
 class TolurRoomState extends ConsumerState<TolurRoom> {
+  TolurMode _mode = TolurMode.tapToHear;
+
+  @visibleForTesting
+  TolurMode get debugMode => _mode;
+
+  @visibleForTesting
+  void debugSetMode(TolurMode m) => setState(() => _mode = m);
+
   void _onNumberTap(IcelandicNumber number) {
     // D-02 / D-03: abstract counting uses masculine (NUM-03). Phase 9 will
     // route picture-object counting through the depicted noun's gender via
@@ -49,7 +58,22 @@ class TolurRoomState extends ConsumerState<TolurRoom> {
     return Scaffold(
       appBar: AppBar(title: const Text('Tölur')),
       body: SafeArea(
-        child: NumberGrid(onNumberTap: _onNumberTap),
+        child: Stack(
+          children: <Widget>[
+            switch (_mode) {
+              TolurMode.tapToHear => NumberGrid(onNumberTap: _onNumberTap),
+              TolurMode.sequence => const SequencingActivity(),
+            },
+            Positioned(
+              top: 8,
+              right: 8,
+              child: TolurModeToggle(
+                currentMode: _mode,
+                onToggle: () => setState(() => _mode = _mode.next),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
