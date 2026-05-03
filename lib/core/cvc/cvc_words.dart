@@ -22,13 +22,11 @@ import 'cvc_word.dart';
 /// would require pre-indexing; runtime lookup is O(32) which is
 /// trivial and only happens at app start when the const list is
 /// dereferenced via an accessor.
-IcelandicLetter _letter(String glyph) =>
-    kIcelandicAlphabet.firstWhere(
-      (l) => l.glyph == glyph,
-      orElse: () => throw StateError(
-        'kCvcWords: no IcelandicLetter for glyph "$glyph"',
-      ),
-    );
+IcelandicLetter _letter(String glyph) => kIcelandicAlphabet.firstWhere(
+  (l) => l.glyph == glyph,
+  orElse: () =>
+      throw StateError('kCvcWords: no IcelandicLetter for glyph "$glyph"'),
+);
 
 /// The 8 canonical CVC starter words (CVC-01).
 ///

@@ -39,10 +39,7 @@ void main() {
     });
 
     test('N2: 5+ entries have null feminine + null neuter', () {
-      const n = IcelandicNumber(
-        value: 5,
-        invariant: UtteranceKey.numberFive,
-      );
+      const n = IcelandicNumber(value: 5, invariant: UtteranceKey.numberFive);
       expect(n.feminine, isNull);
       expect(n.neuter, isNull);
       // For 5+, masculine isn't a separate variant; invariant doubles as the
@@ -75,45 +72,65 @@ void main() {
     test('K1: exactly 10 entries, value 1..10 in order', () {
       expect(kIcelandicNumbers.length, 10);
       for (var i = 0; i < 10; i++) {
-        expect(kIcelandicNumbers[i].value, i + 1,
-            reason: 'kIcelandicNumbers[$i].value should be ${i + 1}');
+        expect(
+          kIcelandicNumbers[i].value,
+          i + 1,
+          reason: 'kIcelandicNumbers[$i].value should be ${i + 1}',
+        );
       }
     });
 
     test('K2: 1..4 have non-null masculine + feminine + neuter', () {
       for (var i = 0; i < 4; i++) {
         final n = kIcelandicNumbers[i];
-        expect(n.masculine, isNotNull,
-            reason: 'value=${n.value} missing masculine');
-        expect(n.feminine, isNotNull,
-            reason: 'value=${n.value} missing feminine');
-        expect(n.neuter, isNotNull,
-            reason: 'value=${n.value} missing neuter');
+        expect(
+          n.masculine,
+          isNotNull,
+          reason: 'value=${n.value} missing masculine',
+        );
+        expect(
+          n.feminine,
+          isNotNull,
+          reason: 'value=${n.value} missing feminine',
+        );
+        expect(n.neuter, isNotNull, reason: 'value=${n.value} missing neuter');
       }
     });
 
     test('K3: 5..10 have null feminine + null neuter (NUM-02)', () {
       for (var i = 4; i < 10; i++) {
         final n = kIcelandicNumbers[i];
-        expect(n.feminine, isNull,
-            reason: 'value=${n.value} should not have feminine variant');
-        expect(n.neuter, isNull,
-            reason: 'value=${n.value} should not have neuter variant');
+        expect(
+          n.feminine,
+          isNull,
+          reason: 'value=${n.value} should not have feminine variant',
+        );
+        expect(
+          n.neuter,
+          isNull,
+          reason: 'value=${n.value} should not have neuter variant',
+        );
       }
     });
 
     test('K4: invariant is non-null for every entry', () {
       for (final n in kIcelandicNumbers) {
-        expect(n.invariant, isNotNull,
-            reason: 'value=${n.value} missing invariant');
+        expect(
+          n.invariant,
+          isNotNull,
+          reason: 'value=${n.value} missing invariant',
+        );
       }
     });
 
     test('K5: 1..4 invariant equals masculine (abstract = masculine D-08)', () {
       for (var i = 0; i < 4; i++) {
         final n = kIcelandicNumbers[i];
-        expect(n.invariant, n.masculine,
-            reason: 'value=${n.value}: abstract counting uses masculine');
+        expect(
+          n.invariant,
+          n.masculine,
+          reason: 'value=${n.value}: abstract counting uses masculine',
+        );
       }
     });
 
@@ -150,39 +167,34 @@ void main() {
       }
       // 12 gendered (1..4 × 3) + 6 invariant for 5..10 = 18. The 4 masculine
       // keys are reused as invariant for 1..4 (D-08), so total distinct = 18.
-      expect(allKeys.length, 18,
-          reason: 'expected 18 distinct UtteranceKeys across all variants');
+      expect(
+        allKeys.length,
+        18,
+        reason: 'expected 18 distinct UtteranceKeys across all variants',
+      );
     });
   });
 
   group('numberAudioKey resolver (D-08)', () {
     test('R1: 1..4 with masculine returns the masculine key', () {
-      expect(numberAudioKey(1, Gender.masculine),
-          UtteranceKey.numberOneMasc);
-      expect(numberAudioKey(2, Gender.masculine),
-          UtteranceKey.numberTwoMasc);
-      expect(numberAudioKey(3, Gender.masculine),
-          UtteranceKey.numberThreeMasc);
-      expect(numberAudioKey(4, Gender.masculine),
-          UtteranceKey.numberFourMasc);
+      expect(numberAudioKey(1, Gender.masculine), UtteranceKey.numberOneMasc);
+      expect(numberAudioKey(2, Gender.masculine), UtteranceKey.numberTwoMasc);
+      expect(numberAudioKey(3, Gender.masculine), UtteranceKey.numberThreeMasc);
+      expect(numberAudioKey(4, Gender.masculine), UtteranceKey.numberFourMasc);
     });
 
     test('R2: 1..4 with feminine returns the feminine key', () {
       expect(numberAudioKey(1, Gender.feminine), UtteranceKey.numberOneFem);
       expect(numberAudioKey(2, Gender.feminine), UtteranceKey.numberTwoFem);
-      expect(numberAudioKey(3, Gender.feminine),
-          UtteranceKey.numberThreeFem);
-      expect(numberAudioKey(4, Gender.feminine),
-          UtteranceKey.numberFourFem);
+      expect(numberAudioKey(3, Gender.feminine), UtteranceKey.numberThreeFem);
+      expect(numberAudioKey(4, Gender.feminine), UtteranceKey.numberFourFem);
     });
 
     test('R3: 1..4 with neuter returns the neuter key', () {
       expect(numberAudioKey(1, Gender.neuter), UtteranceKey.numberOneNeut);
       expect(numberAudioKey(2, Gender.neuter), UtteranceKey.numberTwoNeut);
-      expect(numberAudioKey(3, Gender.neuter),
-          UtteranceKey.numberThreeNeut);
-      expect(numberAudioKey(4, Gender.neuter),
-          UtteranceKey.numberFourNeut);
+      expect(numberAudioKey(3, Gender.neuter), UtteranceKey.numberThreeNeut);
+      expect(numberAudioKey(4, Gender.neuter), UtteranceKey.numberFourNeut);
     });
 
     test('R4: 5..10 returns the invariant regardless of gender (NUM-02)', () {
@@ -196,9 +208,12 @@ void main() {
       };
       for (final entry in expected.entries) {
         for (final g in Gender.values) {
-          expect(numberAudioKey(entry.key, g), entry.value,
-              reason:
-                  'value=${entry.key} gender=$g should resolve to ${entry.value}');
+          expect(
+            numberAudioKey(entry.key, g),
+            entry.value,
+            reason:
+                'value=${entry.key} gender=$g should resolve to ${entry.value}',
+          );
         }
       }
     });

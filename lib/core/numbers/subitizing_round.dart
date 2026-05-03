@@ -76,18 +76,23 @@ class SubitizingRound {
     required List<DotPosition> dotPositions,
   }) {
     if (count < 1 || count > 5) {
-      throw RangeError.range(count, 1, 5, 'count',
-          'SubitizingRound: count must be in 1..5 per NUM-05');
+      throw RangeError.range(
+        count,
+        1,
+        5,
+        'count',
+        'SubitizingRound: count must be in 1..5 per NUM-05',
+      );
     }
     if (dotPositions.length != count) {
       throw ArgumentError(
-          'SubitizingRound: dotPositions.length must equal count '
-          '(got ${dotPositions.length} dots for count=$count)');
+        'SubitizingRound: dotPositions.length must equal count '
+        '(got ${dotPositions.length} dots for count=$count)',
+      );
     }
     for (final p in dotPositions) {
       if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0) {
-        throw RangeError(
-            'SubitizingRound: dotPosition out of [0..1]: $p');
+        throw RangeError('SubitizingRound: dotPosition out of [0..1]: $p');
       }
     }
     return SubitizingRound._(
@@ -115,11 +120,12 @@ class SubitizingRound {
           _listEq(dotPositions, other.dotPositions);
 
   @override
-  int get hashCode => Object.hash(
-      count, arrangement, Object.hashAll(dotPositions));
+  int get hashCode =>
+      Object.hash(count, arrangement, Object.hashAll(dotPositions));
 
   @override
-  String toString() => 'SubitizingRound(count=$count, '
+  String toString() =>
+      'SubitizingRound(count=$count, '
       'arrangement=$arrangement, dots=${dotPositions.length})';
 
   static bool _listEq(List<DotPosition> a, List<DotPosition> b) {
@@ -134,7 +140,7 @@ class SubitizingRound {
 /// Generates [SubitizingRound]s. Deterministic when constructed with a seed.
 class SubitizingRoundGenerator {
   SubitizingRoundGenerator({int? seed})
-      : _rng = seed != null ? Random(seed) : Random();
+    : _rng = seed != null ? Random(seed) : Random();
 
   final Random _rng;
   int _arrangementIndex = 0;
@@ -144,8 +150,8 @@ class SubitizingRoundGenerator {
   /// per arrangement.
   SubitizingRound generate() {
     final count = 1 + _rng.nextInt(5); // 1..5
-    final arrangement = DotArrangement
-        .values[_arrangementIndex % DotArrangement.values.length];
+    final arrangement =
+        DotArrangement.values[_arrangementIndex % DotArrangement.values.length];
     _arrangementIndex++;
     final positions = _positionsFor(count, arrangement);
     return SubitizingRound(
@@ -172,9 +178,7 @@ class SubitizingRoundGenerator {
   List<DotPosition> _dicePositions(int count) {
     switch (count) {
       case 1:
-        return const <DotPosition>[
-          DotPosition(x: 0.5, y: 0.5),
-        ];
+        return const <DotPosition>[DotPosition(x: 0.5, y: 0.5)];
       case 2:
         return const <DotPosition>[
           DotPosition(x: 0.25, y: 0.25),

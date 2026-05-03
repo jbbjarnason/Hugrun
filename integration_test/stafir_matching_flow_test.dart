@@ -90,15 +90,17 @@ void main() {
       final preCount = engine.playCalls.length;
       await tester.tap(find.byKey(const Key('letter-tile-0-a')));
       await tester.pump(const Duration(milliseconds: 100));
-      expect(engine.playCalls.length, greaterThan(preCount),
-          reason: 'letter audio should dispatch');
+      expect(
+        engine.playCalls.length,
+        greaterThan(preCount),
+        reason: 'letter audio should dispatch',
+      );
       final postLetterCount = engine.playCalls.length;
 
       // -- Step 4: hold the StafirModeToggle for 3+ seconds.
       final toggleFinder = find.byType(StafirModeToggle);
       expect(toggleFinder, findsOneWidget);
-      var gesture =
-          await tester.startGesture(tester.getCenter(toggleFinder));
+      var gesture = await tester.startGesture(tester.getCenter(toggleFinder));
       await tester.pump(const Duration(milliseconds: 3200));
       await gesture.up();
       await tester.pumpAndSettle();
@@ -112,18 +114,25 @@ void main() {
           .toList();
       expect(tiles, hasLength(4));
       final wrongTile = tiles.firstWhere((t) => t.letter.glyph != 'h');
-      await tester.tap(find.byWidgetPredicate(
-        (w) => w is LetterTile && w.letter == wrongTile.letter,
-      ));
+      await tester.tap(
+        find.byWidgetPredicate(
+          (w) => w is LetterTile && w.letter == wrongTile.letter,
+        ),
+      );
       await tester.pump(const Duration(milliseconds: 200));
-      expect(engine.playCalls.length, postLetterCount,
-          reason: 'wrong tap MUST NOT fire new audio (MATCH-02)');
+      expect(
+        engine.playCalls.length,
+        postLetterCount,
+        reason: 'wrong tap MUST NOT fire new audio (MATCH-02)',
+      );
 
       // -- Step 6: tap CORRECT letter — wordHundur audio + celebration.
       final correctTile = tiles.firstWhere((t) => t.letter.glyph == 'h');
-      await tester.tap(find.byWidgetPredicate(
-        (w) => w is LetterTile && w.letter == correctTile.letter,
-      ));
+      await tester.tap(
+        find.byWidgetPredicate(
+          (w) => w is LetterTile && w.letter == correctTile.letter,
+        ),
+      );
       await tester.pump();
       expect(engine.playCalls.last, UtteranceKey.wordHundur);
       await tester.pump(const Duration(milliseconds: 100));

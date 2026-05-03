@@ -52,9 +52,13 @@ void main() {
       final phonemeKeys = UtteranceKey.values
           .where((k) => k.name.startsWith('phoneme'))
           .toSet();
-      expect(phonemeKeys.length, 32,
-          reason: 'Expected 32 phoneme<X> enum entries, got '
-              '${phonemeKeys.length}: ${phonemeKeys.map((k) => k.name).toList()}');
+      expect(
+        phonemeKeys.length,
+        32,
+        reason:
+            'Expected 32 phoneme<X> enum entries, got '
+            '${phonemeKeys.length}: ${phonemeKeys.map((k) => k.name).toList()}',
+      );
     });
 
     test('Phase 6 new CVC word keys are present (D-04)', () {
@@ -76,16 +80,13 @@ void main() {
   });
 
   group('kAudioManifest', () {
-    test(
-      'every Phase 2 stub key maps to a non-null AudioAsset (D-11)',
-      () {
-        for (final key in kPhase2StubKeys) {
-          final asset = kAudioManifest[key];
-          expect(asset, isNotNull, reason: 'Missing manifest entry for $key');
-          expect(asset!.path, isNotEmpty, reason: 'Empty path for $key');
-        }
-      },
-    );
+    test('every Phase 2 stub key maps to a non-null AudioAsset (D-11)', () {
+      for (final key in kPhase2StubKeys) {
+        final asset = kAudioManifest[key];
+        expect(asset, isNotNull, reason: 'Missing manifest entry for $key');
+        expect(asset!.path, isNotEmpty, reason: 'Empty path for $key');
+      }
+    });
 
     test(
       'Phase 6 phoneme + new word keys are present in the manifest (Phase 13)',
@@ -98,20 +99,25 @@ void main() {
         // `// PRONUNCIATION REVIEW PENDING` markers. The kid hears audio,
         // but a native-speaker pass should run before shipping.
         final phase6Keys = UtteranceKey.values
-            .where((k) =>
-                k.name.startsWith('phoneme') ||
-                k == UtteranceKey.wordHus ||
-                k == UtteranceKey.wordHar ||
-                k == UtteranceKey.wordGas ||
-                k == UtteranceKey.wordK ||
-                k == UtteranceKey.wordS ||
-                k == UtteranceKey.wordM ||
-                k == UtteranceKey.wordR ||
-                k == UtteranceKey.wordB)
+            .where(
+              (k) =>
+                  k.name.startsWith('phoneme') ||
+                  k == UtteranceKey.wordHus ||
+                  k == UtteranceKey.wordHar ||
+                  k == UtteranceKey.wordGas ||
+                  k == UtteranceKey.wordK ||
+                  k == UtteranceKey.wordS ||
+                  k == UtteranceKey.wordM ||
+                  k == UtteranceKey.wordR ||
+                  k == UtteranceKey.wordB,
+            )
             .toList();
         for (final k in phase6Keys) {
-          expect(kAudioManifest[k], isNotNull,
-              reason: 'Phase 13 expected $k to be present in kAudioManifest');
+          expect(
+            kAudioManifest[k],
+            isNotNull,
+            reason: 'Phase 13 expected $k to be present in kAudioManifest',
+          );
         }
       },
     );

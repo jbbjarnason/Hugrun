@@ -80,30 +80,27 @@ void main() {
       },
     );
 
-    test(
-      'returns null wordKey when pairing target is missing from manifest',
-      () {
-        // Pairing says letterA -> wordHundur, but manifest doesn't have wordHundur.
-        const manifestWithoutHundur = <UtteranceKey, AudioAsset>{
-          UtteranceKey.letterA: AudioAsset(
-            path: 'assets/audio/letters/names/a.aac',
-            approximateDuration: Duration(milliseconds: 100),
-          ),
-        };
-        final r = resolveLetterToClips(
-          UtteranceKey.letterA,
-          manifestOverride: manifestWithoutHundur,
-          pairingOverride: const <UtteranceKey, UtteranceKey>{
-            UtteranceKey.letterA: UtteranceKey.wordHundur,
-          },
-        );
-        expect(r.nameKey, UtteranceKey.letterA);
-        expect(
-          r.wordKey,
-          isNull,
-          reason: 'Phase 2 stub fallback: pairing target absent → no word',
-        );
-      },
-    );
+    test('returns null wordKey when pairing target is missing from manifest', () {
+      // Pairing says letterA -> wordHundur, but manifest doesn't have wordHundur.
+      const manifestWithoutHundur = <UtteranceKey, AudioAsset>{
+        UtteranceKey.letterA: AudioAsset(
+          path: 'assets/audio/letters/names/a.aac',
+          approximateDuration: Duration(milliseconds: 100),
+        ),
+      };
+      final r = resolveLetterToClips(
+        UtteranceKey.letterA,
+        manifestOverride: manifestWithoutHundur,
+        pairingOverride: const <UtteranceKey, UtteranceKey>{
+          UtteranceKey.letterA: UtteranceKey.wordHundur,
+        },
+      );
+      expect(r.nameKey, UtteranceKey.letterA);
+      expect(
+        r.wordKey,
+        isNull,
+        reason: 'Phase 2 stub fallback: pairing target absent → no word',
+      );
+    });
   });
 }

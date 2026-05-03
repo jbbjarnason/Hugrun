@@ -43,9 +43,7 @@ ProviderScope _wrap({
       audioEngineProvider.overrideWith((ref) => engine),
       subitizingRoundGeneratorProvider.overrideWith((ref) => generator),
     ],
-    child: const MaterialApp(
-      home: Scaffold(body: SubitizingActivity()),
-    ),
+    child: const MaterialApp(home: Scaffold(body: SubitizingActivity())),
   );
 }
 
@@ -64,8 +62,9 @@ SubitizingRound _round({
 }
 
 void main() {
-  testWidgets('SU1: during flash phase, 5 numeral options NOT shown',
-      (tester) async {
+  testWidgets('SU1: during flash phase, 5 numeral options NOT shown', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -87,8 +86,9 @@ void main() {
     expect(find.byKey(const Key('sub-option-5')), findsOneWidget);
   });
 
-  testWidgets('SU2: after flash, 5 numeral options 1..5 are visible',
-      (tester) async {
+  testWidgets('SU2: after flash, 5 numeral options 1..5 are visible', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -123,8 +123,9 @@ void main() {
     );
   });
 
-  testWidgets('SU4: D-09 — wrong tap is silent (no audio, no celebration)',
-      (tester) async {
+  testWidgets('SU4: D-09 — wrong tap is silent (no audio, no celebration)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -138,10 +139,7 @@ void main() {
     await tester.tap(find.byKey(const Key('sub-option-1')));
     await tester.pump();
     expect(engine.playCalls, isEmpty);
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
   });
 
   testWidgets('SU5: NUM-08 — no failure-state UI', (tester) async {
@@ -159,8 +157,9 @@ void main() {
     expect(find.byIcon(Icons.close), findsNothing);
   });
 
-  testWidgets('SU6: auto-advance after celebration → next round flashes',
-      (tester) async {
+  testWidgets('SU6: auto-advance after celebration → next round flashes', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -179,10 +178,7 @@ void main() {
     );
     await tester.pump(MatchingCelebration.duration);
     await tester.pump();
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
     // Round 2 — flash phase active again, options absent.
     expect(find.byKey(const Key('sub-option-1')), findsNothing);
     // After flash, options return.

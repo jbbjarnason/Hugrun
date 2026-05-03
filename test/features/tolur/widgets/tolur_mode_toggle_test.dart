@@ -12,36 +12,41 @@ Widget _host({
   required TolurMode mode,
   required VoidCallback onToggle,
   Duration holdDuration = const Duration(seconds: 3),
-}) =>
-    MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: TolurModeToggle(
-            currentMode: mode,
-            onToggle: onToggle,
-            holdDuration: holdDuration,
-          ),
-        ),
+}) => MaterialApp(
+  home: Scaffold(
+    body: Center(
+      child: TolurModeToggle(
+        currentMode: mode,
+        onToggle: onToggle,
+        holdDuration: holdDuration,
       ),
-    );
+    ),
+  ),
+);
 
 void main() {
-  test('TM1: TolurMode.values is exactly [tapToHear, activity] (Phase 9 D-15)',
-      () {
-    expect(TolurMode.values,
-        <TolurMode>[TolurMode.tapToHear, TolurMode.activity]);
-  });
+  test(
+    'TM1: TolurMode.values is exactly [tapToHear, activity] (Phase 9 D-15)',
+    () {
+      expect(TolurMode.values, <TolurMode>[
+        TolurMode.tapToHear,
+        TolurMode.activity,
+      ]);
+    },
+  );
 
-  test('TM1b: TolurModeToggleExt.next cycles tapToHear → activity → tapToHear',
-      () {
-    expect(TolurMode.tapToHear.next, TolurMode.activity);
-    expect(TolurMode.activity.next, TolurMode.tapToHear);
-  });
+  test(
+    'TM1b: TolurModeToggleExt.next cycles tapToHear → activity → tapToHear',
+    () {
+      expect(TolurMode.tapToHear.next, TolurMode.activity);
+      expect(TolurMode.activity.next, TolurMode.tapToHear);
+    },
+  );
 
-  testWidgets('TM2: toggle renders exactly one Icon and zero Text widgets',
-      (tester) async {
-    await tester.pumpWidget(
-        _host(mode: TolurMode.tapToHear, onToggle: () {}));
+  testWidgets('TM2: toggle renders exactly one Icon and zero Text widgets', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_host(mode: TolurMode.tapToHear, onToggle: () {}));
     await tester.pump();
     expect(find.byType(Icon), findsOneWidget);
     expect(find.byType(Text), findsNothing);
@@ -49,18 +54,19 @@ void main() {
 
   testWidgets('TM3 (Phase 12 UI-02): icon is the SAME across modes — '
       'consistent "cycle" affordance, not a mode badge', (tester) async {
-    await tester.pumpWidget(
-        _host(mode: TolurMode.tapToHear, onToggle: () {}));
+    await tester.pumpWidget(_host(mode: TolurMode.tapToHear, onToggle: () {}));
     await tester.pump();
     final tthIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-    await tester.pumpWidget(
-        _host(mode: TolurMode.activity, onToggle: () {}));
+    await tester.pumpWidget(_host(mode: TolurMode.activity, onToggle: () {}));
     await tester.pump();
     final actIcon = tester.widget<Icon>(find.byType(Icon)).icon;
 
-    expect(tthIcon, actIcon,
-        reason: 'both modes must use the same toggle icon');
+    expect(
+      tthIcon,
+      actIcon,
+      reason: 'both modes must use the same toggle icon',
+    );
   });
 
   testWidgets('TM3b (Phase 12 UI-02): icon is Icons.swap_horiz across modes — '
@@ -69,17 +75,19 @@ void main() {
       await tester.pumpWidget(_host(mode: m, onToggle: () {}));
       await tester.pump();
       final icon = tester.widget<Icon>(find.byType(Icon)).icon;
-      expect(icon, Icons.swap_horiz,
-          reason: 'mode $m must use Icons.swap_horiz');
+      expect(
+        icon,
+        Icons.swap_horiz,
+        reason: 'mode $m must use Icons.swap_horiz',
+      );
     }
   });
 
   testWidgets('TM4: hold less than 3s does NOT toggle', (tester) async {
     var callCount = 0;
-    await tester.pumpWidget(_host(
-      mode: TolurMode.tapToHear,
-      onToggle: () => callCount++,
-    ));
+    await tester.pumpWidget(
+      _host(mode: TolurMode.tapToHear, onToggle: () => callCount++),
+    );
     await tester.pump();
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(TolurModeToggle)),
@@ -92,10 +100,9 @@ void main() {
 
   testWidgets('TM5: hold 3s DOES toggle', (tester) async {
     var callCount = 0;
-    await tester.pumpWidget(_host(
-      mode: TolurMode.tapToHear,
-      onToggle: () => callCount++,
-    ));
+    await tester.pumpWidget(
+      _host(mode: TolurMode.tapToHear, onToggle: () => callCount++),
+    );
     await tester.pump();
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(TolurModeToggle)),
@@ -108,10 +115,9 @@ void main() {
 
   testWidgets('TM6: pointer cancel mid-hold aborts toggle', (tester) async {
     var callCount = 0;
-    await tester.pumpWidget(_host(
-      mode: TolurMode.tapToHear,
-      onToggle: () => callCount++,
-    ));
+    await tester.pumpWidget(
+      _host(mode: TolurMode.tapToHear, onToggle: () => callCount++),
+    );
     await tester.pump();
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(TolurModeToggle)),
@@ -123,8 +129,7 @@ void main() {
   });
 
   testWidgets('TM7: small footprint (≤64×64 logical px)', (tester) async {
-    await tester.pumpWidget(
-        _host(mode: TolurMode.tapToHear, onToggle: () {}));
+    await tester.pumpWidget(_host(mode: TolurMode.tapToHear, onToggle: () {}));
     await tester.pump();
     final size = tester.getSize(find.byType(TolurModeToggle));
     expect(size.width, lessThanOrEqualTo(64));
@@ -132,13 +137,9 @@ void main() {
   });
 
   testWidgets('TM8: hold ring appears only while holding', (tester) async {
-    await tester.pumpWidget(
-        _host(mode: TolurMode.tapToHear, onToggle: () {}));
+    await tester.pumpWidget(_host(mode: TolurMode.tapToHear, onToggle: () {}));
     await tester.pump();
-    expect(
-      find.byKey(const Key('tolur-mode-toggle-hold-ring')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('tolur-mode-toggle-hold-ring')), findsNothing);
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(TolurModeToggle)),
     );
@@ -149,9 +150,6 @@ void main() {
     );
     await gesture.up();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(
-      find.byKey(const Key('tolur-mode-toggle-hold-ring')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('tolur-mode-toggle-hold-ring')), findsNothing);
   });
 }

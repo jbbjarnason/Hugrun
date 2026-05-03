@@ -65,8 +65,7 @@ void main() {
     expect(result, equals(['/docs/hugrun_photos/a.jpg']));
   });
 
-  test('refresh() picks up new photos inserted after construction',
-      () async {
+  test('refresh() picks up new photos inserted after construction', () async {
     expect(source.photosForWordSlug('hundur'), isEmpty);
 
     await db.customStatement(

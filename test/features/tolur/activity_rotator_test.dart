@@ -27,73 +27,79 @@ import '../../../integration_test/test_helpers/fake_audio_engine.dart';
 
 ProviderScope _wrap({required FakeAudioEngine engine, required Widget child}) {
   return ProviderScope(
-    overrides: [
-      audioEngineProvider.overrideWith((ref) => engine),
-    ],
+    overrides: [audioEngineProvider.overrideWith((ref) => engine)],
     child: MaterialApp(home: Scaffold(body: child)),
   );
 }
 
 void main() {
-  testWidgets('AR1: ActivityRotator renders one of the 4 numeracy activities',
-      (tester) async {
+  testWidgets('AR1: ActivityRotator renders one of the 4 numeracy activities', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
-    await tester.pumpWidget(_wrap(
-      engine: engine,
-      child: const ActivityRotator(seed: 0),
-    ));
+    await tester.pumpWidget(
+      _wrap(engine: engine, child: const ActivityRotator(seed: 0)),
+    );
     await tester.pump();
     await tester.pump();
 
-    final hasOne = (find.byType(SequencingActivity).evaluate().length +
+    final hasOne =
+        (find.byType(SequencingActivity).evaluate().length +
             find.byType(CorrespondenceActivity).evaluate().length +
             find.byType(SubitizingActivity).evaluate().length +
             find.byType(AdditionActivity).evaluate().length) ==
         1;
-    expect(hasOne, isTrue,
-        reason: 'exactly one of the 4 activities must be rendered');
-  });
-
-  testWidgets('AR2: across many advances, all 4 activities appear (D-15, D-16)',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final engine = FakeAudioEngine();
-
-    // Mount once with a seed; then keep calling debugAdvance() and observe
-    // the rotator's debugCurrent. This is more deterministic than
-    // re-pumpWidget — Timer state from the previous activity won't leak
-    // across iterations.
-    await tester.pumpWidget(_wrap(
-      engine: engine,
-      child: const ActivityRotator(seed: 1234),
-    ));
-    await tester.pump();
-    final state = tester.state<ActivityRotatorState>(
-      find.byType(ActivityRotator),
+    expect(
+      hasOne,
+      isTrue,
+      reason: 'exactly one of the 4 activities must be rendered',
     );
-    final seen = <TolurActivity>{state.debugCurrent};
-    for (var i = 0; i < 50 && seen.length < 4; i++) {
-      state.debugAdvance();
-      await tester.pump();
-      seen.add(state.debugCurrent);
-    }
-
-    expect(seen, containsAll(TolurActivity.values),
-        reason: 'rotator should reach all 4 activities across 50 advances');
   });
 
-  testWidgets('AR3: debugAdvance() can switch to a different activity',
-      (tester) async {
+  testWidgets(
+    'AR2: across many advances, all 4 activities appear (D-15, D-16)',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+
+      // Mount once with a seed; then keep calling debugAdvance() and observe
+      // the rotator's debugCurrent. This is more deterministic than
+      // re-pumpWidget — Timer state from the previous activity won't leak
+      // across iterations.
+      await tester.pumpWidget(
+        _wrap(engine: engine, child: const ActivityRotator(seed: 1234)),
+      );
+      await tester.pump();
+      final state = tester.state<ActivityRotatorState>(
+        find.byType(ActivityRotator),
+      );
+      final seen = <TolurActivity>{state.debugCurrent};
+      for (var i = 0; i < 50 && seen.length < 4; i++) {
+        state.debugAdvance();
+        await tester.pump();
+        seen.add(state.debugCurrent);
+      }
+
+      expect(
+        seen,
+        containsAll(TolurActivity.values),
+        reason: 'rotator should reach all 4 activities across 50 advances',
+      );
+    },
+  );
+
+  testWidgets('AR3: debugAdvance() can switch to a different activity', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
-    await tester.pumpWidget(_wrap(
-      engine: engine,
-      child: const ActivityRotator(seed: 1),
-    ));
+    await tester.pumpWidget(
+      _wrap(engine: engine, child: const ActivityRotator(seed: 1)),
+    );
     await tester.pump();
     await tester.pump();
     final state = tester.state<ActivityRotatorState>(
@@ -109,7 +115,10 @@ void main() {
       await tester.pump();
       attempts++;
     }
-    expect(state.debugCurrent, isNot(initial),
-        reason: 'rotator should be able to land on a different activity');
+    expect(
+      state.debugCurrent,
+      isNot(initial),
+      reason: 'rotator should be able to land on a different activity',
+    );
   });
 }

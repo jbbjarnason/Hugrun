@@ -101,14 +101,9 @@ class AdditionActivityState extends ConsumerState<AdditionActivity> {
         Column(
           children: <Widget>[
             // Top half: two object groups (no operator between them).
-            Expanded(
-              flex: 2,
-              child: _ObjectGroupsRow(round: round),
-            ),
+            Expanded(flex: 2, child: _ObjectGroupsRow(round: round)),
             // Bottom half: 5 numeral options.
-            Expanded(
-              child: _NumeralOptionsRow(onTap: _onOptionTap),
-            ),
+            Expanded(child: _NumeralOptionsRow(onTap: _onOptionTap)),
           ],
         ),
         MatchingCelebration(visible: _celebrationVisible),
@@ -170,22 +165,14 @@ class _ObjectGroup extends StatelessWidget {
       runSpacing: 12,
       children: <Widget>[
         for (var i = 0; i < count; i++)
-          _NounImage(
-            key: Key('$keyPrefix-$i'),
-            index: i,
-            noun: noun,
-          ),
+          _NounImage(key: Key('$keyPrefix-$i'), index: i, noun: noun),
       ],
     );
   }
 }
 
 class _NounImage extends StatelessWidget {
-  const _NounImage({
-    super.key,
-    required this.index,
-    required this.noun,
-  });
+  const _NounImage({super.key, required this.index, required this.noun});
 
   final int index;
   final Noun noun;
@@ -251,11 +238,7 @@ class _NumeralOptionsRow extends StatelessWidget {
 }
 
 class _NumeralOption extends StatelessWidget {
-  const _NumeralOption({
-    super.key,
-    required this.value,
-    required this.onTap,
-  });
+  const _NumeralOption({super.key, required this.value, required this.onTap});
 
   final int value;
   final VoidCallback onTap;

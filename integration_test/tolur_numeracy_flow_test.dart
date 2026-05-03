@@ -64,8 +64,7 @@ void main() {
 
       // -- Step 3: switch to activity mode via debug hook (3-second hold
       // is exercised in tolur_flow_test; here we focus on the rotation).
-      final tolurState =
-          tester.state<TolurRoomState>(find.byType(TolurRoom));
+      final tolurState = tester.state<TolurRoomState>(find.byType(TolurRoom));
       tolurState.debugSetMode(TolurMode.activity);
       await tester.pump();
       await tester.pump();
@@ -87,14 +86,15 @@ void main() {
         await tester.pump();
         seen.add(rotatorState.debugCurrent);
       }
-      expect(seen.length, greaterThanOrEqualTo(3),
-          reason: 'rotator must reach ≥3 distinct activity types');
+      expect(
+        seen.length,
+        greaterThanOrEqualTo(3),
+        reason: 'rotator must reach ≥3 distinct activity types',
+      );
 
       // -- Step 5: toggle back to TapToHear via the toggle widget (3s hold).
       final toggleFinder = find.byType(TolurModeToggle);
-      final gesture = await tester.startGesture(
-        tester.getCenter(toggleFinder),
-      );
+      final gesture = await tester.startGesture(tester.getCenter(toggleFinder));
       await tester.pump(const Duration(milliseconds: 3200));
       await gesture.up();
       await tester.pumpAndSettle();

@@ -27,9 +27,7 @@ void main() {
         '(was vertical ListView)', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        _wrap(LexiconPicker(onSelected: (_) {})),
-      );
+      await tester.pumpWidget(_wrap(LexiconPicker(onSelected: (_) {})));
       // The body should be a GridView, not a ListView.
       expect(find.byType(GridView), findsOneWidget);
       expect(find.byType(ListView), findsNothing);
@@ -42,26 +40,24 @@ void main() {
       expect(delegate.crossAxisCount, 2);
     });
 
-    testWidgets('Phase 12 UI-04: grid declares one slot per lexicon entry',
-        (tester) async {
+    testWidgets('Phase 12 UI-04: grid declares one slot per lexicon entry', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        _wrap(LexiconPicker(onSelected: (_) {})),
-      );
+      await tester.pumpWidget(_wrap(LexiconPicker(onSelected: (_) {})));
       final gridView = tester.widget<GridView>(find.byType(GridView));
       final delegate = gridView.childrenDelegate as SliverChildBuilderDelegate;
       expect(delegate.estimatedChildCount, kStarterLexicon.length);
     });
 
     testWidgets('Phase 12 UI-04: every visible tile renders the noun word '
-        'as a text fallback even when the stock image file is missing',
-        (tester) async {
+        'as a text fallback even when the stock image file is missing', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        _wrap(LexiconPicker(onSelected: (_) {})),
-      );
+      await tester.pumpWidget(_wrap(LexiconPicker(onSelected: (_) {})));
       // First few visible tiles — the alphabetical first words include
       // 'auga' and 'banani' (alphabetical sort).
       // Pump enough frames for any Image.asset errorBuilder to fire.
@@ -70,17 +66,14 @@ void main() {
       expect(find.text('auga'), findsOneWidget);
     });
 
-    testWidgets('a sample of off-screen entries can be scrolled into view',
-        (tester) async {
+    testWidgets('a sample of off-screen entries can be scrolled into view', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
-        _wrap(
-          LexiconPicker(
-            onSelected: (e) => selected = e,
-          ),
-        ),
+        _wrap(LexiconPicker(onSelected: (e) => selected = e)),
       );
 
       // Pick three words that span the alphabetical range — the first
@@ -89,25 +82,25 @@ void main() {
       for (final word in ['hundur', 'sól', 'tré']) {
         final finder = find.byKey(Key('lexicon-tile-$word'));
         if (finder.evaluate().isEmpty) {
-          await tester.scrollUntilVisible(finder, 300.0,
-              scrollable: scrollable);
+          await tester.scrollUntilVisible(
+            finder,
+            300.0,
+            scrollable: scrollable,
+          );
         }
         expect(finder, findsOneWidget, reason: 'Missing tile for $word');
       }
       expect(selected, isNull);
     });
 
-    testWidgets('tapping a tile invokes onSelected with the entry',
-        (tester) async {
+    testWidgets('tapping a tile invokes onSelected with the entry', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
-        _wrap(
-          LexiconPicker(
-            onSelected: (e) => selected = e,
-          ),
-        ),
+        _wrap(LexiconPicker(onSelected: (e) => selected = e)),
       );
 
       // GridView.builder with cacheExtent can mount tiles into the
@@ -116,8 +109,11 @@ void main() {
       // which is too early for hit-testing. Use ensureVisible to
       // guarantee the tile center is on-screen before tapping.
       final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
-      await tester.scrollUntilVisible(hundurTile, 100.0,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        hundurTile,
+        100.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.ensureVisible(hundurTile);
       await tester.pumpAndSettle();
       await tester.tap(hundurTile);
@@ -130,11 +126,7 @@ void main() {
     testWidgets('AppBar shows Icelandic title "Veldu orð"', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        _wrap(
-          LexiconPicker(onSelected: (_) {}),
-        ),
-      );
+      await tester.pumpWidget(_wrap(LexiconPicker(onSelected: (_) {})));
       // AppBar persists on the parent-facing picker screen — Phase 12
       // only removes AppBars from kid-mode screens.
       expect(find.text('Veldu orð'), findsOneWidget);
@@ -145,16 +137,17 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       LexiconEntry? selected;
       await tester.pumpWidget(
-        _wrap(
-          LexiconPicker(onSelected: (e) => selected = e),
-        ),
+        _wrap(LexiconPicker(onSelected: (e) => selected = e)),
       );
       // Pick a non-first word to ensure we're not just hitting the
       // top-of-list tile. Use ensureVisible (see comment on tapping
       // hundur, above) to guarantee the tile center is on-screen.
       final epliTile = find.byKey(const Key('lexicon-tile-epli'));
-      await tester.scrollUntilVisible(epliTile, 100.0,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        epliTile,
+        100.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.ensureVisible(epliTile);
       await tester.pumpAndSettle();
       await tester.tap(epliTile);

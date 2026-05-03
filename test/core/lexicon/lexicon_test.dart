@@ -45,8 +45,7 @@ void main() {
     });
 
     test('contains canonical example word "hundur"', () {
-      final hundur =
-          kStarterLexicon.where((e) => e.word == 'hundur').toList();
+      final hundur = kStarterLexicon.where((e) => e.word == 'hundur').toList();
       expect(hundur, hasLength(1));
       expect(hundur.first.gender, Gender.masculine);
     });

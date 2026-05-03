@@ -105,8 +105,7 @@ void main() {
       }
       // Contiguous ascending.
       for (var i = 1; i < round.targetSequence.length; i++) {
-        expect(round.targetSequence[i],
-            round.targetSequence[i - 1] + 1);
+        expect(round.targetSequence[i], round.targetSequence[i - 1] + 1);
       }
     });
 
@@ -122,16 +121,18 @@ void main() {
       for (final seed in <int>[1, 2, 3, 4, 5, 11, 99, 1000]) {
         final round = SequencingRoundGenerator(seed: seed).generate();
         if (round.isSort) {
-          expect(round.scrambledOrder.toSet(),
-              round.targetSequence.toSet(),
-              reason: 'Sort: scrambled must be permutation of target');
+          expect(
+            round.scrambledOrder.toSet(),
+            round.targetSequence.toSet(),
+            reason: 'Sort: scrambled must be permutation of target',
+          );
           expect(round.scrambledOrder.length, 5);
         } else {
           // FillMissing: scrambledOrder has 4 entries (target minus the
           // missing value), in some order.
           expect(round.scrambledOrder.length, 4);
-          final expectedSet = <int>{...round.targetSequence}..remove(
-              round.missingValue);
+          final expectedSet = <int>{...round.targetSequence}
+            ..remove(round.missingValue);
           expect(round.scrambledOrder.toSet(), expectedSet);
         }
       }
@@ -150,8 +151,11 @@ void main() {
         }
       }
       expect(sortSeen, greaterThan(0), reason: 'Sort variant never produced');
-      expect(fillSeen, greaterThan(0),
-          reason: 'FillMissing variant never produced');
+      expect(
+        fillSeen,
+        greaterThan(0),
+        reason: 'FillMissing variant never produced',
+      );
     });
 
     test('G5: generate() returned scrambled order is NOT identical to target '
@@ -163,13 +167,16 @@ void main() {
       var identical = 0;
       for (var s = 0; s < 100; s++) {
         final r = SequencingRoundGenerator(seed: s).generate();
-        if (r.isSort && r.scrambledOrder.toString() ==
-            r.targetSequence.toString()) {
+        if (r.isSort &&
+            r.scrambledOrder.toString() == r.targetSequence.toString()) {
           identical++;
         }
       }
-      expect(identical, lessThan(10),
-          reason: 'scrambledOrder seems unshuffled across 100 rounds');
+      expect(
+        identical,
+        lessThan(10),
+        reason: 'scrambledOrder seems unshuffled across 100 rounds',
+      );
     });
   });
 }

@@ -48,10 +48,7 @@ void main() {
         c2: byGlyph('r'),
         wordClip: UtteranceKey.wordK,
       );
-      expect(
-        w.letters.map((l) => l.glyph).toList(),
-        <String>['k', 'ý', 'r'],
-      );
+      expect(w.letters.map((l) => l.glyph).toList(), <String>['k', 'ý', 'r']);
     });
 
     test('CW3: equal CvcWords are == and hashCode-equivalent', () {

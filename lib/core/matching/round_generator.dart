@@ -89,10 +89,10 @@ class RoundGenerator {
     Map<UtteranceKey, AudioAsset>? manifestOverride,
     PhotoOverrideSource photoSource = const EmptyPhotoOverrideSource(),
     double photoFrequency = 0.40,
-  })  : _random = seed != null ? Random(seed) : Random(),
-        _manifest = manifestOverride ?? kAudioManifest,
-        _photoSource = photoSource,
-        _photoFrequency = photoFrequency;
+  }) : _random = seed != null ? Random(seed) : Random(),
+       _manifest = manifestOverride ?? kAudioManifest,
+       _photoSource = photoSource,
+       _photoFrequency = photoFrequency;
 
   final Random _random;
   final Map<UtteranceKey, AudioAsset> _manifest;
@@ -140,14 +140,15 @@ class RoundGenerator {
 
     // 4. Build distractor pool: alphabet minus correct minus its similar
     //    counterparts.
-    final distractorPool = kIcelandicAlphabet
-        .where(
-          (l) =>
-              l != correctLetter &&
-              !_formsSimilarPair(correctLetter.glyph, l.glyph),
-        )
-        .toList()
-      ..shuffle(_random);
+    final distractorPool =
+        kIcelandicAlphabet
+            .where(
+              (l) =>
+                  l != correctLetter &&
+                  !_formsSimilarPair(correctLetter.glyph, l.glyph),
+            )
+            .toList()
+          ..shuffle(_random);
 
     // 5. Greedy pick of 3 distractors, skipping any that forms a similar
     //    pair with an already-selected distractor.

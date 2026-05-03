@@ -13,5 +13,5 @@ import '../../../core/numbers/correspondence_round.dart';
 /// timestamp-seeded `Random()` (no seed arg).
 final correspondenceRoundGeneratorProvider =
     Provider<CorrespondenceRoundGenerator>(
-  (ref) => CorrespondenceRoundGenerator(),
-);
+      (ref) => CorrespondenceRoundGenerator(),
+    );

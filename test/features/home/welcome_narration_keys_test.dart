@@ -6,10 +6,7 @@ import 'package:hugrun/features/home/welcome_narration_keys.dart';
 
 void main() {
   test('canonical name "Hugrún" -> narrationWelcome (D-18)', () {
-    expect(
-      selectWelcomeNarrationKey('Hugrún'),
-      UtteranceKey.narrationWelcome,
-    );
+    expect(selectWelcomeNarrationKey('Hugrún'), UtteranceKey.narrationWelcome);
   });
 
   test('non-canonical name -> narrationWelcomeGeneric or fallback', () {

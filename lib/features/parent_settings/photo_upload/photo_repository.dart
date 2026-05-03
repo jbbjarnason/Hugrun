@@ -61,9 +61,9 @@ class PhotoRepository {
     required AppDatabase db,
     DocsDirProvider docsDirProvider = _defaultDocsDir,
     IdGenerator idGenerator = _defaultUuid,
-  })  : _db = db,
-        _docsDirProvider = docsDirProvider,
-        _idGenerator = idGenerator;
+  }) : _db = db,
+       _docsDirProvider = docsDirProvider,
+       _idGenerator = idGenerator;
 
   final AppDatabase _db;
   final DocsDirProvider _docsDirProvider;
@@ -98,8 +98,9 @@ class PhotoRepository {
     }
 
     // Downsize only when needed; never upscale.
-    final maxEdge =
-        decoded.width > decoded.height ? decoded.width : decoded.height;
+    final maxEdge = decoded.width > decoded.height
+        ? decoded.width
+        : decoded.height;
     final img.Image processed;
     if (maxEdge > kPhotoMaxEdgePx) {
       // image package preserves aspect ratio when only one dimension is set.
@@ -121,7 +122,9 @@ class PhotoRepository {
     final destPath = p.join(photoDir.path, filename);
     await File(destPath).writeAsBytes(encoded);
 
-    await _db.into(_db.photoTags).insert(
+    await _db
+        .into(_db.photoTags)
+        .insert(
           PhotoTagsCompanion.insert(
             imagePath: destPath,
             lexiconWord: tag.word,
@@ -136,10 +139,8 @@ class PhotoRepository {
   Future<List<PhotoTag>> listPhotos() async {
     final query = _db.select(_db.photoTags)
       ..orderBy([
-        (t) => d.OrderingTerm(
-              expression: t.createdAt,
-              mode: d.OrderingMode.desc,
-            ),
+        (t) =>
+            d.OrderingTerm(expression: t.createdAt, mode: d.OrderingMode.desc),
       ]);
     return query.get();
   }
@@ -148,19 +149,17 @@ class PhotoRepository {
   Stream<List<PhotoTag>> watchPhotos() {
     final query = _db.select(_db.photoTags)
       ..orderBy([
-        (t) => d.OrderingTerm(
-              expression: t.createdAt,
-              mode: d.OrderingMode.desc,
-            ),
+        (t) =>
+            d.OrderingTerm(expression: t.createdAt, mode: d.OrderingMode.desc),
       ]);
     return query.watch();
   }
 
   /// Deletes a photo row + the underlying file. Tolerant of missing files.
   Future<void> deletePhoto(int id) async {
-    final row = await (_db.select(_db.photoTags)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.photoTags,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row == null) return;
     final f = File(row.imagePath);
     if (f.existsSync()) {

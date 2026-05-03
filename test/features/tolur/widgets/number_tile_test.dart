@@ -35,7 +35,9 @@ Widget _hostTile({
 
 void main() {
   group('NumberTile rendering (NUM-08 — no instructions, no fail UI)', () {
-    testWidgets('NT1: renders the digit glyph as a Text widget', (tester) async {
+    testWidgets('NT1: renders the digit glyph as a Text widget', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _hostTile(
           number: kIcelandicNumbers[2], // value=3
@@ -46,25 +48,31 @@ void main() {
       expect(find.text('3'), findsOneWidget);
     });
 
-    testWidgets('NT2: renders only ONE Text widget (no labels, no instructions)',
-        (tester) async {
-      await tester.pumpWidget(
-        _hostTile(
-          number: kIcelandicNumbers[0], // value=1
-          numberIndex: 0,
-          onNumberTap: (_) {},
-        ),
-      );
-      final textInTile = find.descendant(
-        of: find.byType(NumberTile),
-        matching: find.byType(Text),
-      );
-      expect(textInTile, findsOneWidget,
-          reason: 'NUM-08: only the digit glyph, no labels');
-    });
+    testWidgets(
+      'NT2: renders only ONE Text widget (no labels, no instructions)',
+      (tester) async {
+        await tester.pumpWidget(
+          _hostTile(
+            number: kIcelandicNumbers[0], // value=1
+            numberIndex: 0,
+            onNumberTap: (_) {},
+          ),
+        );
+        final textInTile = find.descendant(
+          of: find.byType(NumberTile),
+          matching: find.byType(Text),
+        );
+        expect(
+          textInTile,
+          findsOneWidget,
+          reason: 'NUM-08: only the digit glyph, no labels',
+        );
+      },
+    );
 
-    testWidgets('NT3: renders no failure-state Icon (no error/check/close)',
-        (tester) async {
+    testWidgets('NT3: renders no failure-state Icon (no error/check/close)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _hostTile(
           number: kIcelandicNumbers[6], // value=7
@@ -80,8 +88,9 @@ void main() {
   });
 
   group('NumberTile sizing (NUM-01 — match Stafir tap target)', () {
-    testWidgets('NT4: tap target ≥200 logical-px when given a 240×240 host',
-        (tester) async {
+    testWidgets('NT4: tap target ≥200 logical-px when given a 240×240 host', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _hostTile(
           number: kIcelandicNumbers[0],
@@ -96,8 +105,9 @@ void main() {
   });
 
   group('NumberTile gesture (mirrors STAFIR-06 — synchronous feedback)', () {
-    testWidgets('NT5: fires onNumberTap on tap-DOWN (before tap-up)',
-        (tester) async {
+    testWidgets('NT5: fires onNumberTap on tap-DOWN (before tap-up)', (
+      tester,
+    ) async {
       IcelandicNumber? tapped;
       await tester.pumpWidget(
         _hostTile(
@@ -118,23 +128,27 @@ void main() {
   });
 
   group('NumberTile palette (D-01 — reuse Phase 4 locked palette)', () {
-    testWidgets('NT6: applies paletteForIndex(numberIndex) to the BoxDecoration',
-        (tester) async {
-      await tester.pumpWidget(
-        _hostTile(
-          number: kIcelandicNumbers[0],
-          numberIndex: 0,
-          onNumberTap: (_) {},
-        ),
-      );
-      final container = tester
-          .widgetList<Container>(find.descendant(
-            of: find.byType(NumberTile),
-            matching: find.byType(Container),
-          ))
-          .firstWhere((c) => c.decoration is BoxDecoration);
-      final decoration = container.decoration! as BoxDecoration;
-      expect(decoration.color, paletteForIndex(0));
-    });
+    testWidgets(
+      'NT6: applies paletteForIndex(numberIndex) to the BoxDecoration',
+      (tester) async {
+        await tester.pumpWidget(
+          _hostTile(
+            number: kIcelandicNumbers[0],
+            numberIndex: 0,
+            onNumberTap: (_) {},
+          ),
+        );
+        final container = tester
+            .widgetList<Container>(
+              find.descendant(
+                of: find.byType(NumberTile),
+                matching: find.byType(Container),
+              ),
+            )
+            .firstWhere((c) => c.decoration is BoxDecoration);
+        final decoration = container.decoration! as BoxDecoration;
+        expect(decoration.color, paletteForIndex(0));
+      },
+    );
   });
 }

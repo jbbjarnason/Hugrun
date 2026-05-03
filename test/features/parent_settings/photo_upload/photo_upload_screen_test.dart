@@ -40,7 +40,10 @@ class _CapturingPhotoRepository {
 
   _CapturingPhotoRepository({this.initialPhotos = const []});
 
-  Future<String> addPhoto({required File source, required LexiconEntry tag}) async {
+  Future<String> addPhoto({
+    required File source,
+    required LexiconEntry tag,
+  }) async {
     addCalls.add((source: source, tag: tag));
     return '/fake/path/${tag.word}.jpg';
   }
@@ -100,69 +103,71 @@ void main() {
       expect(repo.addCalls, isEmpty);
     });
 
-    testWidgets(
-      'tapping FAB → pick → select lexicon → addPhoto called',
-      (tester) async {
-        // Phase 12 UI-04: LexiconPicker is now a 2-column GridView.
-        // Set surface size large enough to host the picker comfortably,
-        // and tap the keyed tile (lexicon-tile-hundur) rather than
-        // find.text('hundur') — the noun text in the picker tile is
-        // a small caption inside an InkWell, but the InkWell takes
-        // its key from the tile root (more robust to layout changes).
-        await tester.binding.setSurfaceSize(const Size(1280, 800));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('tapping FAB → pick → select lexicon → addPhoto called', (
+      tester,
+    ) async {
+      // Phase 12 UI-04: LexiconPicker is now a 2-column GridView.
+      // Set surface size large enough to host the picker comfortably,
+      // and tap the keyed tile (lexicon-tile-hundur) rather than
+      // find.text('hundur') — the noun text in the picker tile is
+      // a small caption inside an InkWell, but the InkWell takes
+      // its key from the tile root (more robust to layout changes).
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final picker = _FakePhotoPicker(File('/tmp/fake_source.jpg'));
-        final repo = _CapturingPhotoRepository();
+      final picker = _FakePhotoPicker(File('/tmp/fake_source.jpg'));
+      final repo = _CapturingPhotoRepository();
 
-        await tester.pumpWidget(_wrap(repo: repo, picker: picker));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(repo: repo, picker: picker));
+      await tester.pumpAndSettle();
 
-        // Trigger picker.
-        await tester.tap(find.byIcon(Icons.add_a_photo));
-        await tester.pumpAndSettle();
+      // Trigger picker.
+      await tester.tap(find.byIcon(Icons.add_a_photo));
+      await tester.pumpAndSettle();
 
-        // LexiconPicker should now be visible.
-        expect(find.text('Veldu orð'), findsOneWidget);
+      // LexiconPicker should now be visible.
+      expect(find.text('Veldu orð'), findsOneWidget);
 
-        // Tap "hundur" tile — kStarterLexicon has ≥30 entries; the tile
-        // can be below the fold in a 2-col grid. ensureVisible after
-        // scrollUntilVisible hits the corner case where the cacheExtent
-        // mounts the tile but it's not yet inside the viewport.
-        final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
-        await tester.scrollUntilVisible(
-          hundurTile,
-          100.0,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.ensureVisible(hundurTile);
-        await tester.pumpAndSettle();
-        await tester.tap(hundurTile);
-        await tester.pumpAndSettle();
+      // Tap "hundur" tile — kStarterLexicon has ≥30 entries; the tile
+      // can be below the fold in a 2-col grid. ensureVisible after
+      // scrollUntilVisible hits the corner case where the cacheExtent
+      // mounts the tile but it's not yet inside the viewport.
+      final hundurTile = find.byKey(const Key('lexicon-tile-hundur'));
+      await tester.scrollUntilVisible(
+        hundurTile,
+        100.0,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(hundurTile);
+      await tester.pumpAndSettle();
+      await tester.tap(hundurTile);
+      await tester.pumpAndSettle();
 
-        expect(repo.addCalls, hasLength(1));
-        expect(repo.addCalls.first.tag.word, 'hundur');
-        expect(repo.addCalls.first.source.path, '/tmp/fake_source.jpg');
-      },
-    );
+      expect(repo.addCalls, hasLength(1));
+      expect(repo.addCalls.first.tag.word, 'hundur');
+      expect(repo.addCalls.first.source.path, '/tmp/fake_source.jpg');
+    });
 
-    testWidgets('shows existing photos ordered most-recent-first',
-        (tester) async {
+    testWidgets('shows existing photos ordered most-recent-first', (
+      tester,
+    ) async {
       final picker = _FakePhotoPicker(null);
-      final repo = _CapturingPhotoRepository(initialPhotos: [
-        PhotoTag(
-          id: 2,
-          imagePath: '/fake/b.jpg',
-          lexiconWord: 'köttur',
-          createdAt: DateTime.fromMillisecondsSinceEpoch(2000),
-        ),
-        PhotoTag(
-          id: 1,
-          imagePath: '/fake/a.jpg',
-          lexiconWord: 'hundur',
-          createdAt: DateTime.fromMillisecondsSinceEpoch(1000),
-        ),
-      ]);
+      final repo = _CapturingPhotoRepository(
+        initialPhotos: [
+          PhotoTag(
+            id: 2,
+            imagePath: '/fake/b.jpg',
+            lexiconWord: 'köttur',
+            createdAt: DateTime.fromMillisecondsSinceEpoch(2000),
+          ),
+          PhotoTag(
+            id: 1,
+            imagePath: '/fake/a.jpg',
+            lexiconWord: 'hundur',
+            createdAt: DateTime.fromMillisecondsSinceEpoch(1000),
+          ),
+        ],
+      );
 
       await tester.pumpWidget(_wrap(repo: repo, picker: picker));
       await tester.pumpAndSettle();
@@ -171,8 +176,9 @@ void main() {
       expect(find.text('köttur'), findsOneWidget);
     });
 
-    testWidgets('empty photos shows a discoverable empty state',
-        (tester) async {
+    testWidgets('empty photos shows a discoverable empty state', (
+      tester,
+    ) async {
       final picker = _FakePhotoPicker(null);
       final repo = _CapturingPhotoRepository();
       await tester.pumpWidget(_wrap(repo: repo, picker: picker));

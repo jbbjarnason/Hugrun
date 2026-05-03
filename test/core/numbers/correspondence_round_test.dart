@@ -57,12 +57,21 @@ void main() {
 
     test('N4: includes at least one masculine, feminine, and neuter noun', () {
       final genders = kCorrespondenceNouns.map((n) => n.gender).toSet();
-      expect(genders.contains(Gender.masculine), isTrue,
-          reason: 'need ≥1 masculine noun for gender coverage');
-      expect(genders.contains(Gender.feminine), isTrue,
-          reason: 'need ≥1 feminine noun for gender coverage');
-      expect(genders.contains(Gender.neuter), isTrue,
-          reason: 'need ≥1 neuter noun for gender coverage');
+      expect(
+        genders.contains(Gender.masculine),
+        isTrue,
+        reason: 'need ≥1 masculine noun for gender coverage',
+      );
+      expect(
+        genders.contains(Gender.feminine),
+        isTrue,
+        reason: 'need ≥1 feminine noun for gender coverage',
+      );
+      expect(
+        genders.contains(Gender.neuter),
+        isTrue,
+        reason: 'need ≥1 neuter noun for gender coverage',
+      );
     });
   });
 
@@ -134,8 +143,11 @@ void main() {
       final gen = CorrespondenceRoundGenerator(seed: 9);
       for (var i = 0; i < 20; i++) {
         final round = gen.generate();
-        expect(kCorrespondenceNouns.contains(round.noun), isTrue,
-            reason: 'generator must draw from canonical noun set');
+        expect(
+          kCorrespondenceNouns.contains(round.noun),
+          isTrue,
+          reason: 'generator must draw from canonical noun set',
+        );
       }
     });
 
@@ -147,8 +159,11 @@ void main() {
       }
       // Expect at least 4 of the 5 to appear given 200 draws (some
       // RNG slack — extremely unlikely to miss more than one).
-      expect(seen.length, greaterThanOrEqualTo(4),
-          reason: 'count distribution should cover 1..5 across 200 draws');
+      expect(
+        seen.length,
+        greaterThanOrEqualTo(4),
+        reason: 'count distribution should cover 1..5 across 200 draws',
+      );
     });
   });
 }

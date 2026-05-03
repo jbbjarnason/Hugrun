@@ -19,22 +19,44 @@ void main() {
 
     test('W2: contains the 8 named starter words', () {
       final words = kCvcWords.map((w) => w.word).toSet();
-      expect(words, containsAll(<String>{
-        'kýr', 'sól', 'hús', 'rós', 'bók', 'mús', 'hár', 'gás',
-      }));
+      expect(
+        words,
+        containsAll(<String>{
+          'kýr',
+          'sól',
+          'hús',
+          'rós',
+          'bók',
+          'mús',
+          'hár',
+          'gás',
+        }),
+      );
     });
 
     test('W3: every entry has c1/v/c2 matching word[0..2]', () {
       for (final w in kCvcWords) {
         final letters = w.word.split('');
-        expect(letters.length, 3,
-            reason: '"${w.word}" should be exactly 3 characters');
-        expect(w.c1.glyph, letters[0],
-            reason: '${w.word}.c1 should be "${letters[0]}"');
-        expect(w.v.glyph, letters[1],
-            reason: '${w.word}.v should be "${letters[1]}"');
-        expect(w.c2.glyph, letters[2],
-            reason: '${w.word}.c2 should be "${letters[2]}"');
+        expect(
+          letters.length,
+          3,
+          reason: '"${w.word}" should be exactly 3 characters',
+        );
+        expect(
+          w.c1.glyph,
+          letters[0],
+          reason: '${w.word}.c1 should be "${letters[0]}"',
+        );
+        expect(
+          w.v.glyph,
+          letters[1],
+          reason: '${w.word}.v should be "${letters[1]}"',
+        );
+        expect(
+          w.c2.glyph,
+          letters[2],
+          reason: '${w.word}.c2 should be "${letters[2]}"',
+        );
       }
     });
 
@@ -42,8 +64,11 @@ void main() {
       // The list should compile-reference real enum values; this is a
       // sanity guard to catch typos that survive analyzer.
       for (final w in kCvcWords) {
-        expect(UtteranceKey.values, contains(w.wordClip),
-            reason: 'wordClip ${w.wordClip} for ${w.word} not in UtteranceKey');
+        expect(
+          UtteranceKey.values,
+          contains(w.wordClip),
+          reason: 'wordClip ${w.wordClip} for ${w.word} not in UtteranceKey',
+        );
       }
     });
 
@@ -66,8 +91,11 @@ void main() {
 
     test('W7: words are unique (no duplicate triples)', () {
       final words = kCvcWords.map((w) => w.word).toList();
-      expect(words.toSet().length, words.length,
-          reason: 'duplicate word in kCvcWords: $words');
+      expect(
+        words.toSet().length,
+        words.length,
+        reason: 'duplicate word in kCvcWords: $words',
+      );
     });
   });
 }

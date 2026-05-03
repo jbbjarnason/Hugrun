@@ -59,18 +59,15 @@ Future<void> main() async {
       // stub to the Drift-backed implementation. The matching round generator
       // sees the new source via `ref.watch` — no code change in the activity.
       overrides: [
-        photoOverrideSourceProvider.overrideWith(
-          (ref) {
-            final source = DriftPhotoOverrideSource(
-              ref.watch(appDatabaseProvider),
-            );
-            ref.onDispose(source.dispose);
-            return source;
-          },
-        ),
+        photoOverrideSourceProvider.overrideWith((ref) {
+          final source = DriftPhotoOverrideSource(
+            ref.watch(appDatabaseProvider),
+          );
+          ref.onDispose(source.dispose);
+          return source;
+        }),
       ],
       child: const HugrunApp(),
     ),
   );
 }
-

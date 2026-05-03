@@ -47,9 +47,7 @@ ProviderScope _wrap({
       audioEngineProvider.overrideWith((ref) => engine),
       additionRoundGeneratorProvider.overrideWith((ref) => generator),
     ],
-    child: const MaterialApp(
-      home: Scaffold(body: AdditionActivity()),
-    ),
+    child: const MaterialApp(home: Scaffold(body: AdditionActivity())),
   );
 }
 
@@ -66,8 +64,9 @@ AdditionRound _round({int a1 = 2, int a2 = 1, String word = 'hundur'}) {
 }
 
 void main() {
-  testWidgets('AD1: NO `+` symbol anywhere in the widget tree (D-12)',
-      (tester) async {
+  testWidgets('AD1: NO `+` symbol anywhere in the widget tree (D-12)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -76,15 +75,18 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('+'), findsNothing,
-        reason: 'D-12: no `+` symbol allowed');
+    expect(find.text('+'), findsNothing, reason: 'D-12: no `+` symbol allowed');
     expect(find.text('plus'), findsNothing);
-    expect(find.byIcon(Icons.add), findsNothing,
-        reason: 'D-12: no add icon allowed');
+    expect(
+      find.byIcon(Icons.add),
+      findsNothing,
+      reason: 'D-12: no add icon allowed',
+    );
   });
 
-  testWidgets('AD2: renders addend1 + addend2 noun copies (5 total for 2+3)',
-      (tester) async {
+  testWidgets('AD2: renders addend1 + addend2 noun copies (5 total for 2+3)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -102,8 +104,9 @@ void main() {
     }
   });
 
-  testWidgets('AD3: 5 numeral options (1..5) shown as answer choices',
-      (tester) async {
+  testWidgets('AD3: 5 numeral options (1..5) shown as answer choices', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -137,8 +140,9 @@ void main() {
     );
   });
 
-  testWidgets('AD5: D-13 — wrong tap is silent (no celebration)',
-      (tester) async {
+  testWidgets('AD5: D-13 — wrong tap is silent (no celebration)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -152,10 +156,7 @@ void main() {
     await tester.pump();
 
     expect(engine.playCalls, isEmpty);
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
   });
 
   testWidgets('AD6: NUM-08 — no failure-state UI', (tester) async {
@@ -172,8 +173,9 @@ void main() {
     expect(find.byIcon(Icons.close), findsNothing);
   });
 
-  testWidgets('AD7: auto-advance to next round after celebration',
-      (tester) async {
+  testWidgets('AD7: auto-advance to next round after celebration', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();

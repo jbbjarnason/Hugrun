@@ -172,7 +172,9 @@ void main() {
     );
   });
 
-  testWidgets('after successful save, "Vistað ✓" shows briefly', (tester) async {
+  testWidgets('after successful save, "Vistað ✓" shows briefly', (
+    tester,
+  ) async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(db.close);
     await ensureDefaultChildProfile(db);

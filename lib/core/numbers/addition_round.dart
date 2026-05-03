@@ -39,23 +39,30 @@ class AdditionRound {
     required Noun noun,
   }) {
     if (addend1.value < 1) {
-      throw RangeError.value(addend1.value, 'addend1.value',
-          'AdditionRound: addend1 must be ≥ 1');
+      throw RangeError.value(
+        addend1.value,
+        'addend1.value',
+        'AdditionRound: addend1 must be ≥ 1',
+      );
     }
     if (addend2.value < 1) {
-      throw RangeError.value(addend2.value, 'addend2.value',
-          'AdditionRound: addend2 must be ≥ 1');
+      throw RangeError.value(
+        addend2.value,
+        'addend2.value',
+        'AdditionRound: addend2 must be ≥ 1',
+      );
     }
     final total = addend1.value + addend2.value;
     if (total > 5) {
-      throw RangeError.range(total, 2, 5, 'addend1+addend2',
-          'AdditionRound: sum must be ≤ 5 (D-11)');
+      throw RangeError.range(
+        total,
+        2,
+        5,
+        'addend1+addend2',
+        'AdditionRound: sum must be ≤ 5 (D-11)',
+      );
     }
-    return AdditionRound._(
-      addend1: addend1,
-      addend2: addend2,
-      noun: noun,
-    );
+    return AdditionRound._(addend1: addend1, addend2: addend2, noun: noun);
   }
 
   final IcelandicNumber addend1;
@@ -86,7 +93,7 @@ class AdditionRound {
 /// Generates [AdditionRound]s. Deterministic when constructed with a seed.
 class AdditionRoundGenerator {
   AdditionRoundGenerator({int? seed})
-      : _rng = seed != null ? Random(seed) : Random();
+    : _rng = seed != null ? Random(seed) : Random();
 
   final Random _rng;
 
@@ -99,8 +106,8 @@ class AdditionRoundGenerator {
     final total = 2 + _rng.nextInt(4); // 2..5
     final addend1Value = 1 + _rng.nextInt(total - 1); // 1..total-1
     final addend2Value = total - addend1Value;
-    final noun = kCorrespondenceNouns[
-        _rng.nextInt(kCorrespondenceNouns.length)];
+    final noun =
+        kCorrespondenceNouns[_rng.nextInt(kCorrespondenceNouns.length)];
     return AdditionRound(
       addend1: kIcelandicNumbers[addend1Value - 1],
       addend2: kIcelandicNumbers[addend2Value - 1],

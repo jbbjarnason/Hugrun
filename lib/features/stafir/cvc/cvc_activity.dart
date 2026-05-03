@@ -138,8 +138,7 @@ class _CvcActivityState extends ConsumerState<CvcActivity> {
               child: LetterTile(
                 key: Key('cvc-tile-$i-${word.letters[i].assetSlug}'),
                 letter: word.letters[i],
-                letterIndex:
-                    kIcelandicAlphabet.indexOf(word.letters[i]),
+                letterIndex: kIcelandicAlphabet.indexOf(word.letters[i]),
                 minSize: 0,
                 onLetterTap: (l) => _onLetterTap(word, i, l),
               ),

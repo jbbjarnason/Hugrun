@@ -43,22 +43,16 @@ void main() {
   group('LetterTile rendering (STAFIR-08)', () {
     testWidgets('renders the letter glyph as a Text widget', (tester) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       expect(find.text('a'), findsOneWidget);
     });
 
-    testWidgets('renders only ONE Text widget (no instructions)', (tester) async {
+    testWidgets('renders only ONE Text widget (no instructions)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       // Anchor under the LetterTile subtree.
       final textInTile = find.descendant(
@@ -76,11 +70,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterEth,
-          letterIndex: 4,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterEth, letterIndex: 4, onLetterTap: (_) {}),
       );
       expect(find.byIcon(Icons.error), findsNothing);
       expect(find.byIcon(Icons.check), findsNothing);
@@ -94,11 +84,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       final size = tester.getSize(find.byType(LetterTile));
       expect(size.width, greaterThanOrEqualTo(200.0));
@@ -115,7 +101,9 @@ void main() {
   });
 
   group('LetterTile gesture (STAFIR-06)', () {
-    testWidgets('fires onLetterTap on tap-DOWN (before tap-up)', (tester) async {
+    testWidgets('fires onLetterTap on tap-DOWN (before tap-up)', (
+      tester,
+    ) async {
       IcelandicLetter? tapped;
       await tester.pumpWidget(
         _hostTile(
@@ -138,13 +126,11 @@ void main() {
   });
 
   group('LetterTile palette (D-30)', () {
-    testWidgets('applies paletteForIndex(0) when letterIndex=0', (tester) async {
+    testWidgets('applies paletteForIndex(0) when letterIndex=0', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       // Find the inner Container's BoxDecoration color.
       final containerFinder = find.descendant(
@@ -153,9 +139,9 @@ void main() {
       );
       expect(containerFinder, findsWidgets);
       // The first Container in the subtree should carry the palette color.
-      final container = tester.widgetList<Container>(containerFinder).firstWhere(
-        (c) => c.decoration is BoxDecoration,
-      );
+      final container = tester
+          .widgetList<Container>(containerFinder)
+          .firstWhere((c) => c.decoration is BoxDecoration);
       final decoration = container.decoration! as BoxDecoration;
       expect(decoration.color, paletteForIndex(0));
     });
@@ -164,11 +150,7 @@ void main() {
   group('LetterTile no-selected-state (D-13, STAFIR-07)', () {
     testWidgets('no persistent visual state after tap', (tester) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       final preTapContainer = tester
           .widgetList<Container>(
@@ -207,11 +189,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _hostTile(
-          letter: _letterA,
-          letterIndex: 0,
-          onLetterTap: (_) {},
-        ),
+        _hostTile(letter: _letterA, letterIndex: 0, onLetterTap: (_) {}),
       );
       // Tap-down to trigger the squeeze-then-bounce-back.
       final gesture = await tester.startGesture(

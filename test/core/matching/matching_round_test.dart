@@ -50,25 +50,27 @@ void main() {
       expect(round.imageSource, isA<ImageSource>());
     });
 
-    test('Test 2: throws AssertionError when correctLetter is not in options',
-        () {
-      final h = letterByGlyph('h');
-      expect(
-        () => MatchingRound(
-          targetWordKey: UtteranceKey.wordHundur,
-          targetWordSlug: 'hundur',
-          correctLetter: h,
-          options: <IcelandicLetter>[
-            letterByGlyph('a'),
-            letterByGlyph('b'),
-            letterByGlyph('k'),
-            letterByGlyph('s'),
-          ],
-          imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
-        ),
-        throwsA(isA<AssertionError>()),
-      );
-    });
+    test(
+      'Test 2: throws AssertionError when correctLetter is not in options',
+      () {
+        final h = letterByGlyph('h');
+        expect(
+          () => MatchingRound(
+            targetWordKey: UtteranceKey.wordHundur,
+            targetWordSlug: 'hundur',
+            correctLetter: h,
+            options: <IcelandicLetter>[
+              letterByGlyph('a'),
+              letterByGlyph('b'),
+              letterByGlyph('k'),
+              letterByGlyph('s'),
+            ],
+            imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
+          ),
+          throwsA(isA<AssertionError>()),
+        );
+      },
+    );
 
     test('Test 3: throws AssertionError when options length != 4', () {
       final h = letterByGlyph('h');
@@ -91,41 +93,47 @@ void main() {
           targetWordKey: UtteranceKey.wordHundur,
           targetWordSlug: 'hundur',
           correctLetter: h,
-          options: <IcelandicLetter>[h, letterByGlyph('b'), letterByGlyph('b'),
-            letterByGlyph('s')],
+          options: <IcelandicLetter>[
+            h,
+            letterByGlyph('b'),
+            letterByGlyph('b'),
+            letterByGlyph('s'),
+          ],
           imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
         ),
         throwsA(isA<AssertionError>()),
       );
     });
 
-    test('Test 5: equal MatchingRound instances have value equality + hash',
-        () {
-      final h = letterByGlyph('h');
-      final options = <IcelandicLetter>[
-        h,
-        letterByGlyph('b'),
-        letterByGlyph('k'),
-        letterByGlyph('s'),
-      ];
-      final a = MatchingRound(
-        targetWordKey: UtteranceKey.wordHundur,
-        targetWordSlug: 'hundur',
-        correctLetter: h,
-        options: options,
-        imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
-      );
-      final b = MatchingRound(
-        targetWordKey: UtteranceKey.wordHundur,
-        targetWordSlug: 'hundur',
-        correctLetter: h,
-        options: List<IcelandicLetter>.from(options),
-        imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
-      );
+    test(
+      'Test 5: equal MatchingRound instances have value equality + hash',
+      () {
+        final h = letterByGlyph('h');
+        final options = <IcelandicLetter>[
+          h,
+          letterByGlyph('b'),
+          letterByGlyph('k'),
+          letterByGlyph('s'),
+        ];
+        final a = MatchingRound(
+          targetWordKey: UtteranceKey.wordHundur,
+          targetWordSlug: 'hundur',
+          correctLetter: h,
+          options: options,
+          imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
+        );
+        final b = MatchingRound(
+          targetWordKey: UtteranceKey.wordHundur,
+          targetWordSlug: 'hundur',
+          correctLetter: h,
+          options: List<IcelandicLetter>.from(options),
+          imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
+        );
 
-      expect(a, equals(b));
-      expect(a.hashCode, equals(b.hashCode));
-    });
+        expect(a, equals(b));
+        expect(a.hashCode, equals(b.hashCode));
+      },
+    );
 
     test('Test 6: ImageSource union cases support value equality', () {
       const a = ImageSource.stockPlaceholder(wordSlug: 'hundur');

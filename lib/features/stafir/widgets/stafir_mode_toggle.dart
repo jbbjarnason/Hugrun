@@ -52,10 +52,7 @@ class _StafirModeToggleState extends State<StafirModeToggle>
   @override
   void initState() {
     super.initState();
-    _ringAnim = AnimationController(
-      vsync: this,
-      duration: widget.holdDuration,
-    );
+    _ringAnim = AnimationController(vsync: this, duration: widget.holdDuration);
     _controller = ParentGateController(
       duration: widget.holdDuration,
       onCompleted: () {
@@ -112,11 +109,7 @@ class _StafirModeToggleState extends State<StafirModeToggle>
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            const Icon(
-              Icons.swap_horiz,
-              size: 28,
-              color: Color(0xFF555555),
-            ),
+            const Icon(Icons.swap_horiz, size: 28, color: Color(0xFF555555)),
             if (_holding)
               Positioned.fill(
                 child: IgnorePointer(

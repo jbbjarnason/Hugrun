@@ -56,8 +56,7 @@ class Noun {
   int get hashCode => Object.hash(word, gender, imagePath);
 
   @override
-  String toString() =>
-      'Noun(word=$word, gender=$gender, imagePath=$imagePath)';
+  String toString() => 'Noun(word=$word, gender=$gender, imagePath=$imagePath)';
 }
 
 /// Built-in noun set for Phase 9 — drawn from the Phase 4/5 example-word
@@ -153,17 +152,18 @@ class CorrespondenceRound {
     required Noun noun,
   }) {
     if (count.value < 1 || count.value > 5) {
-      throw RangeError.range(count.value, 1, 5, 'count.value',
-          'CorrespondenceRound: count must be in 1..5 per NUM-04');
+      throw RangeError.range(
+        count.value,
+        1,
+        5,
+        'count.value',
+        'CorrespondenceRound: count must be in 1..5 per NUM-04',
+      );
     }
     final targets = List<TapTarget>.unmodifiable(<TapTarget>[
       for (var i = 0; i < count.value; i++) TapTarget(index: i),
     ]);
-    return CorrespondenceRound._(
-      count: count,
-      noun: noun,
-      tapTargets: targets,
-    );
+    return CorrespondenceRound._(count: count, noun: noun, tapTargets: targets);
   }
 
   /// IcelandicNumber for the count (1..5).
@@ -185,8 +185,7 @@ class CorrespondenceRound {
           _listEq(tapTargets, other.tapTargets);
 
   @override
-  int get hashCode =>
-      Object.hash(count, noun, Object.hashAll(tapTargets));
+  int get hashCode => Object.hash(count, noun, Object.hashAll(tapTargets));
 
   @override
   String toString() =>
@@ -206,7 +205,7 @@ class CorrespondenceRound {
 /// a seed via [seed].
 class CorrespondenceRoundGenerator {
   CorrespondenceRoundGenerator({int? seed})
-      : _rng = seed != null ? Random(seed) : Random();
+    : _rng = seed != null ? Random(seed) : Random();
 
   final Random _rng;
 

@@ -17,12 +17,15 @@ void main() {
   group('DotArrangement enum (D-06, D-07)', () {
     test('A1: ships exactly 4 arrangements (dice, line, random, finger)', () {
       expect(DotArrangement.values.length, 4);
-      expect(DotArrangement.values, containsAll(<DotArrangement>[
-        DotArrangement.dice,
-        DotArrangement.line,
-        DotArrangement.random,
-        DotArrangement.finger,
-      ]));
+      expect(
+        DotArrangement.values,
+        containsAll(<DotArrangement>[
+          DotArrangement.dice,
+          DotArrangement.line,
+          DotArrangement.random,
+          DotArrangement.finger,
+        ]),
+      );
     });
   });
 
@@ -101,9 +104,7 @@ void main() {
         () => SubitizingRound(
           count: 1,
           arrangement: DotArrangement.random,
-          dotPositions: const <DotPosition>[
-            DotPosition(x: 1.5, y: 0.5),
-          ],
+          dotPositions: const <DotPosition>[DotPosition(x: 1.5, y: 0.5)],
         ),
         throwsA(anything),
       );

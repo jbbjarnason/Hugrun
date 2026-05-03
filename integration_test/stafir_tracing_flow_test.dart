@@ -64,8 +64,9 @@ void main() {
           overrides: [
             appDatabaseProvider.overrideWithValue(db),
             audioEngineProvider.overrideWith((ref) => engine),
-            tracingCurrentLetterProvider
-                .overrideWith(() => _ForcedLetterNotifier(letterA)),
+            tracingCurrentLetterProvider.overrideWith(
+              () => _ForcedLetterNotifier(letterA),
+            ),
           ],
           child: const HugrunApp(),
         ),
@@ -117,16 +118,20 @@ void main() {
       // the post-frame controller (re)build to land.
       await tester.pump(const Duration(milliseconds: 200));
       await tester.pump();
-      final state =
-          tester.state<TracingActivityState>(find.byType(TracingActivity));
+      final state = tester.state<TracingActivityState>(
+        find.byType(TracingActivity),
+      );
 
       final preCount = engine.playCalls.length;
       state.debugCompleteForTesting();
       await tester.pump(const Duration(milliseconds: 50));
 
       // -- Step 7: celebration audio fired.
-      expect(engine.playCalls.length, greaterThan(preCount),
-          reason: 'celebration audio should have fired on completion');
+      expect(
+        engine.playCalls.length,
+        greaterThan(preCount),
+        reason: 'celebration audio should have fired on completion',
+      );
       final celebrationKey = engine.playCalls.last;
       expect(
         celebrationKey == UtteranceKey.narrationWelcome ||

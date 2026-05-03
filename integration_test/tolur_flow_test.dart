@@ -102,14 +102,16 @@ void main() {
       await tester.tap(find.byKey(const Key('number-tile-2-3')));
       await tester.pump(const Duration(milliseconds: 100));
       expect(engine.playCalls.length, greaterThan(preCount));
-      expect(engine.playCalls.last, UtteranceKey.numberThreeMasc,
-          reason: 'abstract counting → masculine variant for 1..4');
+      expect(
+        engine.playCalls.last,
+        UtteranceKey.numberThreeMasc,
+        reason: 'abstract counting → masculine variant for 1..4',
+      );
 
       // -- Step 4: hold the TolurModeToggle for 3+ seconds.
       final toggleFinder = find.byType(TolurModeToggle);
       expect(toggleFinder, findsOneWidget);
-      var gesture =
-          await tester.startGesture(tester.getCenter(toggleFinder));
+      var gesture = await tester.startGesture(tester.getCenter(toggleFinder));
       await tester.pump(const Duration(milliseconds: 3200));
       await gesture.up();
       await tester.pumpAndSettle();

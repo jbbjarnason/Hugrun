@@ -119,13 +119,19 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // -- Step 8: blend fires.
-      expect(engine.playCalls.last, UtteranceKey.wordHus,
-          reason: 'blend should fire as the LAST call after the third tap');
+      expect(
+        engine.playCalls.last,
+        UtteranceKey.wordHus,
+        reason: 'blend should fire as the LAST call after the third tap',
+      );
 
       // The full call sequence between steps 6 and 8: phonemeS, phonemeH,
       // phonemeUAcute, wordHus — 4 entries.
-      expect(engine.playCalls.length - preCount, 4,
-          reason: 'expected 3 phonemes + 1 blend = 4 new play calls');
+      expect(
+        engine.playCalls.length - preCount,
+        4,
+        reason: 'expected 3 phonemes + 1 blend = 4 new play calls',
+      );
 
       // -- Step 9: pump past auto-advance (~2s) — tile state resets.
       await tester.pump(const Duration(milliseconds: 2200));
@@ -142,9 +148,13 @@ void main() {
       final blendCount2 = engine.playCalls
           .where((k) => k == UtteranceKey.wordHus)
           .length;
-      expect(blendCount2, blendCount1,
-          reason: 'blend should NOT re-fire after auto-advance reset (only '
-              '1 of 3 tapped post-reset)');
+      expect(
+        blendCount2,
+        blendCount1,
+        reason:
+            'blend should NOT re-fire after auto-advance reset (only '
+            '1 of 3 tapped post-reset)',
+      );
 
       // No exceptions throughout.
       expect(tester.takeException(), isNull);

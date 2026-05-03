@@ -50,17 +50,26 @@ void main() {
       expect(phonemeKeyForSlug('xyz_not_a_letter'), isNull);
     });
 
-    test('PR10: every letter in kIcelandicAlphabet resolves to a UtteranceKey',
-        () {
-      // CVC-02 says all 32 letters have a phoneme audio set. Resolver MUST
-      // return a real key for every alphabet member.
-      for (final l in kIcelandicAlphabet) {
-        final k = phonemeKeyForSlug(l.assetSlug);
-        expect(k, isNotNull,
-            reason: 'No phoneme key for letter ${l.glyph} (slug=${l.assetSlug})');
-        expect(UtteranceKey.values, contains(k),
-            reason: 'Resolved key $k for ${l.glyph} not in UtteranceKey enum');
-      }
-    });
+    test(
+      'PR10: every letter in kIcelandicAlphabet resolves to a UtteranceKey',
+      () {
+        // CVC-02 says all 32 letters have a phoneme audio set. Resolver MUST
+        // return a real key for every alphabet member.
+        for (final l in kIcelandicAlphabet) {
+          final k = phonemeKeyForSlug(l.assetSlug);
+          expect(
+            k,
+            isNotNull,
+            reason:
+                'No phoneme key for letter ${l.glyph} (slug=${l.assetSlug})',
+          );
+          expect(
+            UtteranceKey.values,
+            contains(k),
+            reason: 'Resolved key $k for ${l.glyph} not in UtteranceKey enum',
+          );
+        }
+      },
+    );
   });
 }

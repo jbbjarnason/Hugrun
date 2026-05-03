@@ -36,8 +36,7 @@ class _FixedPhotoOverrideSource extends PhotoOverrideSource {
 /// kAudioManifest's exact contents (which is owned by Phase 3).
 Map<UtteranceKey, AudioAsset> _buildFakeManifest({
   required Map<UtteranceKey, AudioAsset> entries,
-}) =>
-    Map<UtteranceKey, AudioAsset>.unmodifiable(entries);
+}) => Map<UtteranceKey, AudioAsset>.unmodifiable(entries);
 
 const _hundurAsset = AudioAsset(
   path: 'assets/audio/letters/words/hundur.aac',
@@ -71,13 +70,15 @@ void main() {
   group('RoundGenerator', () {
     test('G1: only word* manifest entries are eligible as targets', () {
       // Two entries, only one starts with `word`.
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.letterA: const AudioAsset(
-          path: 'assets/audio/letters/names/a.aac',
-          approximateDuration: Duration(milliseconds: 100),
-        ),
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.letterA: const AudioAsset(
+            path: 'assets/audio/letters/names/a.aac',
+            approximateDuration: Duration(milliseconds: 100),
+          ),
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(seed: 1, manifestOverride: manifest);
       // 50 rounds — every one MUST target wordHundur since it's the only
       // word* entry.
@@ -88,9 +89,11 @@ void main() {
     });
 
     test('G2: correct option is always present in options (100 rounds)', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(seed: 2, manifestOverride: manifest);
       for (var i = 0; i < 100; i++) {
         final r = gen.generate();
@@ -103,9 +106,11 @@ void main() {
     });
 
     test('G3: 4 distinct options per round', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(seed: 3, manifestOverride: manifest);
       for (var i = 0; i < 100; i++) {
         final r = gen.generate();
@@ -115,9 +120,11 @@ void main() {
     });
 
     test('G4: correct letter is the first character of the target slug', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(seed: 4, manifestOverride: manifest);
       for (var i = 0; i < 50; i++) {
         final r = gen.generate();
@@ -147,22 +154,22 @@ void main() {
       // Round-level check: for wordHundur (correct = 'h'), no similar pair
       // is in options. (h has no similar pair so this is a baseline; the
       // direct invariant below covers the actual exclusion logic.)
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(seed: 5, manifestOverride: manifest);
       for (var i = 0; i < 50; i++) {
         final r = gen.generate();
         // No two glyphs in options form a similar pair.
         for (var a = 0; a < r.options.length; a++) {
           for (var b = a + 1; b < r.options.length; b++) {
-            final pair = <String>{
-              r.options[a].glyph,
-              r.options[b].glyph,
-            };
+            final pair = <String>{r.options[a].glyph, r.options[b].glyph};
             expect(
-              kSimilarPairs.any((p) => p.length == pair.length &&
-                  p.containsAll(pair)),
+              kSimilarPairs.any(
+                (p) => p.length == pair.length && p.containsAll(pair),
+              ),
               isFalse,
               reason: 'round $i: similar pair $pair must not co-occur',
             );
@@ -184,16 +191,21 @@ void main() {
     });
 
     test('G6: deterministic sequence under fixed seed', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final genA = RoundGenerator(seed: 42, manifestOverride: manifest);
       final genB = RoundGenerator(seed: 42, manifestOverride: manifest);
       final seqA = List<MatchingRound>.generate(10, (_) => genA.generate());
       final seqB = List<MatchingRound>.generate(10, (_) => genB.generate());
       for (var i = 0; i < 10; i++) {
-        expect(seqA[i], equals(seqB[i]),
-            reason: 'round $i must be deterministic under same seed');
+        expect(
+          seqA[i],
+          equals(seqB[i]),
+          reason: 'round $i must be deterministic under same seed',
+        );
       }
     });
 
@@ -201,14 +213,19 @@ void main() {
       final file = File('lib/core/matching/round_generator.dart');
       expect(file.existsSync(), isTrue);
       final src = file.readAsStringSync();
-      expect(src.contains("import 'package:flutter/"), isFalse,
-          reason: 'lib/core/matching/ is pure-Dart per D-05');
+      expect(
+        src.contains("import 'package:flutter/"),
+        isFalse,
+        reason: 'lib/core/matching/ is pure-Dart per D-05',
+      );
     });
 
     test('G8: empty photo source → all rounds are StockPlaceholder', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       final gen = RoundGenerator(
         seed: 8,
         manifestOverride: manifest,
@@ -216,38 +233,50 @@ void main() {
       );
       for (var i = 0; i < 100; i++) {
         final r = gen.generate();
-        expect(r.imageSource, isA<StockPlaceholder>(),
-            reason: 'round $i: empty photo source → stock');
+        expect(
+          r.imageSource,
+          isA<StockPlaceholder>(),
+          reason: 'round $i: empty photo source → stock',
+        );
       }
     });
 
-    test('G9: populated photo source → ~40% photo rounds (1000-trial Bernoulli)',
-        () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
-      const photos = <String, List<String>>{
-        'hundur': <String>['photo-1', 'photo-2', 'photo-3'],
-      };
-      final gen = RoundGenerator(
-        seed: 7,
-        manifestOverride: manifest,
-        photoSource: const _FixedPhotoOverrideSource(photos),
-      );
-      var photoCount = 0;
-      for (var i = 0; i < 1000; i++) {
-        final r = gen.generate();
-        if (r.imageSource is PhotoOverride) photoCount++;
-      }
-      // 40% ± 5% tolerance: [350, 450] inclusive.
-      expect(photoCount, inInclusiveRange(350, 450),
-          reason: 'photo Bernoulli should be ~400/1000 (got $photoCount)');
-    });
+    test(
+      'G9: populated photo source → ~40% photo rounds (1000-trial Bernoulli)',
+      () {
+        final manifest = _buildFakeManifest(
+          entries: <UtteranceKey, AudioAsset>{
+            UtteranceKey.wordHundur: _hundurAsset,
+          },
+        );
+        const photos = <String, List<String>>{
+          'hundur': <String>['photo-1', 'photo-2', 'photo-3'],
+        };
+        final gen = RoundGenerator(
+          seed: 7,
+          manifestOverride: manifest,
+          photoSource: const _FixedPhotoOverrideSource(photos),
+        );
+        var photoCount = 0;
+        for (var i = 0; i < 1000; i++) {
+          final r = gen.generate();
+          if (r.imageSource is PhotoOverride) photoCount++;
+        }
+        // 40% ± 5% tolerance: [350, 450] inclusive.
+        expect(
+          photoCount,
+          inInclusiveRange(350, 450),
+          reason: 'photo Bernoulli should be ~400/1000 (got $photoCount)',
+        );
+      },
+    );
 
     test('G10: photo override picks from configured ID list', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.wordHundur: _hundurAsset,
+        },
+      );
       const validIds = <String>['photo-1', 'photo-2'];
       const photos = <String, List<String>>{'hundur': validIds};
       final gen = RoundGenerator(
@@ -258,19 +287,24 @@ void main() {
       for (var i = 0; i < 100; i++) {
         final r = gen.generate();
         if (r.imageSource case PhotoOverride(:final photoId)) {
-          expect(validIds, contains(photoId),
-              reason: 'round $i picked invalid photoId $photoId');
+          expect(
+            validIds,
+            contains(photoId),
+            reason: 'round $i picked invalid photoId $photoId',
+          );
         }
       }
     });
 
     test('G11: empty word* manifest → StateError', () {
-      final manifest = _buildFakeManifest(entries: <UtteranceKey, AudioAsset>{
-        UtteranceKey.letterA: const AudioAsset(
-          path: 'assets/audio/letters/names/a.aac',
-          approximateDuration: Duration(milliseconds: 100),
-        ),
-      });
+      final manifest = _buildFakeManifest(
+        entries: <UtteranceKey, AudioAsset>{
+          UtteranceKey.letterA: const AudioAsset(
+            path: 'assets/audio/letters/names/a.aac',
+            approximateDuration: Duration(milliseconds: 100),
+          ),
+        },
+      );
       final gen = RoundGenerator(seed: 0, manifestOverride: manifest);
       expect(() => gen.generate(), throwsA(isA<StateError>()));
     });

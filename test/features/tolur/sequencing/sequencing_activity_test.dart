@@ -51,20 +51,21 @@ ProviderScope _wrap({
 }
 
 SequencingRound _sortRound() => SequencingRound(
-      targetSequence: const <int>[1, 2, 3, 4, 5],
-      // Pre-determined scramble so dragging works deterministically.
-      scrambledOrder: const <int>[3, 1, 5, 2, 4],
-    );
+  targetSequence: const <int>[1, 2, 3, 4, 5],
+  // Pre-determined scramble so dragging works deterministically.
+  scrambledOrder: const <int>[3, 1, 5, 2, 4],
+);
 
 SequencingRound _fillMissingRound() => SequencingRound(
-      targetSequence: const <int>[1, 2, 3, 4, 5],
-      scrambledOrder: const <int>[1, 2, 4, 5],
-      missingPosition: 2, // missing value = 3
-    );
+  targetSequence: const <int>[1, 2, 3, 4, 5],
+  scrambledOrder: const <int>[1, 2, 4, 5],
+  missingPosition: 2, // missing value = 3
+);
 
 void main() {
-  testWidgets('Q1: SequencingActivity renders 5 numerals (Sort variant)',
-      (tester) async {
+  testWidgets('Q1: SequencingActivity renders 5 numerals (Sort variant)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -75,13 +76,17 @@ void main() {
 
     // Each numeral 1..5 should be visible (in either source or target slots).
     for (var v = 1; v <= 5; v++) {
-      expect(find.text('$v'), findsAtLeastNWidgets(1),
-          reason: 'numeral $v should render');
+      expect(
+        find.text('$v'),
+        findsAtLeastNWidgets(1),
+        reason: 'numeral $v should render',
+      );
     }
   });
 
-  testWidgets('Q2: FillMissing variant renders 4 candidates + 1 empty slot',
-      (tester) async {
+  testWidgets('Q2: FillMissing variant renders 4 candidates + 1 empty slot', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -126,8 +131,9 @@ void main() {
     );
   });
 
-  testWidgets('Q4: NO audio plays when round starts (no auto-narration)',
-      (tester) async {
+  testWidgets('Q4: NO audio plays when round starts (no auto-narration)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -138,44 +144,56 @@ void main() {
     expect(engine.playCalls, isEmpty);
   });
 
-  testWidgets('Q5: D-12 — wrong drops do NOT trigger audio (silent snap-back)',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final engine = FakeAudioEngine();
-    final gen = _StubGenerator([_sortRound()]);
-    await tester.pumpWidget(_wrap(engine: engine, generator: gen));
-    await tester.pump();
-    await tester.pump();
-    // Use the same test hook to drive a wrong drop — the activity's
-    // public API exposes debugRejectDrop so the widget-test can assert
-    // the silent invariant without a flaky DragTarget gesture.
-    final state = tester.state<SequencingActivityState>(
-      find.byType(SequencingActivity),
-    );
-    state.debugRejectDrop();
-    await tester.pump();
-    expect(engine.playCalls, isEmpty,
-        reason: 'D-12: wrong drops MUST NOT fire audio');
-    expect(engine.stopCallCount, 0,
-        reason: 'D-12: wrong drops MUST NOT call stop()');
-  });
+  testWidgets(
+    'Q5: D-12 — wrong drops do NOT trigger audio (silent snap-back)',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      final gen = _StubGenerator([_sortRound()]);
+      await tester.pumpWidget(_wrap(engine: engine, generator: gen));
+      await tester.pump();
+      await tester.pump();
+      // Use the same test hook to drive a wrong drop — the activity's
+      // public API exposes debugRejectDrop so the widget-test can assert
+      // the silent invariant without a flaky DragTarget gesture.
+      final state = tester.state<SequencingActivityState>(
+        find.byType(SequencingActivity),
+      );
+      state.debugRejectDrop();
+      await tester.pump();
+      expect(
+        engine.playCalls,
+        isEmpty,
+        reason: 'D-12: wrong drops MUST NOT fire audio',
+      );
+      expect(
+        engine.stopCallCount,
+        0,
+        reason: 'D-12: wrong drops MUST NOT call stop()',
+      );
+    },
+  );
 
-  testWidgets('Q6: NUM-08 — no fail-state UI (no error/cancel icons; no score)',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final engine = FakeAudioEngine();
-    final gen = _StubGenerator([_sortRound()]);
-    await tester.pumpWidget(_wrap(engine: engine, generator: gen));
-    await tester.pump();
-    await tester.pump();
-    expect(find.byIcon(Icons.error), findsNothing);
-    expect(find.byIcon(Icons.cancel), findsNothing);
-    expect(find.byIcon(Icons.close), findsNothing);
-  });
+  testWidgets(
+    'Q6: NUM-08 — no fail-state UI (no error/cancel icons; no score)',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      final gen = _StubGenerator([_sortRound()]);
+      await tester.pumpWidget(_wrap(engine: engine, generator: gen));
+      await tester.pump();
+      await tester.pump();
+      expect(find.byIcon(Icons.error), findsNothing);
+      expect(find.byIcon(Icons.cancel), findsNothing);
+      expect(find.byIcon(Icons.close), findsNothing);
+    },
+  );
 
-  testWidgets('Q7: round auto-advances after celebration duration', (tester) async {
+  testWidgets('Q7: round auto-advances after celebration duration', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -196,9 +214,6 @@ void main() {
     // Pump past celebration → new round, celebration gone.
     await tester.pump(MatchingCelebration.duration);
     await tester.pump();
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
   });
 }

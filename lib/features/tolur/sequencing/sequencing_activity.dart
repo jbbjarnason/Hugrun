@@ -31,8 +31,7 @@ class SequencingActivity extends ConsumerStatefulWidget {
   const SequencingActivity({super.key});
 
   @override
-  ConsumerState<SequencingActivity> createState() =>
-      SequencingActivityState();
+  ConsumerState<SequencingActivity> createState() => SequencingActivityState();
 }
 
 /// Public so widget tests + integration tests can drive
@@ -180,14 +179,19 @@ class SequencingActivityState extends ConsumerState<SequencingActivity> {
         Column(
           children: <Widget>[
             // Target row (top half).
-            Expanded(child: _TargetRow(round: round, filled: _filled,
-                onAccept: _onAcceptDrop, onReject: () => _wrongDropCount++)),
+            Expanded(
+              child: _TargetRow(
+                round: round,
+                filled: _filled,
+                onAccept: _onAcceptDrop,
+                onReject: () => _wrongDropCount++,
+              ),
+            ),
             const SizedBox(height: 16),
             // Source row (bottom half).
-            Expanded(child: _SourceRow(
-              round: round,
-              available: _availableSources,
-            )),
+            Expanded(
+              child: _SourceRow(round: round, available: _availableSources),
+            ),
           ],
         ),
         MatchingCelebration(visible: _celebrationVisible),
@@ -262,8 +266,7 @@ class _TargetSlot extends StatelessWidget {
           }
           return true;
         },
-        onAcceptWithDetails: (details) =>
-            onAccept(targetIndex, details.data),
+        onAcceptWithDetails: (details) => onAccept(targetIndex, details.data),
         builder: (context, candidate, rejected) {
           final filled = filledValue;
           final color = filled == null

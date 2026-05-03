@@ -53,13 +53,12 @@ ProviderContainer _makeContainer({
 /// container.dispose runs.
 Future<void> _primeChildName(ProviderContainer container) async {
   final emissions = <String?>[];
-  final sub = container.listen<AsyncValue<String?>>(
-    childNameProvider,
-    (prev, next) {
-      if (next is AsyncData<String?>) emissions.add(next.value);
-    },
-    fireImmediately: true,
-  );
+  final sub = container.listen<AsyncValue<String?>>(childNameProvider, (
+    prev,
+    next,
+  ) {
+    if (next is AsyncData<String?>) emissions.add(next.value);
+  }, fireImmediately: true);
   // Wait for at least one emission.
   for (var i = 0; i < 20 && emissions.isEmpty; i++) {
     await Future<void>.delayed(const Duration(milliseconds: 25));
@@ -133,20 +132,23 @@ void main() {
     },
   );
 
-  test('maybeFireOnce when AudioEngine.play throws does not propagate', () async {
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    await ensureDefaultChildProfile(db);
+  test(
+    'maybeFireOnce when AudioEngine.play throws does not propagate',
+    () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await ensureDefaultChildProfile(db);
 
-    final engine = _RecEngine()..throwOnPlay = true;
-    final container = _makeContainer(db: db, engine: engine);
-    addTearDown(container.dispose);
+      final engine = _RecEngine()..throwOnPlay = true;
+      final container = _makeContainer(db: db, engine: engine);
+      addTearDown(container.dispose);
 
-    await _primeChildName(container);
+      await _primeChildName(container);
 
-    final ctl = container.read(welcomeNarrationControllerProvider.notifier);
-    await ctl.maybeFireOnce();
-    await Future<void>.delayed(const Duration(milliseconds: 50));
-    // Absence of exception IS the assertion.
-  });
+      final ctl = container.read(welcomeNarrationControllerProvider.notifier);
+      await ctl.maybeFireOnce();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      // Absence of exception IS the assertion.
+    },
+  );
 }

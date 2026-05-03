@@ -30,9 +30,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fire-and-forget; controller deduplicates across mounts.
       unawaited(
-        ref
-            .read(welcomeNarrationControllerProvider.notifier)
-            .maybeFireOnce(),
+        ref.read(welcomeNarrationControllerProvider.notifier).maybeFireOnce(),
       );
     });
   }

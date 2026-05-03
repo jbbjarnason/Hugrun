@@ -33,37 +33,51 @@ class SequencingRound {
     int? missingPosition,
   }) {
     if (targetSequence.length != 5) {
-      throw ArgumentError('targetSequence must have exactly 5 entries '
-          '(got ${targetSequence.length})');
+      throw ArgumentError(
+        'targetSequence must have exactly 5 entries '
+        '(got ${targetSequence.length})',
+      );
     }
     for (final v in targetSequence) {
       if (v < 1 || v > 10) {
         throw RangeError.range(
-            v, 1, 10, 'targetSequence value', 'must be in 1..10');
+          v,
+          1,
+          10,
+          'targetSequence value',
+          'must be in 1..10',
+        );
       }
     }
     for (var i = 1; i < targetSequence.length; i++) {
       if (targetSequence[i] != targetSequence[i - 1] + 1) {
-        throw ArgumentError('targetSequence must be contiguous ascending '
-            'integers (got $targetSequence at index $i)');
+        throw ArgumentError(
+          'targetSequence must be contiguous ascending '
+          'integers (got $targetSequence at index $i)',
+        );
       }
     }
     if (missingPosition != null) {
-      if (missingPosition < 0 ||
-          missingPosition >= targetSequence.length) {
-        throw RangeError.range(missingPosition, 0,
-            targetSequence.length - 1, 'missingPosition');
+      if (missingPosition < 0 || missingPosition >= targetSequence.length) {
+        throw RangeError.range(
+          missingPosition,
+          0,
+          targetSequence.length - 1,
+          'missingPosition',
+        );
       }
       if (scrambledOrder.length != targetSequence.length - 1) {
         throw ArgumentError(
-            'FillMissing variant: scrambledOrder must have ${targetSequence.length - 1} '
-            'entries (got ${scrambledOrder.length})');
+          'FillMissing variant: scrambledOrder must have ${targetSequence.length - 1} '
+          'entries (got ${scrambledOrder.length})',
+        );
       }
     } else {
       if (scrambledOrder.length != targetSequence.length) {
         throw ArgumentError(
-            'Sort variant: scrambledOrder must have ${targetSequence.length} '
-            'entries (got ${scrambledOrder.length})');
+          'Sort variant: scrambledOrder must have ${targetSequence.length} '
+          'entries (got ${scrambledOrder.length})',
+        );
       }
     }
     return SequencingRound._(
@@ -108,12 +122,14 @@ class SequencingRound {
 
   @override
   int get hashCode => Object.hash(
-      Object.hashAll(targetSequence),
-      Object.hashAll(scrambledOrder),
-      missingPosition);
+    Object.hashAll(targetSequence),
+    Object.hashAll(scrambledOrder),
+    missingPosition,
+  );
 
   @override
-  String toString() => 'SequencingRound(target=$targetSequence, '
+  String toString() =>
+      'SequencingRound(target=$targetSequence, '
       'scrambled=$scrambledOrder, missing=$missingPosition)';
 
   static bool _listEq(List<int> a, List<int> b) {
@@ -153,9 +169,6 @@ class SequencingRoundGenerator {
       );
     }
     final scrambled = <int>[...target]..shuffle(_rng);
-    return SequencingRound(
-      targetSequence: target,
-      scrambledOrder: scrambled,
-    );
+    return SequencingRound(targetSequence: target, scrambledOrder: scrambled);
   }
 }

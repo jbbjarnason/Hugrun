@@ -11,15 +11,15 @@ import 'package:hugrun/features/stafir/matching/matching_celebration.dart';
 
 void main() {
   Widget host(bool visible) => MaterialApp(
-        home: Scaffold(
-          body: Stack(
-            children: <Widget>[
-              const SizedBox.expand(),
-              MatchingCelebration(visible: visible),
-            ],
-          ),
-        ),
-      );
+    home: Scaffold(
+      body: Stack(
+        children: <Widget>[
+          const SizedBox.expand(),
+          MatchingCelebration(visible: visible),
+        ],
+      ),
+    ),
+  );
 
   testWidgets('C1: visible: false renders no active marker', (tester) async {
     await tester.pumpWidget(host(false));
@@ -42,8 +42,9 @@ void main() {
     expect(icons, findsWidgets);
   });
 
-  testWidgets('C3: animation drives opacity + scale to 1.0 after duration',
-      (tester) async {
+  testWidgets('C3: animation drives opacity + scale to 1.0 after duration', (
+    tester,
+  ) async {
     // Build hidden first.
     await tester.pumpWidget(host(false));
     await tester.pump();
@@ -56,8 +57,11 @@ void main() {
     final opacityWidgets = tester
         .widgetList<Opacity>(find.byType(Opacity))
         .where((o) => o.opacity > 0.99);
-    expect(opacityWidgets, isNotEmpty,
-        reason: 'opacity should reach ~1.0 after forward animation');
+    expect(
+      opacityWidgets,
+      isNotEmpty,
+      reason: 'opacity should reach ~1.0 after forward animation',
+    );
   });
 
   testWidgets('C4: NO star or trophy or digit text', (tester) async {
@@ -67,13 +71,17 @@ void main() {
     expect(find.byIcon(Icons.star_border), findsNothing);
     expect(find.byIcon(Icons.emoji_events), findsNothing);
     // No text containing digits.
-    expect(find.byWidgetPredicate(
-      (w) => w is Text && (w.data ?? '').contains(RegExp(r'\d')),
-    ), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Text && (w.data ?? '').contains(RegExp(r'\d')),
+      ),
+      findsNothing,
+    );
   });
 
-  testWidgets('C5: positioned via Positioned.fill + IgnorePointer',
-      (tester) async {
+  testWidgets('C5: positioned via Positioned.fill + IgnorePointer', (
+    tester,
+  ) async {
     await tester.pumpWidget(host(true));
     await tester.pump();
     // The active subtree includes an IgnorePointer wrapping the icon stack.

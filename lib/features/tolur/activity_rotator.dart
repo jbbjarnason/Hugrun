@@ -49,9 +49,7 @@ class ActivityRotator extends StatefulWidget {
 /// Public so widget tests can inspect [debugCurrent] and call
 /// [debugAdvance] without driving real round completions.
 class ActivityRotatorState extends State<ActivityRotator> {
-  late final Random _rng = widget.seed != null
-      ? Random(widget.seed)
-      : Random();
+  late final Random _rng = widget.seed != null ? Random(widget.seed) : Random();
   late TolurActivity _current;
 
   @override

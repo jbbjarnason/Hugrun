@@ -100,7 +100,11 @@ void main() {
     final welcomeCountAfterPop = engine.playCalls
         .where((k) => k.name.startsWith('narration'))
         .length;
-    expect(welcomeCountAfterPop, 1, reason: 'welcome fires only once per session');
+    expect(
+      welcomeCountAfterPop,
+      1,
+      reason: 'welcome fires only once per session',
+    );
   });
 
   testWidgets('rapid retap on the same letter cancels and re-plays', (

@@ -10,7 +10,6 @@ import '../../../core/numbers/subitizing_round.dart';
 
 /// App-scoped seedable [SubitizingRoundGenerator]. Default uses
 /// timestamp-seeded `Random()` (no seed arg).
-final subitizingRoundGeneratorProvider =
-    Provider<SubitizingRoundGenerator>(
+final subitizingRoundGeneratorProvider = Provider<SubitizingRoundGenerator>(
   (ref) => SubitizingRoundGenerator(),
 );

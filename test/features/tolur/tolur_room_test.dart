@@ -29,9 +29,7 @@ import '../../../integration_test/test_helpers/fake_audio_engine.dart';
 
 ProviderScope _wrap({required FakeAudioEngine engine, Widget? child}) {
   return ProviderScope(
-    overrides: [
-      audioEngineProvider.overrideWith((ref) => engine),
-    ],
+    overrides: [audioEngineProvider.overrideWith((ref) => engine)],
     child: MaterialApp(home: child ?? const TolurRoom()),
   );
 }
@@ -76,8 +74,9 @@ void main() {
 
   // -- Phase 8 ---------------------------------------------------------------
 
-  testWidgets('T1: TolurRoom renders exactly 10 NumberTile widgets (NUM-01)',
-      (tester) async {
+  testWidgets('T1: TolurRoom renders exactly 10 NumberTile widgets (NUM-01)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -93,13 +92,17 @@ void main() {
     await tester.pumpWidget(_wrap(engine: engine));
     await tester.pumpAndSettle();
     for (var i = 1; i <= 10; i++) {
-      expect(find.text('$i'), findsOneWidget,
-          reason: 'digit $i should render once in the grid');
+      expect(
+        find.text('$i'),
+        findsOneWidget,
+        reason: 'digit $i should render once in the grid',
+      );
     }
   });
 
-  testWidgets('T3: tapping digit 1 fires numberOneMasc (D-08 — abstract = M)',
-      (tester) async {
+  testWidgets('T3: tapping digit 1 fires numberOneMasc (D-08 — abstract = M)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -111,8 +114,9 @@ void main() {
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.numberOneMasc]);
   });
 
-  testWidgets('T4: tapping digit 4 fires numberFourMasc (1-4 are gendered)',
-      (tester) async {
+  testWidgets('T4: tapping digit 4 fires numberFourMasc (1-4 are gendered)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -124,8 +128,9 @@ void main() {
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.numberFourMasc]);
   });
 
-  testWidgets('T5: tapping digit 7 fires numberSeven (5..10 invariant)',
-      (tester) async {
+  testWidgets('T5: tapping digit 7 fires numberSeven (5..10 invariant)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -137,8 +142,9 @@ void main() {
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.numberSeven]);
   });
 
-  testWidgets('T6: tapping all 10 in order produces 10 distinct play calls',
-      (tester) async {
+  testWidgets('T6: tapping all 10 in order produces 10 distinct play calls', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -172,16 +178,18 @@ void main() {
     expect(find.byType(TolurModeToggle), findsOneWidget);
   });
 
-  testWidgets('TR2: TolurRoom defaults to TapToHear mode (NumberGrid visible)',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final engine = FakeAudioEngine();
-    await tester.pumpWidget(_wrap(engine: engine));
-    await tester.pumpAndSettle();
-    expect(find.byType(NumberGrid), findsOneWidget);
-    expect(find.byType(ActivityRotator), findsNothing);
-  });
+  testWidgets(
+    'TR2: TolurRoom defaults to TapToHear mode (NumberGrid visible)',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      await tester.pumpWidget(_wrap(engine: engine));
+      await tester.pumpAndSettle();
+      expect(find.byType(NumberGrid), findsOneWidget);
+      expect(find.byType(ActivityRotator), findsNothing);
+    },
+  );
 
   testWidgets('TR3: setting mode=activity swaps body to ActivityRotator '
       '(Phase 9 D-15)', (tester) async {
@@ -199,7 +207,8 @@ void main() {
     expect(find.byType(ActivityRotator), findsOneWidget);
     // The rotator picks one of the 4 activities; sequencing is always one
     // of them (legacy from Phase 8).
-    final hasOneActivity = (find.byType(SequencingActivity).evaluate().length +
+    final hasOneActivity =
+        (find.byType(SequencingActivity).evaluate().length +
             // Other activity types tested in dedicated rotator test;
             // here we only assert rotator mounts.
             0) >=
@@ -207,8 +216,9 @@ void main() {
     expect(hasOneActivity, isTrue);
   });
 
-  testWidgets('T7: NUM-08 — no fail UI / no score / no extra digit text',
-      (tester) async {
+  testWidgets('T7: NUM-08 — no fail UI / no score / no extra digit text', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -223,8 +233,12 @@ void main() {
       final s = t.data ?? '';
       return RegExp(r'\d').hasMatch(s);
     }).toList();
-    expect(allDigits.length, 10,
-        reason: 'expected 10 digit glyphs (1..10); '
-            'extra digit-bearing Text would be a score/streak/timer leak');
+    expect(
+      allDigits.length,
+      10,
+      reason:
+          'expected 10 digit glyphs (1..10); '
+          'extra digit-bearing Text would be a score/streak/timer leak',
+    );
   });
 }

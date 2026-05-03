@@ -72,110 +72,105 @@ File _writeFakeJpeg(String path, int w, int h) {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets(
-    'Phase 10 — upload photo → tag with hundur → persists in '
-    'photo_tags → DriftPhotoOverrideSource feeds matching activity',
-    (tester) async {
-      final docs = await Directory.systemTemp.createTemp('hugrun_e2e_');
-      addTearDown(() async {
-        if (docs.existsSync()) await docs.delete(recursive: true);
-      });
+  testWidgets('Phase 10 — upload photo → tag with hundur → persists in '
+      'photo_tags → DriftPhotoOverrideSource feeds matching activity', (
+    tester,
+  ) async {
+    final docs = await Directory.systemTemp.createTemp('hugrun_e2e_');
+    addTearDown(() async {
+      if (docs.existsSync()) await docs.delete(recursive: true);
+    });
 
-      final db = AppDatabase.forTesting(NativeDatabase.memory());
-      addTearDown(db.close);
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
 
-      // Hand-build a deterministic repo that uses our temp docs dir.
-      final repo = PhotoRepository(
-        db: db,
-        docsDirProvider: () async => docs,
-        idGenerator: () => 'fixed-uuid',
-      );
+    // Hand-build a deterministic repo that uses our temp docs dir.
+    final repo = PhotoRepository(
+      db: db,
+      docsDirProvider: () async => docs,
+      idGenerator: () => 'fixed-uuid',
+    );
 
-      final fixturePath = p.join(docs.path, 'fixture_hundur.jpg');
-      final fixture = _writeFakeJpeg(fixturePath, 800, 600);
+    final fixturePath = p.join(docs.path, 'fixture_hundur.jpg');
+    final fixture = _writeFakeJpeg(fixturePath, 800, 600);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            appDatabaseProvider.overrideWithValue(db),
-            photoPickerProvider.overrideWithValue(_StubPhotoPicker(fixture)),
-            photoRepositoryFacadeProvider.overrideWithValue(
-              PhotoRepositoryFacade(
-                addPhoto: repo.addPhoto,
-                listPhotos: repo.listPhotos,
-                deletePhoto: repo.deletePhoto,
-              ),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          photoPickerProvider.overrideWithValue(_StubPhotoPicker(fixture)),
+          photoRepositoryFacadeProvider.overrideWithValue(
+            PhotoRepositoryFacade(
+              addPhoto: repo.addPhoto,
+              listPhotos: repo.listPhotos,
+              deletePhoto: repo.deletePhoto,
             ),
-          ],
-          child: const MaterialApp(home: PhotoUploadScreen()),
-        ),
+          ),
+        ],
+        child: const MaterialApp(home: PhotoUploadScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 1. Empty state visible.
+    expect(find.text('Engar myndir enn'), findsOneWidget);
+
+    // 2. Tap FAB → picker → LexiconPicker.
+    await tester.tap(find.byKey(const Key('photo-upload-add-fab')));
+    await tester.pumpAndSettle();
+    expect(find.text('Veldu orð'), findsOneWidget);
+
+    // 3. Tap "hundur" — scroll to it first if not visible.
+    final hundurFinder = find.byKey(const Key('lexicon-tile-hundur'));
+    if (hundurFinder.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(
+        hundurFinder,
+        300.0,
+        scrollable: find.byType(Scrollable).first,
       );
-      await tester.pumpAndSettle();
+    }
+    await tester.tap(hundurFinder);
+    await tester.pumpAndSettle();
 
-      // 1. Empty state visible.
-      expect(find.text('Engar myndir enn'), findsOneWidget);
+    // 4. SnackBar confirms.
+    expect(find.text('Mynd vistuð fyrir "hundur"'), findsOneWidget);
 
-      // 2. Tap FAB → picker → LexiconPicker.
-      await tester.tap(find.byKey(const Key('photo-upload-add-fab')));
-      await tester.pumpAndSettle();
-      expect(find.text('Veldu orð'), findsOneWidget);
+    // 5. Database has the row.
+    final rows = await db
+        .customSelect('SELECT image_path, lexicon_word FROM photo_tags')
+        .get();
+    expect(rows, hasLength(1));
+    expect(rows.first.read<String>('lexicon_word'), 'hundur');
+    expect(rows.first.read<String>('image_path'), endsWith('fixed-uuid.jpg'));
 
-      // 3. Tap "hundur" — scroll to it first if not visible.
-      final hundurFinder = find.byKey(const Key('lexicon-tile-hundur'));
-      if (hundurFinder.evaluate().isEmpty) {
-        await tester.scrollUntilVisible(
-          hundurFinder,
-          300.0,
-          scrollable: find.byType(Scrollable).first,
-        );
-      }
-      await tester.tap(hundurFinder);
-      await tester.pumpAndSettle();
+    // 6. Saved file exists at the persisted path.
+    final savedPath = rows.first.read<String>('image_path');
+    expect(File(savedPath).existsSync(), isTrue);
 
-      // 4. SnackBar confirms.
-      expect(find.text('Mynd vistuð fyrir "hundur"'), findsOneWidget);
+    // 7. DriftPhotoOverrideSource picks up the row + feeds
+    //    RoundGenerator with photoFrequency = 1.0 → guaranteed override.
+    final source = DriftPhotoOverrideSource(db);
+    addTearDown(source.dispose);
+    // Allow the watch stream to populate the cache.
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    // Force-prime the cache too (belt + suspenders for fast test runs).
+    await source.refresh();
 
-      // 5. Database has the row.
-      final rows = await db
-          .customSelect('SELECT image_path, lexicon_word FROM photo_tags')
-          .get();
-      expect(rows, hasLength(1));
-      expect(rows.first.read<String>('lexicon_word'), 'hundur');
-      expect(
-        rows.first.read<String>('image_path'),
-        endsWith('fixed-uuid.jpg'),
-      );
+    final hundurPhotos = source.photosForWordSlug('hundur');
+    expect(hundurPhotos, hasLength(1));
+    expect(hundurPhotos.first, savedPath);
 
-      // 6. Saved file exists at the persisted path.
-      final savedPath = rows.first.read<String>('image_path');
-      expect(File(savedPath).existsSync(), isTrue);
-
-      // 7. DriftPhotoOverrideSource picks up the row + feeds
-      //    RoundGenerator with photoFrequency = 1.0 → guaranteed override.
-      final source = DriftPhotoOverrideSource(db);
-      addTearDown(source.dispose);
-      // Allow the watch stream to populate the cache.
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-      // Force-prime the cache too (belt + suspenders for fast test runs).
-      await source.refresh();
-
-      final hundurPhotos = source.photosForWordSlug('hundur');
-      expect(hundurPhotos, hasLength(1));
-      expect(hundurPhotos.first, savedPath);
-
-      final gen = RoundGenerator(
-        seed: 0,
-        manifestOverride: const <UtteranceKey, AudioAsset>{
-          UtteranceKey.wordHundur: _hundurAsset,
-        },
-        photoSource: source,
-        photoFrequency: 1.0,
-      );
-      final round = gen.generate();
-      expect(round.targetWordSlug, 'hundur');
-      expect(round.imageSource, isA<PhotoOverride>());
-      expect((round.imageSource as PhotoOverride).photoId, savedPath);
-    },
-    timeout: const Timeout(Duration(seconds: 30)),
-  );
+    final gen = RoundGenerator(
+      seed: 0,
+      manifestOverride: const <UtteranceKey, AudioAsset>{
+        UtteranceKey.wordHundur: _hundurAsset,
+      },
+      photoSource: source,
+      photoFrequency: 1.0,
+    );
+    final round = gen.generate();
+    expect(round.targetWordSlug, 'hundur');
+    expect(round.imageSource, isA<PhotoOverride>());
+    expect((round.imageSource as PhotoOverride).photoId, savedPath);
+  }, timeout: const Timeout(Duration(seconds: 30)));
 }

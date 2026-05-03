@@ -21,39 +21,42 @@ import 'package:hugrun/features/stafir/matching/matching_providers.dart';
 import 'package:hugrun/features/stafir/matching/matching_round_image.dart';
 
 MatchingRound _stockRound() => MatchingRound(
-      targetWordKey: UtteranceKey.wordHundur,
-      targetWordSlug: 'hundur',
-      correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-      options: <dynamic>[
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
-      ].cast(),
-      imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
-    );
+  targetWordKey: UtteranceKey.wordHundur,
+  targetWordSlug: 'hundur',
+  correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+  options: <dynamic>[
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
+  ].cast(),
+  imageSource: const ImageSource.stockPlaceholder(wordSlug: 'hundur'),
+);
 
 MatchingRound _photoRound(String photoId) => MatchingRound(
-      targetWordKey: UtteranceKey.wordHundur,
-      targetWordSlug: 'hundur',
-      correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-      options: <dynamic>[
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
-        kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
-      ].cast(),
-      imageSource: ImageSource.photoOverride(photoId: photoId),
-    );
+  targetWordKey: UtteranceKey.wordHundur,
+  targetWordSlug: 'hundur',
+  correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+  options: <dynamic>[
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
+  ].cast(),
+  imageSource: ImageSource.photoOverride(photoId: photoId),
+);
 
 void main() {
   group('providers', () {
-    test('P1: photoOverrideSourceProvider returns EmptyPhotoOverrideSource', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      final src = container.read(photoOverrideSourceProvider);
-      expect(src, isA<EmptyPhotoOverrideSource>());
-    });
+    test(
+      'P1: photoOverrideSourceProvider returns EmptyPhotoOverrideSource',
+      () {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        final src = container.read(photoOverrideSourceProvider);
+        expect(src, isA<EmptyPhotoOverrideSource>());
+      },
+    );
 
     test('P2: roundGeneratorProvider returns a working RoundGenerator', () {
       final container = ProviderContainer();
@@ -71,64 +74,67 @@ void main() {
   /// errorBuilder fallback path renders the slug as text. Mirrors the
   /// `zz_no_asset` pattern used in example_word_overlay_test.dart.
   MatchingRound missingAssetRound() => MatchingRound(
-        targetWordKey: UtteranceKey.wordHundur,
-        targetWordSlug: 'zz_no_asset',
-        correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-        options: <dynamic>[
-          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
-          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
-          kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
-          kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
-        ].cast(),
-        imageSource: const ImageSource.stockPlaceholder(wordSlug: 'zz_no_asset'),
-      );
+    targetWordKey: UtteranceKey.wordHundur,
+    targetWordSlug: 'zz_no_asset',
+    correctLetter: kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+    options: <dynamic>[
+      kIcelandicAlphabet.firstWhere((l) => l.glyph == 'h'),
+      kIcelandicAlphabet.firstWhere((l) => l.glyph == 'b'),
+      kIcelandicAlphabet.firstWhere((l) => l.glyph == 'k'),
+      kIcelandicAlphabet.firstWhere((l) => l.glyph == 's'),
+    ].cast(),
+    imageSource: const ImageSource.stockPlaceholder(wordSlug: 'zz_no_asset'),
+  );
 
   group('MatchingRoundImage', () {
     Widget wrap(MatchingRound round) => ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: SizedBox(
-                width: 600,
-                height: 400,
-                child: MatchingRoundImage(round: round),
-              ),
-            ),
+      child: MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 600,
+            height: 400,
+            child: MatchingRoundImage(round: round),
           ),
+        ),
+      ),
+    );
+
+    testWidgets(
+      'I1: StockPlaceholder with shipped lexicon image renders Image.asset',
+      (tester) async {
+        // Phase 11 baked `assets/images/letters/words/hundur.webp` so the
+        // matching round's StockPlaceholder now resolves to that asset
+        // instead of the text-on-color placeholder.
+        await tester.pumpWidget(wrap(_stockRound()));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('matching-stock-placeholder-hundur')),
+          findsOneWidget,
         );
+        // Image renders; no text fallback is mounted when the asset succeeds.
+        expect(find.byType(Image), findsOneWidget);
+        expect(find.text('hundur'), findsNothing);
+      },
+    );
 
     testWidgets(
-        'I1: StockPlaceholder with shipped lexicon image renders Image.asset',
-        (tester) async {
-      // Phase 11 baked `assets/images/letters/words/hundur.webp` so the
-      // matching round's StockPlaceholder now resolves to that asset
-      // instead of the text-on-color placeholder.
-      await tester.pumpWidget(wrap(_stockRound()));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const Key('matching-stock-placeholder-hundur')),
-        findsOneWidget,
-      );
-      // Image renders; no text fallback is mounted when the asset succeeds.
-      expect(find.byType(Image), findsOneWidget);
-      expect(find.text('hundur'), findsNothing);
-    });
+      'I1b: StockPlaceholder with missing asset falls back to slug text',
+      (tester) async {
+        await tester.pumpWidget(wrap(missingAssetRound()));
+        // Pump multiple frames so Image.asset's errorBuilder fires for the
+        // missing asset path.
+        await tester.pumpAndSettle();
+        expect(find.text('zz_no_asset'), findsOneWidget);
+        expect(
+          find.byKey(const Key('matching-stock-placeholder-zz_no_asset')),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets(
-        'I1b: StockPlaceholder with missing asset falls back to slug text',
-        (tester) async {
-      await tester.pumpWidget(wrap(missingAssetRound()));
-      // Pump multiple frames so Image.asset's errorBuilder fires for the
-      // missing asset path.
-      await tester.pumpAndSettle();
-      expect(find.text('zz_no_asset'), findsOneWidget);
-      expect(
-        find.byKey(const Key('matching-stock-placeholder-zz_no_asset')),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('I2: PhotoOverride renders with photoId-keyed placeholder',
-        (tester) async {
+    testWidgets('I2: PhotoOverride renders with photoId-keyed placeholder', (
+      tester,
+    ) async {
       await tester.pumpWidget(wrap(_photoRound('photo-uuid-7')));
       await tester.pump();
       expect(
@@ -140,8 +146,9 @@ void main() {
       expect(find.text('photo-uuid-7'), findsOneWidget);
     });
 
-    testWidgets('I3: widget centers content and expands to parent width',
-        (tester) async {
+    testWidgets('I3: widget centers content and expands to parent width', (
+      tester,
+    ) async {
       await tester.pumpWidget(wrap(_stockRound()));
       await tester.pumpAndSettle();
       // The placeholder Container should occupy 80% of parent width = 480.
@@ -162,9 +169,12 @@ void main() {
       // Exactly one Text — the slug label rendered by the errorBuilder.
       expect(find.byType(Text), findsOneWidget);
       // No digits anywhere — no scores or counters.
-      expect(find.byWidgetPredicate(
-        (w) => w is Text && (w.data ?? '').contains(RegExp(r'\d')),
-      ), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Text && (w.data ?? '').contains(RegExp(r'\d')),
+        ),
+        findsNothing,
+      );
     });
   });
 }

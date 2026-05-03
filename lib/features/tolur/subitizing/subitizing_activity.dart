@@ -34,8 +34,7 @@ class SubitizingActivity extends ConsumerStatefulWidget {
   const SubitizingActivity({super.key});
 
   @override
-  ConsumerState<SubitizingActivity> createState() =>
-      SubitizingActivityState();
+  ConsumerState<SubitizingActivity> createState() => SubitizingActivityState();
 }
 
 enum _SubitizingPhase { flash, question, celebration }
@@ -121,9 +120,7 @@ class SubitizingActivityState extends ConsumerState<SubitizingActivity> {
             ),
           ],
         ),
-        MatchingCelebration(
-          visible: _phase == _SubitizingPhase.celebration,
-        ),
+        MatchingCelebration(visible: _phase == _SubitizingPhase.celebration),
       ],
     );
   }
@@ -151,9 +148,11 @@ class _DotFlashArea extends StatelessWidget {
               children: <Widget>[
                 for (var i = 0; i < round.dotPositions.length; i++)
                   Positioned(
-                    left: round.dotPositions[i].x *
+                    left:
+                        round.dotPositions[i].x *
                         (constraints.maxWidth * 0.7 - 60),
-                    top: round.dotPositions[i].y *
+                    top:
+                        round.dotPositions[i].y *
                         (constraints.maxHeight * 0.85 - 60),
                     child: const _Dot(),
                   ),
@@ -204,11 +203,7 @@ class _NumeralOptionsRow extends StatelessWidget {
 }
 
 class _NumeralOption extends StatelessWidget {
-  const _NumeralOption({
-    super.key,
-    required this.value,
-    required this.onTap,
-  });
+  const _NumeralOption({super.key, required this.value, required this.onTap});
 
   final int value;
   final VoidCallback onTap;

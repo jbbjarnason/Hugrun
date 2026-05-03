@@ -106,10 +106,7 @@ void main() {
       await tester.tap(find.byKey(const Key('letter-tile-9-h')));
       await tester.pump();
       // No exception, and the engine wasn't called for this tile.
-      expect(
-        engine.playCalls.where((k) => k.name == 'letterH'),
-        isEmpty,
-      );
+      expect(engine.playCalls.where((k) => k.name == 'letterH'), isEmpty);
     },
   );
 
@@ -130,7 +127,9 @@ void main() {
   //  Plan 05-03 — mode toggle tests S1..S7
   // ============================================================
 
-  testWidgets('S1: default mode is letters — LetterGrid mounted', (tester) async {
+  testWidgets('S1: default mode is letters — LetterGrid mounted', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -140,8 +139,7 @@ void main() {
     expect(find.byType(MatchingActivity), findsNothing);
   });
 
-  testWidgets('S2: StafirModeToggle is mounted in top-right',
-      (tester) async {
+  testWidgets('S2: StafirModeToggle is mounted in top-right', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -155,8 +153,9 @@ void main() {
     expect(scaffoldRect.right - toggleRect.right, lessThan(32));
   });
 
-  testWidgets('S3: programmatic mode swap shows MatchingActivity',
-      (tester) async {
+  testWidgets('S3: programmatic mode swap shows MatchingActivity', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -188,24 +187,27 @@ void main() {
     expect(find.byType(MatchingActivity), findsNothing);
   });
 
-  testWidgets('S4b: programmatic mode swap to cvc shows CvcActivity (Phase 6)',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets(
+    'S4b: programmatic mode swap to cvc shows CvcActivity (Phase 6)',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(_wrap());
-    await tester.pump();
-    final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
-    state.debugSetMode(StafirMode.cvc);
-    await tester.pump();
-    await tester.pump();
-    expect(find.byType(CvcActivity), findsOneWidget);
-    expect(find.byType(LetterGrid), findsNothing);
-    expect(find.byType(MatchingActivity), findsNothing);
-  });
+      await tester.pumpWidget(_wrap());
+      await tester.pump();
+      final state = tester.state<StafirRoomState>(find.byType(StafirRoom));
+      state.debugSetMode(StafirMode.cvc);
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(CvcActivity), findsOneWidget);
+      expect(find.byType(LetterGrid), findsNothing);
+      expect(find.byType(MatchingActivity), findsNothing);
+    },
+  );
 
-  testWidgets('S4c: cvc → letters → match cycle preserves room',
-      (tester) async {
+  testWidgets('S4c: cvc → letters → match cycle preserves room', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -297,8 +299,9 @@ void main() {
     expect(find.byType(AppBar), findsNothing);
   });
 
-  testWidgets('S7: toggle does not capture letter taps in same coordinate',
-      (tester) async {
+  testWidgets('S7: toggle does not capture letter taps in same coordinate', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 

@@ -35,7 +35,8 @@ class ResolvedUtterance {
 /// pairings once the live audio is reviewed and approved. The shape is
 /// stable; only values change. Resolver does NOT hardcode any pairing —
 /// it reads this map at call time.
-const Map<UtteranceKey, UtteranceKey> kLetterToWord = <UtteranceKey, UtteranceKey>{
+const Map<UtteranceKey, UtteranceKey>
+kLetterToWord = <UtteranceKey, UtteranceKey>{
   // Phase 2 stub state: no useful pairings yet.
   // Phase 3 will populate (e.g. UtteranceKey.letterH → UtteranceKey.wordHundur)
   // once that letterH symbol exists in the enum.

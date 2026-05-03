@@ -92,9 +92,7 @@ class StafirRoomState extends ConsumerState<StafirRoom> {
             },
             // Letters-mode-only example word overlay.
             if (_mode == StafirMode.letters)
-              IgnorePointer(
-                child: ExampleWordOverlay(controller: _overlayCtl),
-              ),
+              IgnorePointer(child: ExampleWordOverlay(controller: _overlayCtl)),
             // Mode toggle, top-right corner. 3-second hold is required
             // to swap modes (D-01 — kid-safe, accident-resistant).
             Positioned(
@@ -102,8 +100,7 @@ class StafirRoomState extends ConsumerState<StafirRoom> {
               right: 8,
               child: StafirModeToggle(
                 currentMode: _mode,
-                onToggle: () =>
-                    setState(() => _mode = _mode.next),
+                onToggle: () => setState(() => _mode = _mode.next),
               ),
             ),
           ],

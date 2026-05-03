@@ -58,12 +58,18 @@ sealed class ImageSource with _$ImageSource {
 ///   - the slug is the human-readable thing the placeholder/photo uses.
 @Freezed()
 abstract class MatchingRound with _$MatchingRound {
-  @Assert('options.length == 4',
-      'MatchingRound: options must contain exactly 4 letters')
-  @Assert('options.toSet().length == 4',
-      'MatchingRound: options must contain no duplicate letters')
-  @Assert('options.contains(correctLetter)',
-      'MatchingRound: correctLetter must appear in options')
+  @Assert(
+    'options.length == 4',
+    'MatchingRound: options must contain exactly 4 letters',
+  )
+  @Assert(
+    'options.toSet().length == 4',
+    'MatchingRound: options must contain no duplicate letters',
+  )
+  @Assert(
+    'options.contains(correctLetter)',
+    'MatchingRound: correctLetter must appear in options',
+  )
   factory MatchingRound({
     required UtteranceKey targetWordKey,
     required String targetWordSlug,

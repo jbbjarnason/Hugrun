@@ -24,8 +24,11 @@ class PhotoRepositoryFacade {
     required this.deletePhoto,
   });
 
-  final Future<String> Function({required File source, required LexiconEntry tag})
-      addPhoto;
+  final Future<String> Function({
+    required File source,
+    required LexiconEntry tag,
+  })
+  addPhoto;
   final Future<List<PhotoTag>> Function() listPhotos;
   final Future<void> Function(int id) deletePhoto;
 }
@@ -36,14 +39,12 @@ final photoPickerProvider = Provider<PhotoPicker>(
 );
 
 /// Production [PhotoRepositoryFacade] wired to the Drift app database.
-final photoRepositoryFacadeProvider = Provider<PhotoRepositoryFacade>(
-  (ref) {
-    final repo = PhotoRepository(db: ref.watch(appDatabaseProvider));
-    return PhotoRepositoryFacade(
-      addPhoto: ({required File source, required LexiconEntry tag}) =>
-          repo.addPhoto(source: source, tag: tag),
-      listPhotos: repo.listPhotos,
-      deletePhoto: repo.deletePhoto,
-    );
-  },
-);
+final photoRepositoryFacadeProvider = Provider<PhotoRepositoryFacade>((ref) {
+  final repo = PhotoRepository(db: ref.watch(appDatabaseProvider));
+  return PhotoRepositoryFacade(
+    addPhoto: ({required File source, required LexiconEntry tag}) =>
+        repo.addPhoto(source: source, tag: tag),
+    listPhotos: repo.listPhotos,
+    deletePhoto: repo.deletePhoto,
+  );
+});

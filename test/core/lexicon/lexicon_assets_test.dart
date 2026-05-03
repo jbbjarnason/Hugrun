@@ -38,7 +38,8 @@ void main() {
         expect(
           path,
           endsWith('.webp'),
-          reason: 'kStarterLexicon[${entry.word}] should reference a .webp '
+          reason:
+              'kStarterLexicon[${entry.word}] should reference a .webp '
               'asset, got: $path',
         );
         if (!File(path).existsSync()) {
@@ -49,7 +50,8 @@ void main() {
       expect(
         missing,
         isEmpty,
-        reason: 'Lexicon image files missing — ExampleWordOverlay will fall '
+        reason:
+            'Lexicon image files missing — ExampleWordOverlay will fall '
             'back to text-on-color placeholders for these entries:\n'
             '  ${missing.join('\n  ')}\n'
             'Run: python3 tools/images/generate_lexicon_images.py',
@@ -67,7 +69,8 @@ void main() {
       expect(
         missing,
         isEmpty,
-        reason: 'Auxiliary slug image files missing (used by '
+        reason:
+            'Auxiliary slug image files missing (used by '
             'lib/core/numbers/correspondence_round.dart):\n'
             '  ${missing.join('\n  ')}',
       );
@@ -92,33 +95,37 @@ void main() {
       expect(
         oversized,
         isEmpty,
-        reason: 'Some lexicon images exceed the 200KB-per-image budget:\n'
+        reason:
+            'Some lexicon images exceed the 200KB-per-image budget:\n'
             '  ${oversized.join('\n  ')}',
       );
     });
 
-    test('every image filename uses lowercase ASCII (matches D-06 / slug rules)',
-        () {
-      final dir = Directory(_kImageDir);
-      if (!dir.existsSync()) {
-        fail('Image directory does not exist: $_kImageDir');
-      }
-      final pattern = RegExp(r'^[a-z0-9._-]+$');
-      final bad = <String>[];
-      for (final f in dir.listSync()) {
-        if (f is! File) continue;
-        final name = f.uri.pathSegments.last;
-        if (name == '.gitkeep') continue;
-        if (!pattern.hasMatch(name)) {
-          bad.add(name);
+    test(
+      'every image filename uses lowercase ASCII (matches D-06 / slug rules)',
+      () {
+        final dir = Directory(_kImageDir);
+        if (!dir.existsSync()) {
+          fail('Image directory does not exist: $_kImageDir');
         }
-      }
-      expect(
-        bad,
-        isEmpty,
-        reason: 'Lexicon image filenames violate D-06 (lowercase ASCII '
-            '[a-z0-9._-] only):\n  ${bad.join('\n  ')}',
-      );
-    });
+        final pattern = RegExp(r'^[a-z0-9._-]+$');
+        final bad = <String>[];
+        for (final f in dir.listSync()) {
+          if (f is! File) continue;
+          final name = f.uri.pathSegments.last;
+          if (name == '.gitkeep') continue;
+          if (!pattern.hasMatch(name)) {
+            bad.add(name);
+          }
+        }
+        expect(
+          bad,
+          isEmpty,
+          reason:
+              'Lexicon image filenames violate D-06 (lowercase ASCII '
+              '[a-z0-9._-] only):\n  ${bad.join('\n  ')}',
+        );
+      },
+    );
   });
 }

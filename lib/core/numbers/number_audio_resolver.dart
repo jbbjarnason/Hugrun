@@ -24,8 +24,13 @@ import 'numbers.dart';
 /// (picture-object counting) will pass the depicted noun's gender.
 UtteranceKey numberAudioKey(int value, Gender gender) {
   if (value < 1 || value > 10) {
-    throw RangeError.range(value, 1, 10, 'value',
-        'numberAudioKey: value must be 1..10');
+    throw RangeError.range(
+      value,
+      1,
+      10,
+      'value',
+      'numberAudioKey: value must be 1..10',
+    );
   }
   final entry = kIcelandicNumbers[value - 1];
   if (value >= 5) {

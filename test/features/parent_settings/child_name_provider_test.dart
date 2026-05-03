@@ -24,13 +24,12 @@ void main() {
 
       // Listen first so the stream subscribes; then await first emission.
       final emissions = <String?>[];
-      final sub = container.listen<AsyncValue<String?>>(
-        childNameProvider,
-        (prev, next) {
-          if (next is AsyncData<String?>) emissions.add(next.value);
-        },
-        fireImmediately: true,
-      );
+      final sub = container.listen<AsyncValue<String?>>(childNameProvider, (
+        prev,
+        next,
+      ) {
+        if (next is AsyncData<String?>) emissions.add(next.value);
+      }, fireImmediately: true);
       // Allow stream to deliver.
       await Future<void>.delayed(const Duration(milliseconds: 100));
       sub.close();
@@ -38,58 +37,62 @@ void main() {
     },
   );
 
-  test('childNameProvider streams updated value when DAO upsertName fires', () async {
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    await ensureDefaultChildProfile(db);
+  test(
+    'childNameProvider streams updated value when DAO upsertName fires',
+    () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await ensureDefaultChildProfile(db);
 
-    final container = ProviderContainer(
-      overrides: [appDatabaseProvider.overrideWithValue(db)],
-    );
-    addTearDown(container.dispose);
+      final container = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(container.dispose);
 
-    // Subscribe and capture emissions.
-    final emissions = <String?>[];
-    final sub = container.listen<AsyncValue<String?>>(
-      childNameProvider,
-      (_, value) {
+      // Subscribe and capture emissions.
+      final emissions = <String?>[];
+      final sub = container.listen<AsyncValue<String?>>(childNameProvider, (
+        _,
+        value,
+      ) {
         if (value is AsyncData<String?>) {
           emissions.add(value.value);
         }
-      },
-      fireImmediately: true,
-    );
-    // Wait for the initial 'Hugrún'.
-    await Future<void>.delayed(const Duration(milliseconds: 50));
-    expect(emissions.last, 'Hugrún');
+      }, fireImmediately: true);
+      // Wait for the initial 'Hugrún'.
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(emissions.last, 'Hugrún');
 
-    await db.childProfilesDao.upsertName(name: 'Anna');
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    expect(emissions.contains('Anna'), isTrue);
+      await db.childProfilesDao.upsertName(name: 'Anna');
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(emissions.contains('Anna'), isTrue);
 
-    sub.close();
-  });
+      sub.close();
+    },
+  );
 
-  test('childNameProvider emits null when child_profiles table is empty', () async {
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    // No bootstrap — table is empty.
+  test(
+    'childNameProvider emits null when child_profiles table is empty',
+    () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      // No bootstrap — table is empty.
 
-    final container = ProviderContainer(
-      overrides: [appDatabaseProvider.overrideWithValue(db)],
-    );
-    addTearDown(container.dispose);
+      final container = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(container.dispose);
 
-    final emissions = <String?>[];
-    final sub = container.listen<AsyncValue<String?>>(
-      childNameProvider,
-      (prev, next) {
+      final emissions = <String?>[];
+      final sub = container.listen<AsyncValue<String?>>(childNameProvider, (
+        prev,
+        next,
+      ) {
         if (next is AsyncData<String?>) emissions.add(next.value);
-      },
-      fireImmediately: true,
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    sub.close();
-    expect(emissions, contains(null));
-  });
+      }, fireImmediately: true);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      sub.close();
+      expect(emissions, contains(null));
+    },
+  );
 }

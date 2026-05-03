@@ -27,10 +27,7 @@ class DriftPhotoOverrideSource extends PhotoOverrideSource {
     // Initial best-effort prime; result discarded.
     unawaited(refresh());
     // Stay warm: every photo_tags change rebuilds the cache.
-    _sub = _db
-        .select(_db.photoTags)
-        .watch()
-        .listen((rows) => _rebuild(rows));
+    _sub = _db.select(_db.photoTags).watch().listen((rows) => _rebuild(rows));
   }
 
   final AppDatabase _db;
@@ -57,9 +54,9 @@ class DriftPhotoOverrideSource extends PhotoOverrideSource {
   /// tests and one-off lookups. Production code should prefer [refresh] +
   /// [photosForWordSlug] so the cache stays consistent.
   Future<List<String>> photosForWordSlugAsync(String wordSlug) async {
-    final rows = await (_db.select(_db.photoTags)
-          ..where((t) => t.lexiconWord.equals(wordSlug)))
-        .get();
+    final rows = await (_db.select(
+      _db.photoTags,
+    )..where((t) => t.lexiconWord.equals(wordSlug))).get();
     return rows.map((r) => r.imagePath).toList();
   }
 

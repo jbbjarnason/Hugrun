@@ -56,7 +56,8 @@ void main() {
 
   group('parseGlyphJson', () {
     test('parses a valid 1-stroke glyph and returns a TraceGlyph', () {
-      const raw = '{"character":"l",'
+      const raw =
+          '{"character":"l",'
           '"strokes":["M 0 0 L 100 0 L 100 100 L 0 100 Z"],'
           '"medians":[[[50,0],[50,100]]],'
           '"radStrokes":[]}';
@@ -73,7 +74,8 @@ void main() {
     });
 
     test('throws FormatException on stroke/median count mismatch', () {
-      const raw = '{"character":"x",'
+      const raw =
+          '{"character":"x",'
           '"strokes":["M 0 0 L 1 1 Z","M 0 0 L 2 2 Z"],'
           '"medians":[[[0,0],[1,1]]]}';
       expect(() => parseGlyphJson(raw), throwsFormatException);
@@ -85,7 +87,8 @@ void main() {
     });
 
     test('preserves diacritic glyphs (e.g. á)', () {
-      const raw = '{"character":"á",'
+      const raw =
+          '{"character":"á",'
           '"strokes":["M 0 0 L 1 1 Z","M 0 0 L 2 2 Z"],'
           '"medians":[[[0,0],[100,100]],[[200,800],[300,850]]],'
           '"radStrokes":[]}';
@@ -139,10 +142,16 @@ void main() {
       final glyphs = loadAllShippedGlyphs();
       for (final entry in glyphs.entries) {
         final g = entry.value;
-        expect(g.strokes.length, greaterThanOrEqualTo(1),
-            reason: '${entry.key} has 0 strokes');
-        expect(g.strokes.length, g.medians.length,
-            reason: '${entry.key} stroke/median count mismatch');
+        expect(
+          g.strokes.length,
+          greaterThanOrEqualTo(1),
+          reason: '${entry.key} has 0 strokes',
+        );
+        expect(
+          g.strokes.length,
+          g.medians.length,
+          reason: '${entry.key} stroke/median count mismatch',
+        );
       }
     });
 
@@ -159,34 +168,40 @@ void main() {
       }
     });
 
-    test('Pitfall §2 — diacritic letters have ≥2 strokes and accent is LAST',
-        () {
-      final glyphs = loadAllShippedGlyphs();
-      for (final slug in _diacriticSlugs) {
-        final g = glyphs[slug]!;
-        expect(g.strokes.length, greaterThanOrEqualTo(2),
-            reason: '$slug should have ≥2 strokes (body + accent)');
-        // The accent is the LAST stroke; its median should be entirely
-        // ABOVE (= higher Y in MMAH document space — i.e. greater y) the
-        // body strokes' medians.
-        final lastMedian = g.medians.last;
-        final lastMinY = lastMedian
-            .map((p) => p[1])
-            .reduce((a, b) => a < b ? a : b);
-        for (var i = 0; i < g.medians.length - 1; i++) {
-          final priorMedian = g.medians[i];
-          final priorMaxY = priorMedian
-              .map((p) => p[1])
-              .reduce((a, b) => a > b ? a : b);
+    test(
+      'Pitfall §2 — diacritic letters have ≥2 strokes and accent is LAST',
+      () {
+        final glyphs = loadAllShippedGlyphs();
+        for (final slug in _diacriticSlugs) {
+          final g = glyphs[slug]!;
           expect(
-            lastMinY,
-            greaterThanOrEqualTo(priorMaxY),
-            reason: '$slug: accent stroke (last) should be above '
-                'prior stroke $i in MMAH Y (y-up)',
+            g.strokes.length,
+            greaterThanOrEqualTo(2),
+            reason: '$slug should have ≥2 strokes (body + accent)',
           );
+          // The accent is the LAST stroke; its median should be entirely
+          // ABOVE (= higher Y in MMAH document space — i.e. greater y) the
+          // body strokes' medians.
+          final lastMedian = g.medians.last;
+          final lastMinY = lastMedian
+              .map((p) => p[1])
+              .reduce((a, b) => a < b ? a : b);
+          for (var i = 0; i < g.medians.length - 1; i++) {
+            final priorMedian = g.medians[i];
+            final priorMaxY = priorMedian
+                .map((p) => p[1])
+                .reduce((a, b) => a > b ? a : b);
+            expect(
+              lastMinY,
+              greaterThanOrEqualTo(priorMaxY),
+              reason:
+                  '$slug: accent stroke (last) should be above '
+                  'prior stroke $i in MMAH Y (y-up)',
+            );
+          }
         }
-      }
-    });
+      },
+    );
 
     test('Icelandic-specific ð has exactly 2 strokes (body + cross-bar)', () {
       final g = loadAllShippedGlyphs()['eth']!;
@@ -198,34 +213,41 @@ void main() {
       expect(g.strokes.length, 2);
     });
 
-    test(
-      'every shipped JSON is valid MMAH (json structure check)',
-      () {
-        for (final letter in kIcelandicAlphabet) {
-          final path = 'assets/tracing/${letter.assetSlug}.json';
-          final raw = File(path).readAsStringSync();
-          final decoded = jsonDecode(raw) as Map<String, dynamic>;
-          expect(decoded.containsKey('character'), isTrue,
-              reason: '$path missing "character"');
-          expect(decoded.containsKey('strokes'), isTrue,
-              reason: '$path missing "strokes"');
-          expect(decoded.containsKey('medians'), isTrue,
-              reason: '$path missing "medians"');
-        }
-      },
-    );
-
-    test('two-part Icelandic letters (ð, þ) and diacritics are accounted for',
-        () {
-      // Sanity check on the two manifest sets at the top of this file.
-      for (final s in _diacriticSlugs.followedBy(_twoPartIcelandicSlugs)) {
+    test('every shipped JSON is valid MMAH (json structure check)', () {
+      for (final letter in kIcelandicAlphabet) {
+        final path = 'assets/tracing/${letter.assetSlug}.json';
+        final raw = File(path).readAsStringSync();
+        final decoded = jsonDecode(raw) as Map<String, dynamic>;
         expect(
-          kIcelandicAlphabet.where((l) => l.assetSlug == s),
-          isNotEmpty,
-          reason: '$s not in kIcelandicAlphabet',
+          decoded.containsKey('character'),
+          isTrue,
+          reason: '$path missing "character"',
+        );
+        expect(
+          decoded.containsKey('strokes'),
+          isTrue,
+          reason: '$path missing "strokes"',
+        );
+        expect(
+          decoded.containsKey('medians'),
+          isTrue,
+          reason: '$path missing "medians"',
         );
       }
     });
+
+    test(
+      'two-part Icelandic letters (ð, þ) and diacritics are accounted for',
+      () {
+        // Sanity check on the two manifest sets at the top of this file.
+        for (final s in _diacriticSlugs.followedBy(_twoPartIcelandicSlugs)) {
+          expect(
+            kIcelandicAlphabet.where((l) => l.assetSlug == s),
+            isNotEmpty,
+            reason: '$s not in kIcelandicAlphabet',
+          );
+        }
+      },
+    );
   });
 }
-

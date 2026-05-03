@@ -154,9 +154,7 @@ TraceGlyph parseGlyphJson(String rawJson) {
       );
     }
     if (m.length < 2) {
-      throw FormatException(
-        'Glyph JSON median $i has fewer than 2 points',
-      );
+      throw FormatException('Glyph JSON median $i has fewer than 2 points');
     }
     final stroke = <List<double>>[];
     for (var j = 0; j < m.length; j++) {

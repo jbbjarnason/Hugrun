@@ -10,7 +10,6 @@ import '../../../core/numbers/sequencing_round.dart';
 
 /// App-scoped seedable [SequencingRoundGenerator]. Default uses the
 /// Random.secure-style timestamp seeding via `Random()` (no seed arg).
-final sequencingRoundGeneratorProvider =
-    Provider<SequencingRoundGenerator>(
+final sequencingRoundGeneratorProvider = Provider<SequencingRoundGenerator>(
   (ref) => SequencingRoundGenerator(),
 );

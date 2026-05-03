@@ -65,6 +65,7 @@ class CvcWord {
   int get hashCode => Object.hash(word, c1, v, c2, wordClip);
 
   @override
-  String toString() => 'CvcWord($word: ${c1.glyph}-${v.glyph}-${c2.glyph}, '
+  String toString() =>
+      'CvcWord($word: ${c1.glyph}-${v.glyph}-${c2.glyph}, '
       'clip=${wordClip.name})';
 }

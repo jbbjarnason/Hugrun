@@ -47,10 +47,14 @@ class _RecordingEngine extends AudioEngine {
   final List<UtteranceKey> playCalls = <UtteranceKey>[];
 
   @override
-  Future<void> warmUp() async {/* no-op for tests */}
+  Future<void> warmUp() async {
+    /* no-op for tests */
+  }
 
   @override
-  Future<void> dispose() async {/* no-op */}
+  Future<void> dispose() async {
+    /* no-op */
+  }
 
   @override
   Future<void> play(UtteranceKey key) async {
@@ -58,7 +62,9 @@ class _RecordingEngine extends AudioEngine {
   }
 
   @override
-  Future<void> stop() async {/* no-op */}
+  Future<void> stop() async {
+    /* no-op */
+  }
 }
 
 Map<IcelandicLetter, TraceGlyph> _loadAllShippedGlyphs() {
@@ -88,8 +94,9 @@ Widget _wrap({
       audioEngineProvider.overrideWith((ref) => engine),
       traceDataProvider.overrideWith((ref) async => glyphs),
       if (forcedLetter != null)
-        tracingCurrentLetterProvider
-            .overrideWith(() => _ForcedLetterNotifier(forcedLetter)),
+        tracingCurrentLetterProvider.overrideWith(
+          () => _ForcedLetterNotifier(forcedLetter),
+        ),
     ],
     child: const MaterialApp(home: Scaffold(body: TracingActivity())),
   );
@@ -108,40 +115,36 @@ void main() {
       expect(key, isA<UtteranceKey>());
     });
 
-    test(
-      'falls back to narrationWelcome when celebration not in enum',
-      () {
-        final key = selectCelebrationKey();
-        // narrationWelcome ALWAYS exists (Phase 2 stub guarantee).
-        expect(
-          <UtteranceKey>{
-            UtteranceKey.narrationWelcome,
-            // narrationCelebrationTracing is the preferred key — the
-            // function MAY return either depending on enum state.
-          }.contains(key) ||
-              key.name == 'narrationCelebrationTracing',
-          isTrue,
-        );
-      },
-    );
+    test('falls back to narrationWelcome when celebration not in enum', () {
+      final key = selectCelebrationKey();
+      // narrationWelcome ALWAYS exists (Phase 2 stub guarantee).
+      expect(
+        <UtteranceKey>{
+              UtteranceKey.narrationWelcome,
+              // narrationCelebrationTracing is the preferred key — the
+              // function MAY return either depending on enum state.
+            }.contains(key) ||
+            key.name == 'narrationCelebrationTracing',
+        isTrue,
+      );
+    });
   });
 
   // -----------------------------------------------------------------
   //  T1  Mounts a StrokeOrderAnimator for the active letter
   // -----------------------------------------------------------------
-  testWidgets('T1: mounts a StrokeOrderAnimator for the current letter',
-      (tester) async {
+  testWidgets('T1: mounts a StrokeOrderAnimator for the current letter', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final glyphs = _loadAllShippedGlyphs();
     final letter = kIcelandicAlphabet.firstWhere((l) => l.glyph == 'a');
 
-    await tester.pumpWidget(_wrap(
-      engine: _RecordingEngine(),
-      glyphs: glyphs,
-      forcedLetter: letter,
-    ));
+    await tester.pumpWidget(
+      _wrap(engine: _RecordingEngine(), glyphs: glyphs, forcedLetter: letter),
+    );
     // First pump: build empty (Future is loading or post-frame pending).
     // Second pump: Future resolves; build() requests a controller via
     // addPostFrameCallback. Third pump: setState after callback.
@@ -154,17 +157,20 @@ void main() {
   // -----------------------------------------------------------------
   //  T2  No fail/pass UI surface
   // -----------------------------------------------------------------
-  testWidgets('T2: no LinearProgressIndicator, no error/check icons',
-      (tester) async {
+  testWidgets('T2: no LinearProgressIndicator, no error/check icons', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final glyphs = _loadAllShippedGlyphs();
-    await tester.pumpWidget(_wrap(
-      engine: _RecordingEngine(),
-      glyphs: glyphs,
-      forcedLetter: kIcelandicAlphabet.first,
-    ));
+    await tester.pumpWidget(
+      _wrap(
+        engine: _RecordingEngine(),
+        glyphs: glyphs,
+        forcedLetter: kIcelandicAlphabet.first,
+      ),
+    );
     await tester.pump();
     expect(find.byType(LinearProgressIndicator), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -178,17 +184,20 @@ void main() {
   //  T3  No text instructions visible to the child (STAFIR-08 spirit
   //       extended to tracing per Phase 7 D-09)
   // -----------------------------------------------------------------
-  testWidgets('T3: no Text widgets show user-facing instructions',
-      (tester) async {
+  testWidgets('T3: no Text widgets show user-facing instructions', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final glyphs = _loadAllShippedGlyphs();
-    await tester.pumpWidget(_wrap(
-      engine: _RecordingEngine(),
-      glyphs: glyphs,
-      forcedLetter: kIcelandicAlphabet.first,
-    ));
+    await tester.pumpWidget(
+      _wrap(
+        engine: _RecordingEngine(),
+        glyphs: glyphs,
+        forcedLetter: kIcelandicAlphabet.first,
+      ),
+    );
     await tester.pump();
     // Allow at most one Text widget — the optional letter glyph header.
     // Either way: no instruction-style strings.
@@ -198,8 +207,10 @@ void main() {
         .toList();
     for (final s in texts) {
       // No instruction-y words.
-      expect(s.toLowerCase(),
-          isNot(anyOf(contains('try'), contains('start'), contains('begin'))));
+      expect(
+        s.toLowerCase(),
+        isNot(anyOf(contains('try'), contains('start'), contains('begin'))),
+      );
     }
   });
 
@@ -214,21 +225,27 @@ void main() {
 
       final engine = _RecordingEngine();
       final glyphs = _loadAllShippedGlyphs();
-      await tester.pumpWidget(_wrap(
-        engine: engine,
-        glyphs: glyphs,
-        forcedLetter: kIcelandicAlphabet.first,
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          engine: engine,
+          glyphs: glyphs,
+          forcedLetter: kIcelandicAlphabet.first,
+        ),
+      );
       await tester.pump();
 
       // Find the activity state and invoke the test-only completion hook.
-      final state =
-          tester.state<TracingActivityState>(find.byType(TracingActivity));
+      final state = tester.state<TracingActivityState>(
+        find.byType(TracingActivity),
+      );
       state.debugCompleteForTesting();
       await tester.pump(const Duration(milliseconds: 50));
 
-      expect(engine.playCalls, isNotEmpty,
-          reason: 'celebration audio should fire on quiz complete');
+      expect(
+        engine.playCalls,
+        isNotEmpty,
+        reason: 'celebration audio should fire on quiz complete',
+      );
       final last = engine.playCalls.last;
       // Either narrationCelebrationTracing (preferred) or narrationWelcome
       // (fallback) is acceptable.
@@ -245,8 +262,9 @@ void main() {
   // -----------------------------------------------------------------
   //  T5  Auto-advance — current letter changes after celebration
   // -----------------------------------------------------------------
-  testWidgets('T5: auto-advances to a new letter after celebration',
-      (tester) async {
+  testWidgets('T5: auto-advances to a new letter after celebration', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -254,18 +272,21 @@ void main() {
     final glyphs = _loadAllShippedGlyphs();
     final initialLetter = kIcelandicAlphabet.firstWhere((l) => l.glyph == 'a');
 
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        audioEngineProvider.overrideWith((ref) => engine),
-        traceDataProvider.overrideWith((ref) async => glyphs),
-      ],
-      child: const MaterialApp(home: Scaffold(body: TracingActivity())),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          audioEngineProvider.overrideWith((ref) => engine),
+          traceDataProvider.overrideWith((ref) async => glyphs),
+        ],
+        child: const MaterialApp(home: Scaffold(body: TracingActivity())),
+      ),
+    );
     await tester.pump();
 
     // Capture the initial letter from the state.
-    final state1 =
-        tester.state<TracingActivityState>(find.byType(TracingActivity));
+    final state1 = tester.state<TracingActivityState>(
+      find.byType(TracingActivity),
+    );
     final letterBefore = state1.debugCurrentLetter;
 
     state1.debugCompleteForTesting();
@@ -273,8 +294,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
     await tester.pump(const Duration(milliseconds: 1300));
     await tester.pump();
-    final state2 =
-        tester.state<TracingActivityState>(find.byType(TracingActivity));
+    final state2 = tester.state<TracingActivityState>(
+      find.byType(TracingActivity),
+    );
     final letterAfter = state2.debugCurrentLetter;
 
     // With 32 letters and random selection, identical letter is possible
@@ -289,9 +311,11 @@ void main() {
       current = state2.debugCurrentLetter;
       advances++;
     }
-    expect(current, isNot(letterBefore),
-        reason:
-            'auto-advance should pick a different letter within 5 attempts');
+    expect(
+      current,
+      isNot(letterBefore),
+      reason: 'auto-advance should pick a different letter within 5 attempts',
+    );
     // Initial start letter should also have rendered without explicit
     // override — it is selected at random from the 32-letter pool.
     expect(kIcelandicAlphabet, contains(letterBefore));
@@ -305,30 +329,37 @@ void main() {
   //  callback fires `onWrongStrokeCallback` — we just confirm nothing
   //  user-facing changes (no audio plays, no error chrome).
   // -----------------------------------------------------------------
-  testWidgets('T6: wrong-stroke triggers NO audio + NO error chrome',
-      (tester) async {
+  testWidgets('T6: wrong-stroke triggers NO audio + NO error chrome', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final engine = _RecordingEngine();
     final glyphs = _loadAllShippedGlyphs();
-    await tester.pumpWidget(_wrap(
-      engine: engine,
-      glyphs: glyphs,
-      forcedLetter: kIcelandicAlphabet.first,
-    ));
+    await tester.pumpWidget(
+      _wrap(
+        engine: engine,
+        glyphs: glyphs,
+        forcedLetter: kIcelandicAlphabet.first,
+      ),
+    );
     await tester.pump();
     // Mounting produced zero plays.
     expect(engine.playCalls, isEmpty);
 
     // Simulating "wrong stroke" via the test hook on the activity.
-    final state =
-        tester.state<TracingActivityState>(find.byType(TracingActivity));
+    final state = tester.state<TracingActivityState>(
+      find.byType(TracingActivity),
+    );
     state.debugWrongStrokeForTesting();
     await tester.pump();
     // Wrong-stroke is silent — no celebration, no negative cue.
-    expect(engine.playCalls, isEmpty,
-        reason: 'wrong stroke must NOT fire audio (TRACE-03/04, no fail UI)');
+    expect(
+      engine.playCalls,
+      isEmpty,
+      reason: 'wrong stroke must NOT fire audio (TRACE-03/04, no fail UI)',
+    );
     expect(find.byIcon(Icons.error), findsNothing);
     expect(find.byIcon(Icons.cancel), findsNothing);
   });

@@ -46,22 +46,21 @@ ProviderScope _wrap({
         (ref) => const EmptyPhotoOverrideSource(),
       ),
     ],
-    child: MaterialApp(
-      home: Scaffold(body: child ?? const MatchingActivity()),
-    ),
+    child: MaterialApp(home: Scaffold(body: child ?? const MatchingActivity())),
   );
 }
 
 RoundGenerator _hundurOnlyGenerator(int seed) => RoundGenerator(
-      seed: seed,
-      manifestOverride: <UtteranceKey, AudioAsset>{
-        UtteranceKey.wordHundur: _hundurAsset,
-      },
-    );
+  seed: seed,
+  manifestOverride: <UtteranceKey, AudioAsset>{
+    UtteranceKey.wordHundur: _hundurAsset,
+  },
+);
 
 void main() {
-  testWidgets('A1: layout — 1 image, 4 LetterTiles, 1 (hidden) celebration',
-      (tester) async {
+  testWidgets('A1: layout — 1 image, 4 LetterTiles, 1 (hidden) celebration', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -75,14 +74,12 @@ void main() {
     expect(find.byType(LetterTile), findsNWidgets(4));
     // Celebration is mounted but hidden.
     expect(find.byType(MatchingCelebration), findsOneWidget);
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
   });
 
-  testWidgets('A2: each LetterTile receives kIcelandicAlphabet index',
-      (tester) async {
+  testWidgets('A2: each LetterTile receives kIcelandicAlphabet index', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -96,8 +93,11 @@ void main() {
         .toList();
     for (final t in tiles) {
       final expectedIndex = kIcelandicAlphabet.indexOf(t.letter);
-      expect(t.letterIndex, expectedIndex,
-          reason: 'tile for ${t.letter.glyph} should have index $expectedIndex');
+      expect(
+        t.letterIndex,
+        expectedIndex,
+        reason: 'tile for ${t.letter.glyph} should have index $expectedIndex',
+      );
     }
   });
 
@@ -112,8 +112,9 @@ void main() {
     expect(engine.playCalls, isEmpty);
   });
 
-  testWidgets('A4 (CRITICAL — MATCH-02): wrong tap is completely silent',
-      (tester) async {
+  testWidgets('A4 (CRITICAL — MATCH-02): wrong tap is completely silent', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -134,20 +135,31 @@ void main() {
     await tester.tap(wrongFinder);
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(engine.playCalls, isEmpty,
-        reason: 'wrong tap MUST NOT trigger audio (MATCH-02)');
-    expect(engine.stopCallCount, 0,
-        reason: 'wrong tap MUST NOT trigger stop()');
-    expect(find.byKey(const Key('matching-celebration-active')), findsNothing,
-        reason: 'wrong tap MUST NOT show celebration');
+    expect(
+      engine.playCalls,
+      isEmpty,
+      reason: 'wrong tap MUST NOT trigger audio (MATCH-02)',
+    );
+    expect(
+      engine.stopCallCount,
+      0,
+      reason: 'wrong tap MUST NOT trigger stop()',
+    );
+    expect(
+      find.byKey(const Key('matching-celebration-active')),
+      findsNothing,
+      reason: 'wrong tap MUST NOT show celebration',
+    );
 
     // Tap a second wrong letter — same invariants hold.
     final secondWrongTile = tiles.firstWhere(
       (t) => t.letter.glyph != 'h' && t.letter != wrongTile.letter,
     );
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == secondWrongTile.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == secondWrongTile.letter,
+      ),
+    );
     await tester.pump(const Duration(milliseconds: 100));
     expect(engine.playCalls, isEmpty);
     expect(engine.stopCallCount, 0);
@@ -167,9 +179,11 @@ void main() {
         .widgetList<LetterTile>(find.byType(LetterTile))
         .toList();
     final correctTile = tiles.firstWhere((t) => t.letter.glyph == 'h');
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == correctTile.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == correctTile.letter,
+      ),
+    );
     await tester.pump();
 
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.wordHundur]);
@@ -184,8 +198,9 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('A6: auto-advance generates a new round after duration',
-      (tester) async {
+  testWidgets('A6: auto-advance generates a new round after duration', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -200,9 +215,11 @@ void main() {
         .widgetList<LetterTile>(find.byType(LetterTile))
         .toList();
     final correctTile = tiles.firstWhere((t) => t.letter.glyph == 'h');
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == correctTile.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == correctTile.letter,
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(
@@ -214,10 +231,7 @@ void main() {
     await tester.pump(MatchingCelebration.duration);
     await tester.pump();
     // Celebration is now hidden again — auto-advance fired.
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
     // 4 tiles still rendered for the new round.
     expect(find.byType(LetterTile), findsNWidgets(4));
   });
@@ -237,9 +251,9 @@ void main() {
     final wrongs = tiles.where((t) => t.letter.glyph != 'h').toList();
     for (var i = 0; i < 5; i++) {
       final t = wrongs[i % wrongs.length];
-      await tester.tap(find.byWidgetPredicate(
-        (w) => w is LetterTile && w.letter == t.letter,
-      ));
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is LetterTile && w.letter == t.letter),
+      );
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(find.byIcon(Icons.error), findsNothing);
@@ -268,7 +282,8 @@ void main() {
     for (final forbidden in <String>['score', 'streak', 'timer', 'count']) {
       expect(
         find.byWidgetPredicate(
-          (w) => w.key is ValueKey<String> &&
+          (w) =>
+              w.key is ValueKey<String> &&
               ((w.key! as ValueKey<String>).value).toLowerCase().contains(
                 forbidden,
               ),
@@ -279,8 +294,9 @@ void main() {
     }
   });
 
-  testWidgets('A9: rapid wrong then correct — only correct dispatches audio',
-      (tester) async {
+  testWidgets('A9: rapid wrong then correct — only correct dispatches audio', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -295,13 +311,17 @@ void main() {
     final wrong = tiles.firstWhere((t) => t.letter.glyph != 'h');
     final correct = tiles.firstWhere((t) => t.letter.glyph == 'h');
 
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == wrong.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == wrong.letter,
+      ),
+    );
     // No pump in between — same frame.
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == correct.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == correct.letter,
+      ),
+    );
     await tester.pump();
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.wordHundur]);
     // Drain auto-advance.
@@ -309,8 +329,9 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('A10: exactly 4 LetterTile widgets (no duplicate tile class)',
-      (tester) async {
+  testWidgets('A10: exactly 4 LetterTile widgets (no duplicate tile class)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -321,8 +342,9 @@ void main() {
     expect(find.byType(LetterTile).evaluate().length, 4);
   });
 
-  testWidgets('A11: pending auto-advance Timer is safe across unmount',
-      (tester) async {
+  testWidgets('A11: pending auto-advance Timer is safe across unmount', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -335,9 +357,11 @@ void main() {
         .widgetList<LetterTile>(find.byType(LetterTile))
         .toList();
     final correct = tiles.firstWhere((t) => t.letter.glyph == 'h');
-    await tester.tap(find.byWidgetPredicate(
-      (w) => w is LetterTile && w.letter == correct.letter,
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is LetterTile && w.letter == correct.letter,
+      ),
+    );
     await tester.pump();
 
     // Replace the entire app with a different widget (unmounts the

@@ -111,23 +111,23 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       body: photos == null
           ? const Center(child: CircularProgressIndicator())
           : photos.isEmpty
-              ? const _EmptyState()
-              : ListView.builder(
-                  itemCount: photos.length,
-                  itemBuilder: (context, i) {
-                    final tag = photos[i];
-                    return ListTile(
-                      key: Key('photo-row-${tag.id}'),
-                      leading: SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: _PhotoThumbnail(path: tag.imagePath),
-                      ),
-                      title: Text(tag.lexiconWord),
-                      onLongPress: () => _confirmDelete(tag),
-                    );
-                  },
-                ),
+          ? const _EmptyState()
+          : ListView.builder(
+              itemCount: photos.length,
+              itemBuilder: (context, i) {
+                final tag = photos[i];
+                return ListTile(
+                  key: Key('photo-row-${tag.id}'),
+                  leading: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: _PhotoThumbnail(path: tag.imagePath),
+                  ),
+                  title: Text(tag.lexiconWord),
+                  onLongPress: () => _confirmDelete(tag),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         key: const Key('photo-upload-add-fab'),
         onPressed: _onAddPhotoPressed,

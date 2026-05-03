@@ -64,9 +64,7 @@ void main() {
       // At least one player has a setAsset OR setAudioSource call AFTER warmUp.
       final dispatchedCalls = t.fakes
           .expand((p) => p.calls)
-          .where(
-            (c) => c.method == 'setAsset' || c.method == 'setAudioSource',
-          );
+          .where((c) => c.method == 'setAsset' || c.method == 'setAudioSource');
       expect(
         dispatchedCalls.where((c) {
           if (c.method == 'setAsset') {
@@ -164,61 +162,67 @@ void main() {
       },
     );
 
-    test('play() with missing manifest entry logs warning and does NOT throw', () async {
-      final fakes = <FakeAudioPlayer>[];
-      // Manifest that intentionally lacks letterA.
-      const sparseManifest = <UtteranceKey, AudioAsset>{
-        UtteranceKey.narrationWelcome: AudioAsset(
-          path: 'assets/audio/narration/welcome_hugrun.aac',
-          approximateDuration: Duration(milliseconds: 100),
-        ),
-      };
-      final engine = AudioEngine(
-        playerFactory: () {
-          final p = FakeAudioPlayer();
-          fakes.add(p);
-          return p;
-        },
-        manifestOverride: sparseManifest,
-      );
-      await engine.warmUp();
-      // Should not throw, returns silently.
-      expect(
-        () => engine.play(UtteranceKey.letterA),
-        returnsNormally,
-      );
-    });
+    test(
+      'play() with missing manifest entry logs warning and does NOT throw',
+      () async {
+        final fakes = <FakeAudioPlayer>[];
+        // Manifest that intentionally lacks letterA.
+        const sparseManifest = <UtteranceKey, AudioAsset>{
+          UtteranceKey.narrationWelcome: AudioAsset(
+            path: 'assets/audio/narration/welcome_hugrun.aac',
+            approximateDuration: Duration(milliseconds: 100),
+          ),
+        };
+        final engine = AudioEngine(
+          playerFactory: () {
+            final p = FakeAudioPlayer();
+            fakes.add(p);
+            return p;
+          },
+          manifestOverride: sparseManifest,
+        );
+        await engine.warmUp();
+        // Should not throw, returns silently.
+        expect(() => engine.play(UtteranceKey.letterA), returnsNormally);
+      },
+    );
 
-    test('play() returns a Future that completes (does not deadlock)', () async {
-      final t = makeEngine();
-      await t.engine.warmUp();
-      // Bound the await so a hang in play() shows up as a test timeout.
-      await t.engine
-          .play(UtteranceKey.letterA)
-          .timeout(const Duration(milliseconds: 500));
-    });
+    test(
+      'play() returns a Future that completes (does not deadlock)',
+      () async {
+        final t = makeEngine();
+        await t.engine.warmUp();
+        // Bound the await so a hang in play() shows up as a test timeout.
+        await t.engine
+            .play(UtteranceKey.letterA)
+            .timeout(const Duration(milliseconds: 500));
+      },
+    );
 
-    test('play() with a paired word queues both clips via setAudioSources', () async {
-      final t = makeEngine(
-        pairingOverride: const <UtteranceKey, UtteranceKey>{
-          UtteranceKey.letterA: UtteranceKey.wordHundur,
-        },
-      );
-      await t.engine.warmUp();
-      await t.engine.play(UtteranceKey.letterA);
+    test(
+      'play() with a paired word queues both clips via setAudioSources',
+      () async {
+        final t = makeEngine(
+          pairingOverride: const <UtteranceKey, UtteranceKey>{
+            UtteranceKey.letterA: UtteranceKey.wordHundur,
+          },
+        );
+        await t.engine.warmUp();
+        await t.engine.play(UtteranceKey.letterA);
 
-      // At least one fake should have received a setAudioSources call (the
-      // playlist path), NOT a setAsset (single-clip path).
-      final hasSetSources = t.fakes.any(
-        (p) => p.calls.any((c) => c.method == 'setAudioSources'),
-      );
-      expect(
-        hasSetSources,
-        isTrue,
-        reason:
-            'paired letter→word path queues via setAudioSources playlist for gapless playback',
-      );
-    });
+        // At least one fake should have received a setAudioSources call (the
+        // playlist path), NOT a setAsset (single-clip path).
+        final hasSetSources = t.fakes.any(
+          (p) => p.calls.any((c) => c.method == 'setAudioSources'),
+        );
+        expect(
+          hasSetSources,
+          isTrue,
+          reason:
+              'paired letter→word path queues via setAudioSources playlist for gapless playback',
+        );
+      },
+    );
   });
 
   group('AudioEngine.stop', () {

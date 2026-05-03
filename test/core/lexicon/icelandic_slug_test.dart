@@ -49,7 +49,8 @@ void main() {
         expect(
           expectedPath,
           entry.defaultImagePath,
-          reason: 'slug for ${entry.word} should resolve to ${entry.defaultImagePath}',
+          reason:
+              'slug for ${entry.word} should resolve to ${entry.defaultImagePath}',
         );
       }
     });

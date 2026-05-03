@@ -116,7 +116,8 @@ void main() {
         expect(
           find.byKey(const Key('home-room-glyph-stafir')),
           findsOneWidget,
-          reason: 'Stafir room button must render a styled alphabet '
+          reason:
+              'Stafir room button must render a styled alphabet '
               'glyph keyed home-room-glyph-stafir',
         );
       },
@@ -131,7 +132,8 @@ void main() {
         expect(
           find.byKey(const Key('home-room-glyph-tolur')),
           findsOneWidget,
-          reason: 'Tölur room button must render a styled numeral '
+          reason:
+              'Tölur room button must render a styled numeral '
               'glyph keyed home-room-glyph-tolur',
         );
       },
@@ -180,9 +182,7 @@ void main() {
         tester,
         body: (engine, db) async {
           final settings = find.byIcon(Icons.settings);
-          final gesture = await tester.startGesture(
-            tester.getCenter(settings),
-          );
+          final gesture = await tester.startGesture(tester.getCenter(settings));
           await tester.pump(const Duration(seconds: 3, milliseconds: 100));
           await gesture.up();
           await tester.pumpAndSettle();

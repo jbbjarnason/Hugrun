@@ -48,9 +48,7 @@ ProviderScope _wrap({
       audioEngineProvider.overrideWith((ref) => engine),
       correspondenceRoundGeneratorProvider.overrideWith((ref) => generator),
     ],
-    child: const MaterialApp(
-      home: Scaffold(body: CorrespondenceActivity()),
-    ),
+    child: const MaterialApp(home: Scaffold(body: CorrespondenceActivity())),
   );
 }
 
@@ -70,8 +68,9 @@ CorrespondenceRound _round({
 }
 
 void main() {
-  testWidgets('CR1: renders exactly N tap targets when count is 3',
-      (tester) async {
+  testWidgets('CR1: renders exactly N tap targets when count is 3', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -113,31 +112,33 @@ void main() {
   });
 
   testWidgets(
-      'CR3: feminine noun → numeral audio uses feminine variants for 1..4',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1280, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final engine = FakeAudioEngine();
-    final gen = _StubGenerator([
-      _round(count: 2, gender: Gender.feminine, word: 'kyr'),
-    ]);
-    await tester.pumpWidget(_wrap(engine: engine, generator: gen));
-    await tester.pump();
-    await tester.pump();
+    'CR3: feminine noun → numeral audio uses feminine variants for 1..4',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final engine = FakeAudioEngine();
+      final gen = _StubGenerator([
+        _round(count: 2, gender: Gender.feminine, word: 'kyr'),
+      ]);
+      await tester.pumpWidget(_wrap(engine: engine, generator: gen));
+      await tester.pump();
+      await tester.pump();
 
-    await tester.tap(find.byKey(const Key('corr-target-0')));
-    await tester.pump();
-    await tester.tap(find.byKey(const Key('corr-target-1')));
-    await tester.pump();
+      await tester.tap(find.byKey(const Key('corr-target-0')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('corr-target-1')));
+      await tester.pump();
 
-    expect(engine.playCalls, <UtteranceKey>[
-      UtteranceKey.numberOneFem,
-      UtteranceKey.numberTwoFem,
-    ]);
-  });
+      expect(engine.playCalls, <UtteranceKey>[
+        UtteranceKey.numberOneFem,
+        UtteranceKey.numberTwoFem,
+      ]);
+    },
+  );
 
-  testWidgets('CR4: re-tapping a counted target is a no-op (D-05)',
-      (tester) async {
+  testWidgets('CR4: re-tapping a counted target is a no-op (D-05)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -155,8 +156,9 @@ void main() {
     expect(engine.playCalls, <UtteranceKey>[UtteranceKey.numberOneMasc]);
   });
 
-  testWidgets('CR5: completing all targets shows celebration (D-13)',
-      (tester) async {
+  testWidgets('CR5: completing all targets shows celebration (D-13)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -178,9 +180,9 @@ void main() {
     );
   });
 
-  testWidgets(
-      'CR6: NUM-08 — no failure-state UI (no error/cancel icons)',
-      (tester) async {
+  testWidgets('CR6: NUM-08 — no failure-state UI (no error/cancel icons)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -213,10 +215,7 @@ void main() {
 
     await tester.pump(MatchingCelebration.duration);
     await tester.pump();
-    expect(
-      find.byKey(const Key('matching-celebration-active')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('matching-celebration-active')), findsNothing);
     // Round 2 has 2 targets.
     expect(find.byKey(const Key('corr-target-1')), findsOneWidget);
   });

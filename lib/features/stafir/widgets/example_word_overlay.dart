@@ -132,4 +132,3 @@ class _ExampleWordOverlayState extends State<ExampleWordOverlay> {
     );
   }
 }
-

@@ -34,25 +34,21 @@ CvcWord _kyrWord() => kCvcWords.firstWhere((w) => w.word == 'kýr');
 // the errorBuilder fallback path renders the word string as text.
 CvcWord _harWord() => kCvcWords.firstWhere((w) => w.word == 'hár');
 
-ProviderScope _wrap({
-  required FakeAudioEngine engine,
-  required CvcWord word,
-}) {
+ProviderScope _wrap({required FakeAudioEngine engine, required CvcWord word}) {
   return ProviderScope(
     overrides: [
       audioEngineProvider.overrideWith((ref) => engine),
       // Force a deterministic round by overriding the round provider.
       cvcCurrentWordProvider.overrideWith((ref) => word),
     ],
-    child: const MaterialApp(
-      home: Scaffold(body: CvcActivity()),
-    ),
+    child: const MaterialApp(home: Scaffold(body: CvcActivity())),
   );
 }
 
 void main() {
-  testWidgets('C1: layout — image area + 3 LetterTiles (NOT 4)',
-      (tester) async {
+  testWidgets('C1: layout — image area + 3 LetterTiles (NOT 4)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -106,8 +102,7 @@ void main() {
     expect(engine.playCalls.last, UtteranceKey.phonemeUAcute);
   });
 
-  testWidgets('C5: tap-order tolerance — c2 first is accepted',
-      (tester) async {
+  testWidgets('C5: tap-order tolerance — c2 first is accepted', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -148,8 +143,9 @@ void main() {
     },
   );
 
-  testWidgets('C7: re-tapping a letter replays its phoneme (D-14)',
-      (tester) async {
+  testWidgets('C7: re-tapping a letter replays its phoneme (D-14)', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -172,7 +168,9 @@ void main() {
     expect(secondCount, firstCount + 1, reason: 'phoneme should replay');
   });
 
-  testWidgets('C8: blend does NOT play with only 2 of 3 tapped', (tester) async {
+  testWidgets('C8: blend does NOT play with only 2 of 3 tapped', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -188,8 +186,9 @@ void main() {
     expect(engine.playCalls.contains(UtteranceKey.wordHus), isFalse);
   });
 
-  testWidgets('C9: re-tapping after completion does NOT replay the blend',
-      (tester) async {
+  testWidgets('C9: re-tapping after completion does NOT replay the blend', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -205,21 +204,24 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     // First blend played.
-    final blendCount1 =
-        engine.playCalls.where((k) => k == UtteranceKey.wordHus).length;
+    final blendCount1 = engine.playCalls
+        .where((k) => k == UtteranceKey.wordHus)
+        .length;
     expect(blendCount1, 1);
 
     // Re-tap c1 — phoneme replays, but blend should NOT fire again because
     // the round is in its post-blend wait state (auto-advance handles it).
     await tester.tap(find.byKey(const Key('cvc-tile-0-h')));
     await tester.pump(const Duration(milliseconds: 100));
-    final blendCount2 =
-        engine.playCalls.where((k) => k == UtteranceKey.wordHus).length;
+    final blendCount2 = engine.playCalls
+        .where((k) => k == UtteranceKey.wordHus)
+        .length;
     expect(blendCount2, 1, reason: 'blend should not double-fire');
   });
 
-  testWidgets('C10: zero failure UI — no error/check/score icons',
-      (tester) async {
+  testWidgets('C10: zero failure UI — no error/check/score icons', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -231,8 +233,9 @@ void main() {
     expect(find.byType(LinearProgressIndicator), findsNothing);
   });
 
-  testWidgets('C11: zero text instructions visible to the child',
-      (tester) async {
+  testWidgets('C11: zero text instructions visible to the child', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
@@ -245,14 +248,19 @@ void main() {
         .map((t) => t.data)
         .whereType<String>()
         .toList();
-    final asciiTextFound = texts.where((s) =>
-        RegExp(r'^[A-Za-z\s,.!?]+\$').hasMatch(s) && s.length > 5).toList();
-    expect(asciiTextFound, isEmpty,
-        reason: 'No long English-style instruction text should be present');
+    final asciiTextFound = texts
+        .where((s) => RegExp(r'^[A-Za-z\s,.!?]+\$').hasMatch(s) && s.length > 5)
+        .toList();
+    expect(
+      asciiTextFound,
+      isEmpty,
+      reason: 'No long English-style instruction text should be present',
+    );
   });
 
-  testWidgets('C12: works with kýr word too — phoneme keys resolve correctly',
-      (tester) async {
+  testWidgets('C12: works with kýr word too — phoneme keys resolve correctly', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final engine = FakeAudioEngine();
