@@ -81,6 +81,7 @@ auxiliary slugs `lampi` and `ros`), we:
 | auga | Cartoon blue eye (Phase 11.2 replacement — was photographic close-up of bloodshot human eye, unsettling for 5-year-olds; replaced with cartoon) | Public Domain (Openclipart) | <https://openclipart.org/detail/183972/cartoon-eye> |
 | lampi | Cartoon table lamp with cyan shade (Phase 11.2 replacement — was cluttered Wide-array-of-lamps store-shelf shot; replaced with single clean lamp) | Public Domain (Openclipart) | <https://openclipart.org/detail/240395/table-lamp> |
 | ros | Rosa rubiginosa (sweet briar) flower | Public Domain | <https://commons.wikimedia.org/wiki/File:Rosa_rubiginosa_1.jpg> |
+| aer | Icelandic sheep (single ewe) at Grábrók (added with æ-letter content fix — replaces "æða"/vein example word with "ær"/ewe; photo by Diego Delso) | CC-BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Oveja_islandesa,_Gr%C3%A1br%C3%B3k,_Vesturland,_Islandia,_2014-08-15,_DD_097_(cropped).JPG> |
 
 ## Attribution requirements
 
