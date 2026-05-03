@@ -66,6 +66,16 @@ class AudioEngine {
 
   bool _warmedUp = false;
 
+  /// In-flight warm-up future. When two callers race to warm up (the
+  /// keep-alive provider's microtask-scheduled `warmUp()` and an early
+  /// `play()` before the first call resolves), the second caller awaits
+  /// the same future instead of allocating a duplicate pool. The original
+  /// guard (`if (_warmedUp) return`) only fires AFTER the first call has
+  /// finished priming, leaving a window where both calls can each allocate
+  /// `poolSize` players — pushing `_pool.length` to `2 * poolSize` and
+  /// tripping the invariant assertion in `_acquirePlayer`.
+  Future<void>? _warmUpFuture;
+
   /// Number of warm AudioPlayer instances kept ready (D-02).
   static const int poolSize = 4;
 
@@ -91,9 +101,14 @@ class AudioEngine {
   /// Budget: < 500 ms after `runApp`. The audio_engine_provider schedules
   /// this via `Future.microtask` so the home screen renders before the
   /// pool finishes initializing.
-  Future<void> warmUp() async {
-    if (_warmedUp) return;
+  Future<void> warmUp() {
+    if (_warmedUp) return Future<void>.value();
+    // De-duplicate concurrent callers: the second caller awaits the same
+    // in-flight future, never allocating a second pool.
+    return _warmUpFuture ??= _doWarmUp();
+  }
 
+  Future<void> _doWarmUp() async {
     // 1. Allocate the pool.
     for (var i = 0; i < poolSize; i++) {
       _pool.add(_playerFactory());
@@ -165,6 +180,7 @@ class AudioEngine {
     }
     _pool.clear();
     _warmedUp = false;
+    _warmUpFuture = null;
   }
 
   /// Active playback slot. Conceptually a `(player, key)` pair: when a
