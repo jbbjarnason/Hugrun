@@ -142,6 +142,11 @@ flutter:
     - assets/audio/letters/words/
     - assets/audio/letters/phonemes/
     - assets/audio/cvc/
+    # Gender-neutral cardinals (fimm/sex/sjö/átta/níu/tíu) and any other
+    # genderless number clips ship directly under assets/audio/numbers/.
+    # Numbers 1-4 are gendered and live in masculine/feminine/neuter
+    # subfolders below.
+    - assets/audio/numbers/
     - assets/audio/numbers/masculine/
     - assets/audio/numbers/feminine/
     - assets/audio/numbers/neuter/
