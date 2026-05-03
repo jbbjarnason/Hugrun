@@ -324,4 +324,3 @@ IcelandicLetter? _letterForKey(UtteranceKey k) {
 
 IcelandicLetter _byGlyph(String glyph) =>
     kIcelandicAlphabet.firstWhere((l) => l.glyph == glyph);
-

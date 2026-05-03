@@ -123,4 +123,3 @@ String _slugFromAssetPath(String path) {
   final dotIdx = filename.lastIndexOf('.');
   return dotIdx >= 0 ? filename.substring(0, dotIdx) : filename;
 }
-

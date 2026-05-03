@@ -37,42 +37,42 @@ class ResolvedUtterance {
 /// One special case: letterH → wordHundur (Phase 2 stub key kept as the
 /// canonical "h" example word per manifest.yaml notes_for_reviewer —
 /// "wordHundur IS wordH"). All other letters pair to their wordX counterpart.
-const Map<UtteranceKey, UtteranceKey>
-kLetterToWord = <UtteranceKey, UtteranceKey>{
-  UtteranceKey.letterA: UtteranceKey.wordA,
-  UtteranceKey.letterAAcute: UtteranceKey.wordAAcute,
-  UtteranceKey.letterAe: UtteranceKey.wordAe,
-  UtteranceKey.letterB: UtteranceKey.wordB,
-  UtteranceKey.letterD: UtteranceKey.wordD,
-  UtteranceKey.letterE: UtteranceKey.wordE,
-  UtteranceKey.letterEAcute: UtteranceKey.wordEAcute,
-  UtteranceKey.letterEth: UtteranceKey.wordEth,
-  UtteranceKey.letterF: UtteranceKey.wordF,
-  UtteranceKey.letterG: UtteranceKey.wordG,
-  // Phase 2 stub key kept as canonical "h" example word.
-  UtteranceKey.letterH: UtteranceKey.wordHundur,
-  UtteranceKey.letterI: UtteranceKey.wordI,
-  UtteranceKey.letterIAcute: UtteranceKey.wordIAcute,
-  UtteranceKey.letterJ: UtteranceKey.wordJ,
-  UtteranceKey.letterK: UtteranceKey.wordK,
-  UtteranceKey.letterL: UtteranceKey.wordL,
-  UtteranceKey.letterM: UtteranceKey.wordM,
-  UtteranceKey.letterN: UtteranceKey.wordN,
-  UtteranceKey.letterO: UtteranceKey.wordO,
-  UtteranceKey.letterOAcute: UtteranceKey.wordOAcute,
-  UtteranceKey.letterOumlaut: UtteranceKey.wordOumlaut,
-  UtteranceKey.letterP: UtteranceKey.wordP,
-  UtteranceKey.letterR: UtteranceKey.wordR,
-  UtteranceKey.letterS: UtteranceKey.wordS,
-  UtteranceKey.letterT: UtteranceKey.wordT,
-  UtteranceKey.letterThorn: UtteranceKey.wordThorn,
-  UtteranceKey.letterU: UtteranceKey.wordU,
-  UtteranceKey.letterUAcute: UtteranceKey.wordUAcute,
-  UtteranceKey.letterV: UtteranceKey.wordV,
-  UtteranceKey.letterX: UtteranceKey.wordX,
-  UtteranceKey.letterY: UtteranceKey.wordY,
-  UtteranceKey.letterYAcute: UtteranceKey.wordYAcute,
-};
+const Map<UtteranceKey, UtteranceKey> kLetterToWord =
+    <UtteranceKey, UtteranceKey>{
+      UtteranceKey.letterA: UtteranceKey.wordA,
+      UtteranceKey.letterAAcute: UtteranceKey.wordAAcute,
+      UtteranceKey.letterAe: UtteranceKey.wordAe,
+      UtteranceKey.letterB: UtteranceKey.wordB,
+      UtteranceKey.letterD: UtteranceKey.wordD,
+      UtteranceKey.letterE: UtteranceKey.wordE,
+      UtteranceKey.letterEAcute: UtteranceKey.wordEAcute,
+      UtteranceKey.letterEth: UtteranceKey.wordEth,
+      UtteranceKey.letterF: UtteranceKey.wordF,
+      UtteranceKey.letterG: UtteranceKey.wordG,
+      // Phase 2 stub key kept as canonical "h" example word.
+      UtteranceKey.letterH: UtteranceKey.wordHundur,
+      UtteranceKey.letterI: UtteranceKey.wordI,
+      UtteranceKey.letterIAcute: UtteranceKey.wordIAcute,
+      UtteranceKey.letterJ: UtteranceKey.wordJ,
+      UtteranceKey.letterK: UtteranceKey.wordK,
+      UtteranceKey.letterL: UtteranceKey.wordL,
+      UtteranceKey.letterM: UtteranceKey.wordM,
+      UtteranceKey.letterN: UtteranceKey.wordN,
+      UtteranceKey.letterO: UtteranceKey.wordO,
+      UtteranceKey.letterOAcute: UtteranceKey.wordOAcute,
+      UtteranceKey.letterOumlaut: UtteranceKey.wordOumlaut,
+      UtteranceKey.letterP: UtteranceKey.wordP,
+      UtteranceKey.letterR: UtteranceKey.wordR,
+      UtteranceKey.letterS: UtteranceKey.wordS,
+      UtteranceKey.letterT: UtteranceKey.wordT,
+      UtteranceKey.letterThorn: UtteranceKey.wordThorn,
+      UtteranceKey.letterU: UtteranceKey.wordU,
+      UtteranceKey.letterUAcute: UtteranceKey.wordUAcute,
+      UtteranceKey.letterV: UtteranceKey.wordV,
+      UtteranceKey.letterX: UtteranceKey.wordX,
+      UtteranceKey.letterY: UtteranceKey.wordY,
+      UtteranceKey.letterYAcute: UtteranceKey.wordYAcute,
+    };
 
 /// Pure resolver. Returns null wordKey when:
 ///   - No pairing exists for [key] in the active pairing table, OR
