@@ -15,123 +15,123 @@ entries:
   letterA:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 597
-    technically_reviewed_lufs: -18.6
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -19.4
   letterAAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -18.3
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.1
   letterAe:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.3
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -19.0
   letterB:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -19.5
   letterD:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.5
   letterE:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -20.0
   letterEAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1527
-    technically_reviewed_lufs: -18.3
+    technically_reviewed_duration_ms: 704
+    technically_reviewed_lufs: -19.5
   letterEth:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -19.6
+    technically_reviewed_duration_ms: 725
+    technically_reviewed_lufs: -20.2
   letterF:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 811
-    technically_reviewed_lufs: -22.0
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -20.9
   letterG:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -19.9
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.0
   letterH:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 619
-    technically_reviewed_lufs: -20.0
+    technically_reviewed_duration_ms: 597
+    technically_reviewed_lufs: -18.6
   letterI:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.5
   letterIAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.2
   letterJ:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 832
-    technically_reviewed_lufs: -19.3
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -17.9
   letterK:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -18.0
+    technically_reviewed_lufs: -18.1
   letterL:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -20.2
+    technically_reviewed_duration_ms: 704
+    technically_reviewed_lufs: -19.7
   letterM:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 640
-    technically_reviewed_lufs: -21.4
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -22.1
   letterN:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 747
-    technically_reviewed_lufs: -21.7
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -22.5
   letterO:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_duration_ms: 555
+    technically_reviewed_lufs: -19.3
   letterOAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 619
-    technically_reviewed_lufs: -19.6
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -18.1
   letterOumlaut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 811
-    technically_reviewed_lufs: -18.0
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.6
   letterP:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -20.3
+    technically_reviewed_duration_ms: 597
+    technically_reviewed_lufs: -18.8
   letterR:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -20.5
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -21.5
   letterS:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 640
-    technically_reviewed_lufs: -19.0
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -19.1
   letterT:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -145,53 +145,53 @@ entries:
   letterU:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -18.0
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.5
   letterUAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -17.9
+    technically_reviewed_duration_ms: 597
+    technically_reviewed_lufs: -18.2
   letterV:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 747
+    technically_reviewed_duration_ms: 704
     technically_reviewed_lufs: -22.1
   letterX:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
+    technically_reviewed_duration_ms: 704
     technically_reviewed_lufs: -19.5
   letterY:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1684
-    technically_reviewed_lufs: -19.0
+    technically_reviewed_duration_ms: 1271
+    technically_reviewed_lufs: -19.4
   letterYAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1403
-    technically_reviewed_lufs: -18.9
+    technically_reviewed_duration_ms: 1247
+    technically_reviewed_lufs: -19.4
   narrationWelcome:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 2829
+    technically_reviewed_duration_ms: 2844
     technically_reviewed_lufs: -18.9
   numberEight:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -22.2
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -23.1
   numberFive:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -21.8
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -21.6
   numberFourFem:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 811
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_lufs: -19.4
   numberFourMasc:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -201,42 +201,42 @@ entries:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.5
+    technically_reviewed_lufs: -19.4
   numberNine:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.5
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.2
   numberOneFem:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -19.9
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -21.7
   numberOneMasc:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -20.1
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.1
   numberOneNeut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 533
-    technically_reviewed_lufs: -21.0
+    technically_reviewed_lufs: -21.4
   numberSeven:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1643
-    technically_reviewed_lufs: -19.1
+    technically_reviewed_duration_ms: 704
+    technically_reviewed_lufs: -18.1
   numberSix:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 960
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -19.5
   numberTen:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 619
-    technically_reviewed_lufs: -19.7
+    technically_reviewed_lufs: -19.6
   numberThreeFem:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -245,98 +245,98 @@ entries:
   numberThreeMasc:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_duration_ms: 832
+    technically_reviewed_lufs: -19.9
   numberThreeNeut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_lufs: -19.3
   numberTwoFem:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -19.6
+    technically_reviewed_duration_ms: 725
+    technically_reviewed_lufs: -19.7
   numberTwoMasc:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 832
+    technically_reviewed_duration_ms: 789
     technically_reviewed_lufs: -19.9
   numberTwoNeut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 555
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_lufs: -19.0
   phonemeA:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -19.6
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.5
   phonemeAAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 555
-    technically_reviewed_lufs: -19.0
+    technically_reviewed_duration_ms: 533
+    technically_reviewed_lufs: -19.1
   phonemeAe:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -20.7
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -20.4
   phonemeB:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -18.3
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.4
   phonemeD:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 747
-    technically_reviewed_lufs: -19.8
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.2
   phonemeE:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 597
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -18.0
   phonemeEAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1791
-    technically_reviewed_lufs: -19.0
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.1
   phonemeEth:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 747
-    technically_reviewed_lufs: -19.8
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -18.9
   phonemeF:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1319
-    technically_reviewed_lufs: -21.8
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -21.3
   phonemeG:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.7
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -19.4
   phonemeH:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -20.0
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.8
   phonemeI:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -17.8
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.6
   phonemeIAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.2
   phonemeJ:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1067
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 789
+    technically_reviewed_lufs: -17.8
   phonemeK:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -345,143 +345,143 @@ entries:
   phonemeL:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -20.7
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -21.5
   phonemeM:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -20.0
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -20.8
   phonemeN:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 640
-    technically_reviewed_lufs: -21.2
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -21.7
   phonemeO:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -19.4
   phonemeOAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 619
-    technically_reviewed_lufs: -19.7
+    technically_reviewed_duration_ms: 555
+    technically_reviewed_lufs: -19.4
   phonemeOumlaut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 640
+    technically_reviewed_lufs: -19.4
   phonemeP:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -17.8
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.9
   phonemeR:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
-    technically_reviewed_lufs: -21.1
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -22.1
   phonemeS:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -19.5
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -19.4
   phonemeT:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -18.3
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.9
   phonemeThorn:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 555
-    technically_reviewed_lufs: -19.5
+    technically_reviewed_lufs: -18.8
   phonemeU:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 747
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.5
   phonemeUAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 619
+    technically_reviewed_lufs: -19.6
   phonemeV:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -21.8
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -22.1
   phonemeX:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1067
-    technically_reviewed_lufs: -19.7
+    technically_reviewed_duration_ms: 1003
+    technically_reviewed_lufs: -18.6
   phonemeY:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1422
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 1348
+    technically_reviewed_lufs: -18.5
   phonemeYAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1368
+    technically_reviewed_duration_ms: 1323
     technically_reviewed_lufs: -19.4
   wordA:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -18.2
   wordAAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 597
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_duration_ms: 576
+    technically_reviewed_lufs: -18.1
   wordAe:
     technically_reviewed: true
-    technically_reviewed_at: '2026-05-02T21:22:53Z'
+    technically_reviewed_at: '2026-05-03T20:05:03Z'
     technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -21.1
+    technically_reviewed_lufs: -21.2
   wordB:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -19.8
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.0
   wordD:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -17.8
+    technically_reviewed_duration_ms: 725
+    technically_reviewed_lufs: -19.2
   wordE:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -23.9
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -23.2
   wordEAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.3
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -18.0
   wordEth:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 832
-    technically_reviewed_lufs: -18.7
+    technically_reviewed_duration_ms: 789
+    technically_reviewed_lufs: -19.3
   wordF:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1730
-    technically_reviewed_lufs: -19.1
+    technically_reviewed_duration_ms: 917
+    technically_reviewed_lufs: -18.6
   wordG:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -21.1
+    technically_reviewed_duration_ms: 661
+    technically_reviewed_lufs: -21.3
   wordGas:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -20.5
+    technically_reviewed_duration_ms: 811
+    technically_reviewed_lufs: -20.7
   wordHar:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -491,72 +491,72 @@ entries:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 811
-    technically_reviewed_lufs: -18.7
+    technically_reviewed_lufs: -18.9
   wordHus:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -18.9
+    technically_reviewed_duration_ms: 704
+    technically_reviewed_lufs: -19.4
   wordI:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -19.2
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -17.8
   wordIAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1045
-    technically_reviewed_lufs: -18.3
+    technically_reviewed_duration_ms: 1003
+    technically_reviewed_lufs: -19.4
   wordJ:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1728
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.6
   wordK:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 747
-    technically_reviewed_lufs: -18.2
+    technically_reviewed_lufs: -18.1
   wordL:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 683
-    technically_reviewed_lufs: -20.1
+    technically_reviewed_lufs: -20.2
   wordM:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.3
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -19.1
   wordN:
-    technically_reviewed: true
-    technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 853
-    technically_reviewed_lufs: -19.4
-  wordO:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 789
     technically_reviewed_lufs: -18.6
+  wordO:
+    technically_reviewed: true
+    technically_reviewed_at: '2026-05-02T21:22:53Z'
+    technically_reviewed_duration_ms: 747
+    technically_reviewed_lufs: -19.1
   wordOAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 896
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 811
+    technically_reviewed_lufs: -18.1
   wordOumlaut:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 811
-    technically_reviewed_lufs: -19.3
+    technically_reviewed_duration_ms: 704
+    technically_reviewed_lufs: -19.5
   wordP:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
     technically_reviewed_duration_ms: 704
-    technically_reviewed_lufs: -18.4
+    technically_reviewed_lufs: -18.3
   wordR:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1210
-    technically_reviewed_lufs: -19.5
+    technically_reviewed_duration_ms: 725
+    technically_reviewed_lufs: -19.6
   wordS:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
@@ -575,31 +575,31 @@ entries:
   wordU:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1651
-    technically_reviewed_lufs: -19.1
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -19.3
   wordUAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 768
-    technically_reviewed_lufs: -19.4
+    technically_reviewed_duration_ms: 725
+    technically_reviewed_lufs: -19.7
   wordV:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 661
+    technically_reviewed_duration_ms: 619
     technically_reviewed_lufs: -20.5
   wordX:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 1790
-    technically_reviewed_lufs: -19.0
+    technically_reviewed_duration_ms: 896
+    technically_reviewed_lufs: -19.2
   wordY:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 725
-    technically_reviewed_lufs: -18.0
+    technically_reviewed_duration_ms: 683
+    technically_reviewed_lufs: -18.1
   wordYAcute:
     technically_reviewed: true
     technically_reviewed_at: '2026-05-02T21:22:53Z'
-    technically_reviewed_duration_ms: 789
-    technically_reviewed_lufs: -18.1
+    technically_reviewed_duration_ms: 768
+    technically_reviewed_lufs: -20.8
 version: 1

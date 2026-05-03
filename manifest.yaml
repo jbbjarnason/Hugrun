@@ -315,8 +315,8 @@ utterances:
     kind: example_word
     starts_with: þ
   - key: wordAe
-    text: "æða"
-    asset: assets/audio/letters/words/aeda.aac
+    text: "ær"
+    asset: assets/audio/letters/words/aer.aac
     kind: example_word
     starts_with: æ
   - key: wordOumlaut
