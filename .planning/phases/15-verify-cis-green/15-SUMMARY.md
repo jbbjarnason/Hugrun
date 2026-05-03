@@ -246,3 +246,20 @@ Phase 15 iteration loop.
   runner support permits.
 - Migrate to `actions/checkout@v5` (or successor) before Sept 16 2026
   when Node.js 20 is removed from runners.
+
+## Self-Check: PASSED
+
+- All six expected docs exist:
+  - .planning/phases/14-deploy-ci-android-ios/14-CONTEXT.md ✓
+  - .planning/phases/14-deploy-ci-android-ios/14-SUMMARY.md ✓
+  - .planning/phases/14-deploy-ci-android-ios/14-VERIFICATION.md ✓
+  - .planning/phases/15-verify-cis-green/15-CONTEXT.md ✓
+  - .planning/phases/15-verify-cis-green/15-SUMMARY.md ✓
+  - .planning/phases/15-verify-cis-green/15-VERIFICATION.md ✓
+- All 8 fix commits + final docs commit present in git log:
+  da20b11, fb79577, 1de0b2d, 5163fbd, ba68cb1, aede8ad, 5d379eb,
+  354a3fa, b9331e7 — all FOUND in `git log --all`.
+- CI run 25282759936 (commit 354a3fa) confirmed green for all
+  three CI jobs via `gh run view --json status,conclusion,jobs`.
+- Deploy runs 25282759937 + 25282759944 (same commit) confirmed
+  green for both deploy workflows.
