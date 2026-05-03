@@ -4,6 +4,65 @@
 
 The app is functional on device after the Phase 22 (real-device fix) pass. These are quality / UX issues caught during play.
 
+## Verbatim user comments from this session (chronological, for context)
+
+These are Jon's exact words / concerns. Treat them as the source of truth for what to fix and how:
+
+1. **"the app doesnt work"** — referring to first device-run attempt. Resolved by Phase 22 (5 critical bugs fixed: 29 letters silent, kLetterToWord empty, slug mismatch, AudioEngine warmup race, missing pubspec assets entry for `assets/audio/numbers/`).
+
+2. **"when I click æ I get aeda, why the wrong spelling"** — example word for æ was "æða" (vein/artery). Heard as "aeda" by kid. Fixed: replaced with "ær" (ewe). New sheep image sourced.
+
+3. **"v vatn is weirdly said"** — Piper Steinn's pronunciation of `vaff` (letter name) and `vatn` (water) is rough. Pending fix; Azure TTS migration would resolve.
+
+4. **"the other letters also have misspellings like ö"** — confirms the Piper-quality issue is broad, not just 1-2 letters. Diacritics generally weak.
+
+5. **"can we enhance what we have, it is 80% okay"** — initial preference: don't switch TTS, just improve. Then changed mind to Azure (see #11).
+
+6. **"and below the picture of vatn you should have the word spelled"** — wants the example word as TEXT below the image. Literacy aid. Item 2 in the pending list.
+
+7. **"and you can find many more pictures online like pera and api and all of the letters, just google those"** — wants every example word to have a real image. Some currently are placeholder text. Sourcing required for all 32 (and later all ~160 if 5-words-per-letter happens).
+
+8. **"we can also go with azure neural tts, just let me know how to make credentials"** — strategic switch. Runbook at `.planning/deployment/azure-tts-setup.md`. Awaiting credentials.
+
+9. **"and can you add a big back button"** — UX bug. Current back affordance is missing/tiny on activity screens. A 5-year-old can't navigate home. Item 3.
+
+10. **"sometimes I click and I dont get sound, when I am quickly clicking"** — AudioEngine cancel-on-new-tap race. Item 5.
+
+11. **"dúkka is a teddy bear not a dúkka, the picture"** — image-content mismatch. Item 1.
+
+12. **"and g and j and y and ý and þ need to go a bit up, it is cutted"** — descender clipping in LetterTile. Item 4.
+
+13. **"can you add more words, like for h, we can also have hákarl. like can we try to have at least 5 words for each letter"** — major scope expansion to 5 words/letter. Item 8.
+
+14. **"p can you add pabbi"** — wants `pabbi` (daddy) for letter p. Currently only `pera` (pear). Should be in the 5-words-per-letter set.
+
+15. **"and m for mamma"** — wants `mamma` (mommy) for letter m. Currently only `mús` (mouse). Should be in the 5-words-per-letter set.
+
+**Pattern emerging:** Jon prioritizes WARM, FAMILIAR, KID-RELATIONAL words over abstract ones. mamma/pabbi >> mús; hákarl (shark — exciting) >> hundur alone. The 5-words-per-letter list (item 8 below) should bias toward words a 5yo encounters daily: family, food, animals seen at the zoo or in books, body parts, household objects. Less so: abstract concepts, verbs, places.
+
+## Earlier session principles (persistent)
+
+These were established earlier and should carry forward:
+
+- **"remember TDD and use marionette for e2e tests"** — TDD red→green→refactor mandatory; Marionette is the E2E framework (saved to project memory at `~/.claude/projects/-Users-jonb-Projects-hugrun/memory/feedback_testing.md`).
+- **"80% is OK"** — don't perfectionist. Ship working over perfect.
+- **No text instructions visible to child** (PROJECT.md core constraint) — but example word LABELS below images are OK; that's content, not instruction. Top-level "Stafir" / "Tölur" / "Stillingar" AppBar titles were visible to child and are now hidden (Phase 12).
+- **No fail states, no scores, no timers** (PROJECT.md core).
+- **Native-speaker pronunciation review is non-negotiable** — neither Claude nor any spectral-analysis tool can certify Icelandic phonetic correctness. User (or another native speaker) must do this manually via `python3 tools/tts/review_server.py` after each bake.
+
+## Current state of the world (2026-05-03 evening)
+
+- All 14 numbered phases (1-13.1) shipped. Phase 14 (deploy CIs) + Phase 15 (verify green) shipped.
+- 469 unit/widget tests passing.
+- 5 CI workflows green on https://github.com/jbbjarnason/Hugrun
+- App functional on Huawei MediaPad CMR W09, Android 9 (5 critical real-device bugs fixed).
+- Real CC photos for 32 lexicon nouns (with 8 swapped to kid-friendly cartoon style in Phase 11.2).
+- Audio: 118 clips baked via Piper Steinn voice, technical-pass approved, native-speaker review still pending.
+- Web repo: https://github.com/jbbjarnason/Hugrun (main branch, all commits pushed).
+- Build artifacts (APK + IPA unsigned) generated automatically by deploy-android + deploy-ios workflows on every push to main.
+- Google Play setup runbook at `.planning/deployment/google-play-setup.md` (designed for browser-driving Claude).
+- Azure TTS setup runbook at `.planning/deployment/azure-tts-setup.md` (designed for Jon to follow OR a browser-driving agent).
+
 ## Priority list
 
 ### 1. dúkka image is a teddy bear, not a doll (5 min)
@@ -130,6 +189,18 @@ y: ylur, yndi, yfir, ymja, ys            (warmth, joy, over, ..., bustle)
 **Recommendation:** ship 3 words per letter first as a beta (~96 clips), iterate to 5 if quality holds.
 
 This is best dispatched as a dedicated multi-hour agent run, with Azure TTS already in place so audio quality is high.
+
+## Things to NOT lose in the noise
+
+- **Repo is public at https://github.com/jbbjarnason/Hugrun** — Jon authorized push. CI pipelines live there.
+- **Hugrún (the child) is 5 years old** — design must work for a non-reader.
+- **Marionette is `marionette_flutter ^0.5.0`** (leancodepl) — MCP-based, not a scripted assertion framework. The integration tests provide the gating, not Marionette.
+- **Audio review pending:** `reviewed.yaml` has `technically_reviewed: true` for all 118 clips but `reviewed: true` (= native-speaker approved) is FALSE. The manifest_writer has a soft-gate that emits the manifest with PRONUNCIATION REVIEW PENDING comments per entry. Production-quality release requires the native-speaker review pass. Ergonomics: `python3 tools/tts/review_server.py` opens a localhost UI for tap-through approval.
+- **Phase 7 tracing is simplified placeholders** (Bezier curves, not authentic Briem). Designer pass deferred to v1.1+. Not blocking play.
+- **The orchestrator (Claude) cannot listen to audio directly** but CAN render spectrograms and visually inspect via the Read tool. Spectral analysis caught the leading-silence bug (1180ms → 70ms) in Phase 13.1.
+- **Test suite blind spots:** the 5 device bugs from Phase 22 all passed CI tests because the tests stubbed the hot paths. Tests need to be honest mocks of real behavior, not just "stub returns the 3 working cases."
+- **License hygiene matters** — every image must be CC0/CC-BY/Pixabay/Pexels. Documented in `assets/images/CREDITS.md`. ElevenLabs TTS is BANNED for under-13 apps (their ToS); Piper (Apache 2.0) and Azure (commercial-friendly) are clean.
+- **Budget warning:** Jon hit a usage limit during this session (resets 10am Atlantic/Reykjavik). Background-agent dispatches eat budget faster than direct work.
 
 ## Suggested agent dispatch order for next session
 
