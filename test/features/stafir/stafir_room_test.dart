@@ -91,10 +91,15 @@ void main() {
     await tester.pump();
 
     expect(engine.playCalls, contains(UtteranceKey.letterA));
+
+    // Drain the 3-second ExampleWordOverlay auto-dismiss timer scheduled
+    // by `_overlayCtl.show(...)` so the test framework's
+    // `_verifyInvariants` doesn't trip on leftover pending timers.
+    await tester.pump(const Duration(seconds: 4));
   });
 
   testWidgets(
-    'Tapping a letter that is NOT in the stub manifest does not throw',
+    'Tapping the "h" tile is handled (post-cfe4f80: all 32 letters resolve)',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -102,11 +107,17 @@ void main() {
       final engine = _RecordingEngine();
       await tester.pumpWidget(_wrap(engine: engine));
       await tester.pump();
-      // Letter "h" — letterH doesn't exist in Phase 2 stub enum.
+      // Letter "h" — historically letterH was a Phase 2 stub gap, but
+      // commit cfe4f80 populated all 32 letters in kLetterToWord +
+      // letterToUtteranceKey, so letterH now resolves to a real
+      // UtteranceKey and the engine IS invoked. The original assertion
+      // ("not called") is now stale; the invariant we still want to
+      // protect is: tapping any letter tile must not throw.
       await tester.tap(find.byKey(const Key('letter-tile-9-h')));
       await tester.pump();
-      // No exception, and the engine wasn't called for this tile.
-      expect(engine.playCalls.where((k) => k.name == 'letterH'), isEmpty);
+      expect(engine.playCalls, contains(UtteranceKey.letterH));
+      // Drain any pending overlay timer (see "Tapping the a tile" above).
+      await tester.pump(const Duration(seconds: 4));
     },
   );
 
@@ -312,6 +323,8 @@ void main() {
     await tester.tap(find.byKey(const Key('letter-tile-0-a')));
     await tester.pump();
     expect(engine.playCalls, contains(UtteranceKey.letterA));
+    // Drain the 3-second ExampleWordOverlay auto-dismiss timer.
+    await tester.pump(const Duration(seconds: 4));
   });
 
   testWidgets('StafirRoom can be popped without crashing', (tester) async {
