@@ -27,6 +27,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/app/app.dart';
+import 'package:hugrun/features/stafir/stafir_room.dart';
+import 'package:hugrun/features/tolur/tolur_room.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
@@ -75,18 +77,20 @@ void main() {
       'physical ≈ ${physicalCmStafir.toStringAsFixed(2)} cm',
     );
 
-    // 3. Tap Stafir → StafirRoom appears.
+    // 3. Tap Stafir → StafirRoom appears. Phase 12 UI-01 removed visible
+    //    AppBar titles from kid surfaces, so we assert on the widget Type
+    //    rather than localised text.
     await tester.tap(find.byKey(const Key('home-room-stafir')));
     await tester.pumpAndSettle();
-    expect(find.text('Stafir'), findsWidgets);
+    expect(find.byType(StafirRoom), findsOneWidget);
     // Pop back.
     await tester.pageBack();
     await tester.pumpAndSettle();
 
-    // 4. Tap Tölur → TolurRoom appears.
+    // 4. Tap Tölur → TolurRoom appears (same Phase 12 rationale).
     await tester.tap(find.byKey(const Key('home-room-tolur')));
     await tester.pumpAndSettle();
-    expect(find.text('Tölur'), findsWidgets);
+    expect(find.byType(TolurRoom), findsOneWidget);
     await tester.pageBack();
     await tester.pumpAndSettle();
 
