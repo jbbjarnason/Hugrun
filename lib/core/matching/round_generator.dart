@@ -17,14 +17,24 @@
 //   This file deliberately re-implements `_slugFromWordKey` rather than
 //   importing it from `lib/features/stafir/example_word_resolver.dart`.
 //   Reason: lib/core/ may NOT depend on lib/features/ (per project layering
-//   invariant). The duplication is small (a 4-line helper) and the
-//   layering boundary is the right call. If the helper changes, both
-//   copies will need updating — that is rare and easily caught by tests.
+//   invariant). The duplication is small and the layering boundary is the
+//   right call. If the helper changes, both copies will need updating —
+//   that is rare and easily caught by tests.
+//
+// Slug derivation (post-Phase-3):
+//   Earlier this helper stripped the `word` PascalCase prefix
+//   (`wordHundur` → `hundur`, but `wordA` → `a`, which was wrong — the
+//   real audio asset for `wordA` is `api.aac`). The current implementation
+//   reads the AudioAsset path from the manifest and extracts the basename
+//   (`assets/audio/letters/words/api.aac` → `api`). This produces the
+//   correct slug for every `word*` key and is the slug the image lookup
+//   in `assets/images/letters/words/<slug>.webp` expects.
 
 import 'dart:math';
 
 import '../alphabet/alphabet.dart';
 import '../alphabet/icelandic_letter.dart';
+import '../audio/utterance_resolver.dart';
 import '../manifest/audio_asset.dart';
 import '../manifest/utterance_key.dart';
 import '../../gen/audio_manifest.g.dart';
@@ -59,15 +69,24 @@ bool _formsSimilarPair(String glyphA, String glyphB) {
   return false;
 }
 
-/// Strips the `word` prefix from a `wordX` UtteranceKey to recover the
-/// asset slug. Same convention as Phase 4's example_word_resolver — kept
-/// as a private duplicate here for layering reasons (see file header).
-String _slugFromWordKey(UtteranceKey k) {
-  final name = k.name;
-  if (!name.startsWith('word')) return name;
-  final remainder = name.substring(4);
-  if (remainder.isEmpty) return name;
-  return remainder[0].toLowerCase() + remainder.substring(1);
+/// Returns the actual asset slug for a `word*` UtteranceKey, derived from
+/// the manifest path. Mirrors `slugFromWordKey` in the features layer —
+/// kept as a private duplicate here for layering reasons (see file header).
+///
+/// Reads the AudioAsset path from [manifest] and extracts the basename
+/// without extension (`assets/audio/letters/words/hundur.aac` → `hundur`).
+/// Falls back to enum name when the key isn't in the manifest (defensive).
+String _slugFromWordKey(
+  UtteranceKey k,
+  Map<UtteranceKey, AudioAsset> manifest,
+) {
+  final asset = manifest[k];
+  if (asset == null) return k.name;
+  final path = asset.path;
+  final lastSlash = path.lastIndexOf('/');
+  final filename = lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+  final dotIdx = filename.lastIndexOf('.');
+  return dotIdx >= 0 ? filename.substring(0, dotIdx) : filename;
 }
 
 /// Generates [MatchingRound] instances from a manifest + alphabet pool.
@@ -108,11 +127,48 @@ class RoundGenerator {
   ///   - the derived correct letter has no entry in `kIcelandicAlphabet`
   ///     (defensive — should not happen with the canonical alphabet).
   MatchingRound generate() {
-    // 1. Filter to word* manifest entries.
-    final wordKeys = _manifest.keys
-        .where((k) => k.name.startsWith('word'))
-        .toList();
-    if (wordKeys.isEmpty) {
+    // 1. Build the eligible (letterKey, wordKey, glyph) target list. Two
+    //    sources:
+    //      a) kLetterToWord pairings whose wordKey is in the manifest. This
+    //         yields the canonical (letter, word) pairings — including
+    //         letters whose example word does not begin with the bare letter
+    //         glyph (letterEth → wordEth/maður, letterAAcute → wordAAcute/ár,
+    //         etc.). These are correct-by-construction.
+    //      b) word* manifest entries that have NO entry in kLetterToWord but
+    //         whose slug's first character matches a glyph in the alphabet
+    //         (legacy path). Phase 3's manifest covers all 32 letters via (a),
+    //         so (b) is a safety net that keeps the original Phase 5 contract
+    //         working when a test fixture omits the pairing table.
+    final pairedTargets = <_Target>[];
+    kLetterToWord.forEach((letterKey, wordKey) {
+      if (!_manifest.containsKey(wordKey)) return;
+      final letter = _letterForKey(letterKey);
+      if (letter == null) return;
+      pairedTargets.add(_Target(letter: letter, wordKey: wordKey));
+    });
+
+    // Add word* manifest entries that don't already appear in pairedTargets.
+    // Resolves their letter via the slug-first-char heuristic (Phase 5
+    // legacy path; only triggers when the pairing table is bypassed via a
+    // test fixture).
+    final pairedWordKeys = pairedTargets.map((t) => t.wordKey).toSet();
+    for (final k in _manifest.keys) {
+      if (!k.name.startsWith('word')) continue;
+      if (pairedWordKeys.contains(k)) continue;
+      final slug = _slugFromWordKey(k, _manifest);
+      if (slug.isEmpty) continue;
+      final firstChar = slug.substring(0, 1);
+      final letter = kIcelandicAlphabet.firstWhere(
+        (l) => l.glyph == firstChar,
+        orElse: () => throw StateError(
+          'RoundGenerator: no IcelandicLetter for glyph "$firstChar" '
+          '(target ${k.name})',
+        ),
+      );
+      pairedTargets.add(_Target(letter: letter, wordKey: k));
+    }
+
+    if (pairedTargets.isEmpty) {
       throw StateError(
         'RoundGenerator: manifest has no word* entries — cannot generate '
         'a round (Phase 5 expects ≥1 wordX UtteranceKey).',
@@ -120,23 +176,15 @@ class RoundGenerator {
     }
 
     // 2. Pick a target.
-    final targetWordKey = wordKeys[_random.nextInt(wordKeys.length)];
-    final targetWordSlug = _slugFromWordKey(targetWordKey);
-
-    // 3. Resolve correct letter from slug[0].
+    final picked = pairedTargets[_random.nextInt(pairedTargets.length)];
+    final targetWordKey = picked.wordKey;
+    final correctLetter = picked.letter;
+    final targetWordSlug = _slugFromWordKey(targetWordKey, _manifest);
     if (targetWordSlug.isEmpty) {
       throw StateError(
         'RoundGenerator: target slug is empty for ${targetWordKey.name}',
       );
     }
-    final firstChar = targetWordSlug.substring(0, 1);
-    final correctLetter = kIcelandicAlphabet.firstWhere(
-      (l) => l.glyph == firstChar,
-      orElse: () => throw StateError(
-        'RoundGenerator: no IcelandicLetter for glyph "$firstChar" '
-        '(target ${targetWordKey.name})',
-      ),
-    );
 
     // 4. Build distractor pool: alphabet minus correct minus its similar
     //    counterparts.
@@ -191,3 +239,89 @@ class RoundGenerator {
     );
   }
 }
+
+/// Internal target row: (correctLetter, wordKey) tuple.
+class _Target {
+  const _Target({required this.letter, required this.wordKey});
+  final IcelandicLetter letter;
+  final UtteranceKey wordKey;
+}
+
+/// Resolves a `letter*` UtteranceKey to its IcelandicLetter. Hand-mapped
+/// alongside `kLetterToWord` so the inverse direction stays explicit.
+/// Returns null only for non-`letter*` keys (defensive — the caller filters
+/// to letterKey-keyed map entries).
+IcelandicLetter? _letterForKey(UtteranceKey k) {
+  switch (k) {
+    case UtteranceKey.letterA:
+      return _byGlyph('a');
+    case UtteranceKey.letterAAcute:
+      return _byGlyph('á');
+    case UtteranceKey.letterAe:
+      return _byGlyph('æ');
+    case UtteranceKey.letterB:
+      return _byGlyph('b');
+    case UtteranceKey.letterD:
+      return _byGlyph('d');
+    case UtteranceKey.letterE:
+      return _byGlyph('e');
+    case UtteranceKey.letterEAcute:
+      return _byGlyph('é');
+    case UtteranceKey.letterEth:
+      return _byGlyph('ð');
+    case UtteranceKey.letterF:
+      return _byGlyph('f');
+    case UtteranceKey.letterG:
+      return _byGlyph('g');
+    case UtteranceKey.letterH:
+      return _byGlyph('h');
+    case UtteranceKey.letterI:
+      return _byGlyph('i');
+    case UtteranceKey.letterIAcute:
+      return _byGlyph('í');
+    case UtteranceKey.letterJ:
+      return _byGlyph('j');
+    case UtteranceKey.letterK:
+      return _byGlyph('k');
+    case UtteranceKey.letterL:
+      return _byGlyph('l');
+    case UtteranceKey.letterM:
+      return _byGlyph('m');
+    case UtteranceKey.letterN:
+      return _byGlyph('n');
+    case UtteranceKey.letterO:
+      return _byGlyph('o');
+    case UtteranceKey.letterOAcute:
+      return _byGlyph('ó');
+    case UtteranceKey.letterOumlaut:
+      return _byGlyph('ö');
+    case UtteranceKey.letterP:
+      return _byGlyph('p');
+    case UtteranceKey.letterR:
+      return _byGlyph('r');
+    case UtteranceKey.letterS:
+      return _byGlyph('s');
+    case UtteranceKey.letterT:
+      return _byGlyph('t');
+    case UtteranceKey.letterThorn:
+      return _byGlyph('þ');
+    case UtteranceKey.letterU:
+      return _byGlyph('u');
+    case UtteranceKey.letterUAcute:
+      return _byGlyph('ú');
+    case UtteranceKey.letterV:
+      return _byGlyph('v');
+    case UtteranceKey.letterX:
+      return _byGlyph('x');
+    case UtteranceKey.letterY:
+      return _byGlyph('y');
+    case UtteranceKey.letterYAcute:
+      return _byGlyph('ý');
+    default:
+      return null;
+  }
+}
+
+IcelandicLetter _byGlyph(String glyph) =>
+    kIcelandicAlphabet.firstWhere((l) => l.glyph == glyph);
+

@@ -7,8 +7,11 @@
 //   D-23  Letters without paired words: name-only playback (graceful fallback)
 //
 // Plan 04-02 owns the source of truth for the letter→word pairing table.
-// Phase 2 stub state ships with kLetterToWord empty (the stub doesn't have
-// the letter↔word pairings — Phase 3 will populate this).
+// Phase 3 has shipped the full 32-letter manifest; this map covers all 32
+// (letter → example word) pairings. The example-word picks for each letter
+// follow the canonical list from manifest.yaml (`starts_with` field for
+// each `wordX` entry — letterEth → wordEth uses `maður` per the
+// notes_for_reviewer there because ð is rare word-initially).
 
 import '../manifest/audio_asset.dart';
 import '../manifest/utterance_key.dart';
@@ -29,17 +32,46 @@ class ResolvedUtterance {
   String toString() => 'ResolvedUtterance(name=$nameKey, word=$wordKey)';
 }
 
-/// Letter → example-word pairing table. Phase 2 stub: empty (no pairings).
+/// Letter → example-word pairing table. All 32 (letter → word) pairings.
 ///
-/// Phase 3 manifest writer will populate this with the 32 (letterX → wordY)
-/// pairings once the live audio is reviewed and approved. The shape is
-/// stable; only values change. Resolver does NOT hardcode any pairing —
-/// it reads this map at call time.
+/// One special case: letterH → wordHundur (Phase 2 stub key kept as the
+/// canonical "h" example word per manifest.yaml notes_for_reviewer —
+/// "wordHundur IS wordH"). All other letters pair to their wordX counterpart.
 const Map<UtteranceKey, UtteranceKey>
 kLetterToWord = <UtteranceKey, UtteranceKey>{
-  // Phase 2 stub state: no useful pairings yet.
-  // Phase 3 will populate (e.g. UtteranceKey.letterH → UtteranceKey.wordHundur)
-  // once that letterH symbol exists in the enum.
+  UtteranceKey.letterA: UtteranceKey.wordA,
+  UtteranceKey.letterAAcute: UtteranceKey.wordAAcute,
+  UtteranceKey.letterAe: UtteranceKey.wordAe,
+  UtteranceKey.letterB: UtteranceKey.wordB,
+  UtteranceKey.letterD: UtteranceKey.wordD,
+  UtteranceKey.letterE: UtteranceKey.wordE,
+  UtteranceKey.letterEAcute: UtteranceKey.wordEAcute,
+  UtteranceKey.letterEth: UtteranceKey.wordEth,
+  UtteranceKey.letterF: UtteranceKey.wordF,
+  UtteranceKey.letterG: UtteranceKey.wordG,
+  // Phase 2 stub key kept as canonical "h" example word.
+  UtteranceKey.letterH: UtteranceKey.wordHundur,
+  UtteranceKey.letterI: UtteranceKey.wordI,
+  UtteranceKey.letterIAcute: UtteranceKey.wordIAcute,
+  UtteranceKey.letterJ: UtteranceKey.wordJ,
+  UtteranceKey.letterK: UtteranceKey.wordK,
+  UtteranceKey.letterL: UtteranceKey.wordL,
+  UtteranceKey.letterM: UtteranceKey.wordM,
+  UtteranceKey.letterN: UtteranceKey.wordN,
+  UtteranceKey.letterO: UtteranceKey.wordO,
+  UtteranceKey.letterOAcute: UtteranceKey.wordOAcute,
+  UtteranceKey.letterOumlaut: UtteranceKey.wordOumlaut,
+  UtteranceKey.letterP: UtteranceKey.wordP,
+  UtteranceKey.letterR: UtteranceKey.wordR,
+  UtteranceKey.letterS: UtteranceKey.wordS,
+  UtteranceKey.letterT: UtteranceKey.wordT,
+  UtteranceKey.letterThorn: UtteranceKey.wordThorn,
+  UtteranceKey.letterU: UtteranceKey.wordU,
+  UtteranceKey.letterUAcute: UtteranceKey.wordUAcute,
+  UtteranceKey.letterV: UtteranceKey.wordV,
+  UtteranceKey.letterX: UtteranceKey.wordX,
+  UtteranceKey.letterY: UtteranceKey.wordY,
+  UtteranceKey.letterYAcute: UtteranceKey.wordYAcute,
 };
 
 /// Pure resolver. Returns null wordKey when:
