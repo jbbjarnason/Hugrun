@@ -78,20 +78,21 @@ void main() {
     );
 
     // 3. Tap Stafir → StafirRoom appears. Phase 12 UI-01 removed visible
-    //    AppBar titles from kid surfaces, so we assert on the widget Type
-    //    rather than localised text.
+    //    AppBar titles AND the auto-generated back button from kid
+    //    surfaces, so we assert on the widget Type rather than
+    //    localised text, and pop programmatically via Navigator.of(...)
+    //    rather than tester.pageBack() (which expects a back button).
     await tester.tap(find.byKey(const Key('home-room-stafir')));
     await tester.pumpAndSettle();
     expect(find.byType(StafirRoom), findsOneWidget);
-    // Pop back.
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(StafirRoom))).pop();
     await tester.pumpAndSettle();
 
     // 4. Tap Tölur → TolurRoom appears (same Phase 12 rationale).
     await tester.tap(find.byKey(const Key('home-room-tolur')));
     await tester.pumpAndSettle();
     expect(find.byType(TolurRoom), findsOneWidget);
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(TolurRoom))).pop();
     await tester.pumpAndSettle();
 
     // 5. Parent gate — long-press the settings icon for 3 s.

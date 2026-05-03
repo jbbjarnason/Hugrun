@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugrun/app/app.dart';
+import 'package:hugrun/features/stafir/stafir_room.dart';
+import 'package:hugrun/features/tolur/tolur_room.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'test_helpers/no_network_http_overrides.dart';
@@ -27,13 +29,15 @@ void main() {
     await tester.pumpAndSettle();
 
     // Tap each room and back out — exercises Plan 01-03 paths.
+    // Phase 12 UI-01 removed the AppBar from kid surfaces so we pop
+    // programmatically via Navigator.of(...) rather than tester.pageBack().
     await tester.tap(find.byKey(const Key('home-room-stafir')));
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(StafirRoom))).pop();
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('home-room-tolur')));
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(TolurRoom))).pop();
     await tester.pumpAndSettle();
 
     // Long-press settings icon.
