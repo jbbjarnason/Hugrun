@@ -2,9 +2,21 @@
 
 Phase 11.1 (Real CC-licensed photographs) replaced the 32 emoji-on-pastel
 placeholders shipped by Phase 11 with curated, free-licensed photographs
-sourced from Wikimedia Commons. Every image is recognizable at a glance
-to a 5-year-old and is licensed for commercial redistribution as part of
-this app.
+sourced from Wikimedia Commons.
+
+Phase 11.2 (Kid-friendly review pass) reviewed all 32 images against
+five-year-old recognition criteria (single subject, bright/colorful,
+no text or watermarks, cheerful, prototypical form) and swapped out
+8 photos that were too "scientific", artistic, or cluttered for the
+target audience. The replaced subjects are: `sol`, `mani`, `tre`,
+`vatn`, `bok`, `bill`, `auga`, `lampi`. The replacements are mostly
+public-domain cartoon illustrations from Openclipart (CC0) plus two
+Wikimedia Commons CC-BY-SA cartoon illustrations. See
+`audio-review/lexicon-photos-before.png` and
+`audio-review/lexicon-photos-after.png` for side-by-side review.
+
+Every image is recognizable at a glance to a 5-year-old and is licensed
+for commercial redistribution as part of this app.
 
 The widget code is unchanged: `ExampleWordOverlay`, `MatchingActivity`,
 `CorrespondenceActivity`, and `AdditionActivity` all continue to read the
@@ -49,13 +61,13 @@ auxiliary slugs `lampi` and `ros`), we:
 | banani | Cavendish bananas on white | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Cavendish_Banana_DS.jpg> |
 | braud | White bread loaf | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Wei%C3%9Fbrot-1.jpg> |
 | mjolk | Glass of milk | CC-BY 2.0 | <https://commons.wikimedia.org/wiki/File:Glass_of_Milk_(33657535532).jpg> |
-| vatn | Lake Idro (Italy) | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Lake_Idro_Italy_2005-08-16.jpg> |
-| sol | The Sun in white light | CC-BY 4.0 | <https://commons.wikimedia.org/wiki/File:The_Sun_in_white_light.jpg> |
-| mani | Full Moon (2010) | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:FullMoon2010.jpg> |
-| tre | Lone ash tree | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Usamljeni_jasen_-_panoramio_(cropped).jpg> |
+| vatn | Cartoon glass of water with straw (Phase 11.2 replacement — was Lake Idro landscape; replaced for kid-friendliness) | Public Domain (Openclipart) | <https://openclipart.org/detail/193470/glass-of-water> |
+| sol | Cartoon yellow smiling sun (Phase 11.2 replacement — was scientific grayscale Sun-in-white-light; replaced for kid-friendliness) | Public Domain (Openclipart) | <https://openclipart.org/detail/206318/cartoon-sun> |
+| mani | Yellow crescent moon and star icon (Phase 11.2 replacement — was grayscale astronomy Full Moon photo; replaced for kid-friendliness) | Public Domain (Openclipart) | <https://openclipart.org/detail/220484/yellow-moon-and-star-icon> |
+| tre | Simple green pine tree silhouette (Phase 11.2 replacement — was distant landscape lone ash; replaced for kid-friendliness) | Public Domain (Openclipart) | <https://openclipart.org/detail/192460/a-simple-green-tree> |
 | blom | Magnolia grandiflora flower | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Magnolia_grandiflora_-_flower_1.jpg> |
-| bok | Children's "Fairy Tales" book cover (1911, Jessie Willcox Smith) | Public Domain | <https://commons.wikimedia.org/wiki/File:Fairy_Tales_(Boston_Public_Library).jpg> |
-| bill | Toy cars | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:ToyCars.jpg> |
+| bok | Cartoon open book with smiling face (Phase 11.2 replacement — was 1911 Fairy Tales cover with embedded text; replaced because text in image fails kid-photo rule) | CC-BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Open_Book_Cartoon.jpg> |
+| bill | Cartoon red car (Phase 11.2 replacement — was vintage Matchbox toy-cars row; replaced for clearer single-car recognition) | CC-BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Red_Car_Closed_Window_Cartoon_Vector.svg> |
 | hus | Country cottage on Inch Island | CC-BY-SA 2.0 | <https://commons.wikimedia.org/wiki/File:Country_cottage,_Inch_Island_-_geograph.org.uk_-_3951065_(cropped).jpg> |
 | bolti | Beach ball | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:BeachBall.jpg> |
 | dukka | Steiff teddy bear (stuffed toy) | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Nachbildung_55PB_Steiff_Museum_Giengen.jpg> |
@@ -66,8 +78,8 @@ auxiliary slugs `lampi` and `ros`), we:
 | peysa | Selburose-pattern wool sweater | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Selburose-sweater.jpg> |
 | sokkar | Hand-knit white lace sock | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:HandKnittedWhiteLaceSock.jpg> |
 | skor | Air Jordan 1 sneakers (red/black) | CC-BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Air_Jordan_1_Banned.jpg> |
-| auga | Close-up of human eye | CC-BY-SA 3.0 | <https://commons.wikimedia.org/wiki/File:Human_eye_with_blood_vessels.jpg> |
-| lampi | Wide array of table lamps | CC-BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Wide_array_of_lamps.jpg> |
+| auga | Cartoon blue eye (Phase 11.2 replacement — was photographic close-up of bloodshot human eye, unsettling for 5-year-olds; replaced with cartoon) | Public Domain (Openclipart) | <https://openclipart.org/detail/183972/cartoon-eye> |
+| lampi | Cartoon table lamp with cyan shade (Phase 11.2 replacement — was cluttered Wide-array-of-lamps store-shelf shot; replaced with single clean lamp) | Public Domain (Openclipart) | <https://openclipart.org/detail/240395/table-lamp> |
 | ros | Rosa rubiginosa (sweet briar) flower | Public Domain | <https://commons.wikimedia.org/wiki/File:Rosa_rubiginosa_1.jpg> |
 
 ## Attribution requirements
