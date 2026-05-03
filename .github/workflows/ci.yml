@@ -121,10 +121,19 @@ jobs:
       - name: Add ephemeral Linux desktop target
         run: flutter create --platforms=linux --project-name hugrun .
 
-      - name: integration_test under NoNetworkHttpOverrides
+      # Run ONLY the standalone `test()` case (HttpOverrides mechanic
+      # assertion) via --plain-name. The companion `testWidgets` case
+      # ("Full Phase 1 play session attempts no network") is iOS/Android
+      # only — `just_audio` has no Linux desktop implementation, so the
+      # full-session pump path crashes on `disposeAllPlayers` channel
+      # invocation under the Linux runner. The full-session no-network
+      # behavior is still exercised by the marionette-e2e job on
+      # macos-latest (iOS Simulator), which has full audio support.
+      - name: integration_test (HttpOverrides assertion only, Linux)
         run: |
           xvfb-run -a flutter test integration_test/no_network_test.dart \
             -d linux \
+            --plain-name "NoNetworkHttpOverrides throws on HttpClient construction" \
             --reporter=expanded
 
   # ============================================================================
