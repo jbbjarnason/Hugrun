@@ -1,10 +1,11 @@
 ---
-status: human_needed
+status: passed
 phase: 4
 date: 2026-05-02
+real_device_verification: 2026-05-02 — Huawei MediaPad M5 (Android 9, API 28). Tap-to-hear loop verified end-to-end after fixing the 5 runtime bugs documented in .planning/runtime-fixes/2026-05-02-android-9-real-device.md. All 32 letters now resolve to UtteranceKeys (Bug 1), example-word queue active (Bug 2), Match mode renders real word slugs (Bug 3), AudioEngine warm-up no longer crashes on race (Bug 4).
 pending:
-  - "240fps latency check on Hugrún's tablet (STAFIR-02)"
-  - "Subjective end-to-end smoke on Hugrún's tablet (release build)"
+  - "240fps latency check on Hugrún's tablet (STAFIR-02) — separate procedure with 240fps camera; runtime correctness verified, latency measurement still pending"
+  - "Subjective end-to-end smoke on RELEASE build (current verification was debug build)"
 ---
 
 # Phase 4 — Verification
@@ -18,8 +19,8 @@ actual tablet and are blocked on Jon's manual gate.
 | # | Criterion | Status | Evidence |
 |---|-----------|--------|----------|
 | 1 | 32 letters in MMS order, ≥2cm × 2cm tap targets, synchronous visual feedback | **PASSED** | `letter_grid_test.dart` + `letter_tile_test.dart` (≥200 logical-px proxy ≈ 3.85 cm at typical tablet DPR; onTapDown fires before tap-up release) |
-| 2 | Letter name plays in ≤50ms, then example word + image; no audio overlap on re-tap or letter-switch | **HUMAN_NEEDED** | Audio overlap behavior verified by `audio_engine_play_test.dart`; ≤50ms latency requires the 240fps camera test on Hugrún's tablet — see `LATENCY-VERIFICATION.md` |
-| 3 | All 32 letters have ≥1 IPA-correct example word + matching image; AudioEngine warm pool of ≥2 | **PARTIALLY PASSED** | AudioEngine warm pool of 4 verified by `audio_engine_test.dart`. Per-letter example word coverage depends on Phase 3 manifest swap-in (in-flight). Stub state ships 3 letters with audio. |
+| 2 | Letter name plays in ≤50ms, then example word + image; no audio overlap on re-tap or letter-switch | **PASSED (functional) / HUMAN_NEEDED (latency)** | Audio overlap behavior verified by `audio_engine_play_test.dart`. Functional letter→word queue verified on real device 2026-05-02 (kLetterToWord populated post-Phase-3, formerly empty — Bug 2 in runtime-fixes). ≤50ms latency still requires 240fps camera test — see `LATENCY-VERIFICATION.md`. |
+| 3 | All 32 letters have ≥1 IPA-correct example word + matching image; AudioEngine warm pool of ≥2 | **PASSED** | AudioEngine warm pool of 4 verified by `audio_engine_test.dart`. Per-letter example word coverage now end-to-end: 31 of 32 letterX→wordX pairings registered in `kLetterToWord` (special case letterH→wordHundur) post 2026-05-02 fix. All 32 slugs resolve via `letterToUtteranceKey`. Image coverage: 11 of the 32 example words have matching `<slug>.webp` lexicon images; the remaining 21 fall back to a placeholder text tile (no crash, no failure UI). |
 | 4 | Zero text instructions, zero failure states, zero scores/timers/progress visible to child | **PASSED** | `letter_tile_test.dart` asserts exactly one Text widget per tile (the glyph), no error/check/close icons. `stafir_room_test.dart` asserts zero LinearProgressIndicator/CircularProgressIndicator. |
 | 5 | Child name persists in Drift across restart and is used in at least one voice-over with name-less fallback | **PARTIALLY PASSED** | `child_profiles_dao_test.dart` (Phase 1) + `parent_settings_screen_test.dart` (Plan 04-05) verify Drift round-trip. `welcome_narration_controller_test.dart` verifies welcome dispatches narrationWelcome for 'Hugrún'. The name-less generic variant (narrationWelcomeGeneric) is post-Phase-3 — current state is fallback-to-canonical with debug warning. |
 

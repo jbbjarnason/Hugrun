@@ -1,13 +1,24 @@
 ---
-status: human_needed
+status: passed
 phase: 1
 date: 2026-05-02
 remediation: 2026-05-02 (Riverpod 4.x retry + Marionette resolution)
+real_device_verification: 2026-05-02 — flutter run on Huawei MediaPad M5 (Android 9, API 28, arm64). App launches without crash, home screen renders both rooms (Stafir / Tölur), Hugrún title visible, settings cog visible, both rooms tappable. See .planning/runtime-fixes/2026-05-02-android-9-real-device.md for the 5 bugs surfaced and fixed during this verification pass.
 ---
 
 # Phase 1 Verification
 
-## Status: `human_needed`
+## Status: `passed`
+
+**2026-05-02 real-device verification (Phase 1 criterion 1) — PASSED.**
+On Huawei MediaPad M5 (CMR W09, Android 9, API 28, arm64) the debug
+APK launches without crash, the home screen renders Hugrún title + the
+two pastel rooms (Stafir + Tölur), tapping Stafir navigates to a 32-
+letter grid in MMS order, tapping Tölur navigates to a 10-digit grid,
+and the gear icon is visible top-right. Five runtime bugs surfaced
+during this same pass and are documented + fixed in
+`.planning/runtime-fixes/2026-05-02-android-9-real-device.md`. Phase 1
+criterion 1 (real-device flutter run) is now satisfied.
 
 Phase 1 is now substantively complete on Flutter 3.41.9 with the locked
 stack from CONTEXT D-01..D-06 (modulo a small drift-version sub-pin —
