@@ -1,0 +1,88 @@
+name: deploy-android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build-and-deploy:
+    name: build-android (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .fvmrc
+        id: fvmrc
+        run: |
+          FLUTTER_VERSION="$(grep -oE '"flutter":\s*"[^"]+"' .fvmrc | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvmrc.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: flutter --version
+        run: flutter --version
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: flutter build apk --release
+        run: flutter build apk --release
+
+      - name: flutter build appbundle --release
+        run: flutter build appbundle --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hugrun-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hugrun-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      # ----------------------------------------------------------------------
+      # Gated Google Play Internal Testing deploy.
+      # Skips gracefully if PLAY_SERVICE_ACCOUNT_JSON is not set in repo
+      # secrets — build artifacts above still upload regardless.
+      # ----------------------------------------------------------------------
+      - name: Check for Google Play deploy secret
+        id: play_secret_check
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
+            echo "has_secret=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_secret=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Play deploy — no PLAY_SERVICE_ACCOUNT_JSON secret configured"
+          fi
+
+      - name: Deploy to Google Play Internal Testing
+        if: steps.play_secret_check.outputs.has_secret == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ secrets.PLAY_PACKAGE_NAME }}
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed

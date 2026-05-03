@@ -1,0 +1,125 @@
+name: deploy-ios
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build-and-deploy:
+    name: build-ios (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .fvmrc
+        id: fvmrc
+        run: |
+          FLUTTER_VERSION="$(grep -oE '"flutter":\s*"[^"]+"' .fvmrc | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvmrc.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: flutter --version
+        run: flutter --version
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # ----------------------------------------------------------------------
+      # Detect whether iOS code-signing secrets are present.
+      # If yes  → import certs, download profiles, build signed IPA, upload
+      #           to TestFlight via apple-actions/upload-testflight-build@v1.
+      # If no   → flutter build ios --release --no-codesign and upload the
+      #           unsigned .app as artifact (best-effort sanity build).
+      # ----------------------------------------------------------------------
+      - name: Check for iOS signing secrets
+        id: ios_secret_check
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          IOS_BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          if [ -n "$APP_STORE_CONNECT_API_KEY_ID" ] \
+             && [ -n "$APP_STORE_CONNECT_API_ISSUER_ID" ] \
+             && [ -n "$APP_STORE_CONNECT_API_KEY" ] \
+             && [ -n "$IOS_BUILD_CERTIFICATE_BASE64" ] \
+             && [ -n "$IOS_PROVISIONING_PROFILE_BASE64" ]; then
+            echo "has_secrets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_secrets=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping TestFlight deploy — required iOS signing secrets not configured"
+            echo "  (need APP_STORE_CONNECT_API_KEY_ID/ISSUER_ID/KEY +"
+            echo "   IOS_BUILD_CERTIFICATE_BASE64 + IOS_PROVISIONING_PROFILE_BASE64)"
+          fi
+
+      # ===== Unsigned build path (no secrets) =====
+      - name: flutter build ios --release --no-codesign
+        if: steps.ios_secret_check.outputs.has_secrets != 'true'
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload unsigned .app artifact
+        if: steps.ios_secret_check.outputs.has_secrets != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hugrun-ios-unsigned-app
+          path: build/ios/iphoneos/Runner.app
+          if-no-files-found: error
+
+      # ===== Signed build + TestFlight path (secrets present) =====
+      - name: Import code-signing certificates
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Install provisioning profile
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILE_DIR"
+          echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode \
+            > "$PROFILE_DIR/hugrun.mobileprovision"
+
+      - name: flutter build ipa --release
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        run: flutter build ipa --release
+
+      - name: Upload signed IPA artifact
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hugrun-ios-signed-ipa
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error
+
+      - name: Find IPA path
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        id: find_ipa
+        run: |
+          IPA_PATH="$(ls build/ios/ipa/*.ipa | head -n1)"
+          echo "ipa_path=$IPA_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to TestFlight
+        if: steps.ios_secret_check.outputs.has_secrets == 'true'
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: ${{ steps.find_ipa.outputs.ipa_path }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
