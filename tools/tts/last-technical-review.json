@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-05-02T21:47:16Z",
-  "finished_at": "2026-05-02T21:47:21Z",
+  "started_at": "2026-05-03T20:04:56Z",
+  "finished_at": "2026-05-03T20:05:00Z",
   "total": 118,
   "passed": 118,
   "failed": 0,
@@ -999,18 +999,18 @@
     },
     "wordAe": {
       "key": "wordAe",
-      "asset": "/Users/jonb/Projects/hugrun/assets/audio/letters/words/aeda.aac",
+      "asset": "/Users/jonb/Projects/hugrun/assets/audio/letters/words/aer.aac",
       "passed": true,
-      "file_size_bytes": 8820,
-      "duration_ms": 661,
+      "file_size_bytes": 8938,
+      "duration_ms": 704,
       "sample_rate": 48000,
       "channels": 1,
       "codec": "aac",
       "profile": "LC",
-      "bitrate_bps": 106698,
+      "bitrate_bps": 101575,
       "format_name": "aac",
-      "measured_lufs": -21.0,
-      "true_peak": -1.1,
+      "measured_lufs": -21.2,
+      "true_peak": -1.2,
       "lufs_tolerance": 5.0
     },
     "wordOumlaut": {
