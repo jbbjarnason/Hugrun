@@ -38,6 +38,8 @@ These are Jon's exact words / concerns. Treat them as the source of truth for wh
 
 15. **"and m for mamma"** — wants `mamma` (mommy) for letter m. Currently only `mús` (mouse). Should be in the 5-words-per-letter set.
 
+16. **"a afi and a amma"** — wants `afi` (grandpa) and `amma` (grandma) for letter `a`. Currently only `api` (monkey). The 5-words-for-a list now should include: `api, afi, amma, álfur, akur` (or substitute the others — but afi + amma are the priority adds).
+
 **Pattern emerging:** Jon prioritizes WARM, FAMILIAR, KID-RELATIONAL words over abstract ones. mamma/pabbi >> mús; hákarl (shark — exciting) >> hundur alone. The 5-words-per-letter list (item 8 below) should bias toward words a 5yo encounters daily: family, food, animals seen at the zoo or in books, body parts, household objects. Less so: abstract concepts, verbs, places.
 
 ## Earlier session principles (persistent)
